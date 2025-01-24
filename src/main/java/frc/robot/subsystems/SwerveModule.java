@@ -15,7 +15,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
 
 import frc.robot.Constants.SwerveConstants.SwerveModuleConstants.SwerveAnglePIDConstants;
 import frc.robot.Constants;
@@ -39,8 +38,8 @@ public class SwerveModule extends SubsystemBase {
 
 		drive = new SparkMax(driveMotorID, MotorType.kBrushless);
 		rotate = new SparkMax(turnMotorID, MotorType.kBrushless);
-		//drive.setIdleMode(IdleMode.kBrake);
-		//rotate.setIdleMode(IdleMode.kBrake); //TODO: brooo
+		// drive.setIdleMode(IdleMode.kBrake);
+		// rotate.setIdleMode(IdleMode.kBrake); //TODO: brooo
 
 		this.canCoder = new CANcoder(canCoderID);
 		encoder = drive.getEncoder();
@@ -58,12 +57,12 @@ public class SwerveModule extends SubsystemBase {
 	 * @param state {@link SwerveModuleState} object with speed and angle
 	 */
 	public void setState(SwerveModuleState state) {
-		state = SwerveModuleState.optimize(state, getTurningPosition()); // swerve module optimization prevents the
-																			// wheel
-																			// from ever turning more than 180 degrees,
-																			// so it
-																			// always chooses the shortest angle to
-																			// rotate to
+		state.optimize(getTurningPosition()); // swerve module optimization prevents the
+												// wheel
+												// from ever turning more than 180 degrees,
+												// so it
+												// always chooses the shortest angle to
+												// rotate to
 
 		drive.set(state.speedMetersPerSecond);
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
@@ -76,7 +75,8 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Absolute angle of module including angleOffset
 	 */
 	public Rotation2d getTurningPosition() {
-		return new Rotation2d((this.canCoder.getAbsolutePosition().getValueAsDouble() * Math.PI * 2 + this.angleOffset));
+		return new Rotation2d(
+				(this.canCoder.getAbsolutePosition().getValueAsDouble() * Math.PI * 2 + this.angleOffset));
 	}
 
 	/**
@@ -131,8 +131,8 @@ public class SwerveModule extends SubsystemBase {
 	 * @param idlemode Coast or brake
 	 */
 	public void setIdleMode(IdleMode idlemode) {
-		//drive.setIdleMode(idlemode); //TODO: bruh
-		//rotate.setIdleMode(idlemode);
+		// drive.setIdleMode(idlemode); //TODO: bruh
+		// rotate.setIdleMode(idlemode);
 	}
 
 }

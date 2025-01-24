@@ -52,8 +52,6 @@ public class Swerve extends SubsystemBase {
 	private SwerveModule rearLeftModule;
 	Field2d a = new Field2d();
 
-	private boolean isCoasting;
-
 	RobotConfig config;
 
 	/**
