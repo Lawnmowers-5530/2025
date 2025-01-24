@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -279,6 +280,18 @@ public class Swerve extends SubsystemBase {
 		//	isCoasting = false;
 		//}
 		updateOdometry();
+
+		if (DriverStation.isEnabled()) {
+			frontLeftModule.setIdleMode(IdleMode.kBrake);
+			frontRightModule.setIdleMode(IdleMode.kBrake);
+			rearRightModule.setIdleMode(IdleMode.kBrake);
+			rearLeftModule.setIdleMode(IdleMode.kBrake);
+		} else {
+			frontLeftModule.setIdleMode(IdleMode.kCoast);
+			frontRightModule.setIdleMode(IdleMode.kCoast);
+			rearRightModule.setIdleMode(IdleMode.kCoast);
+			rearLeftModule.setIdleMode(IdleMode.kCoast);
+		}
 	}
 
 	/**
