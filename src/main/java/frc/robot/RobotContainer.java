@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -68,6 +69,8 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
+		DriverStation.silenceJoystickConnectionWarning(true);
+
 		/**
 		 * initalize controllers here
 		 */
@@ -108,7 +111,7 @@ public class RobotContainer {
 			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
 			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
 
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
+			this.bindings.align = this.subsystems.swerve.new AlignToTag(4);
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
 
 		}
