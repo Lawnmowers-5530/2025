@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -18,6 +19,10 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -34,6 +39,8 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
+
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
@@ -281,6 +288,7 @@ public class Swerve extends SubsystemBase {
 		//	isCoasting = false;
 		//}
 		updateOdometry();
+		SmartDashboard.putString("swerveEst", this.odometry.getEstimatedPosition().toString());
 	}
 
 	/**
@@ -431,12 +439,17 @@ public class Swerve extends SubsystemBase {
 
 	public class AlignToTag extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(0.05, 0, 0);
+		PIDController yawPID = new PIDController(0.01, 0, 0);
+		PIDController drivePID = new PIDController(0.15, 0.0, 0);
 		int tagId;
 
 		public AlignToTag(int tagId) {
 			this.tagId = tagId;
-			yawPID.setSetpoint(0);
+			yawPID.setSetpoint(180);
+			yawPID.enableContinuousInput(-180, 180);
+			drivePID.setSetpoint(0);
+			drivePID.setTolerance(0.15);
+			yawPID.setTolerance(2);
 		}
 
 		@Override
@@ -453,8 +466,15 @@ public class Swerve extends SubsystemBase {
 
 			tracked_tag.ifPresent(
 				tag -> {
-					double output = yawPID.calculate(tag.getYaw());
-					Swerve.this.drive(VecBuilder.fill(0, 0), -output, false, 1);
+					Transform3d camTrans = tag.getBestCameraToTarget();
+					Transform3d cameraToRobot = new Transform3d(0, 0, 0, new Rotation3d());
+					Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
+					SmartDashboard.putString("pose", estimate.toString());
+					SmartDashboard.putNumber("y", camTrans.getY());
+					SmartDashboard.putNumber("x", camTrans.getX());
+					SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
+					//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-0,-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
+					Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
 				}
 			);
 		}
