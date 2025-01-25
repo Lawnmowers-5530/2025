@@ -30,11 +30,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
-import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import frc.robot.data.State;
 
 /**
  * Drivetrain control subsystem. Uses {@link SwerveModule}s to control the
@@ -51,8 +52,6 @@ public class Swerve extends SubsystemBase {
 	private SwerveModule rearRightModule;
 	private SwerveModule rearLeftModule;
 	Field2d a = new Field2d();
-
-	private boolean isCoasting;
 
 	RobotConfig config;
 
@@ -165,13 +164,20 @@ public class Swerve extends SubsystemBase {
 	 *                            slow mode
 	 * @return {@link RunCommand} to drive with suppliers
 	 */
+	
 	public Command drive() {
 		return new RunCommand(
 				() -> {
-					this.drive(ControllerState.driveVector, ControllerState.driveRotation, true, ControllerState.slowMode ? 0.5 : 1);
-				}, this);
-	};
+					switch(RobotContainer.state.getState()) {
+						case instanceof State.Idling:
+							this.drive(VecBuilder.fill(0, 0), 0, false, 1);
+							break;
+					}
+					}
 
+				, this);
+	};	
+	
 
 	/**
 	 * 

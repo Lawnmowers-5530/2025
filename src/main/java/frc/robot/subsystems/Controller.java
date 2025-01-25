@@ -5,7 +5,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.RobotContainer.State.ControllerState;
+import frc.robot.data.State;
+import frc.robot.data.StateManager;
+import frc.robot.RobotContainer;
 
 
 /**
@@ -21,8 +23,11 @@ public class Controller extends SubsystemBase {
     }
 
     public void periodic() {
+        switch (RobotContainer.state) {
 
-        ControllerState.driveVector = VecBuilder.fill(
+        }
+        /** 
+        driveVector = VecBuilder.fill(
 			MathUtil.applyDeadband(
 				driverController.getLeftY(),
 				ControllerConstants.driveControllerJoystickDeadband,
@@ -40,5 +45,6 @@ public class Controller extends SubsystemBase {
         );
 
         ControllerState.slowMode = driverController.b().getAsBoolean();
+        */
     }
 }

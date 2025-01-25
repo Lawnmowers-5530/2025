@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.RobotContainer.State.ControllerState;
+import frc.robot.data.State;
+import frc.robot.data.StateManager;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
@@ -49,14 +50,6 @@ public class RobotContainer {
 
 	}
 
-	public static class State {
-		public static class ControllerState {
-			public static Vector<N2> driveVector;
-			public static double driveRotation;
-			public static boolean slowMode;
-		}
-	}
-
 	public class Suppliers {
 		public Supplier<Vector<N2>> driveVectorSupplier;
 		public DoubleSupplier driveRotationSupplier;
@@ -66,6 +59,7 @@ public class RobotContainer {
 	private Subsystems subsystems;
 	private Bindings bindings;
 	private Suppliers suppliers;
+	public static StateManager state;
 
 	public RobotContainer() {
 		/**
@@ -123,7 +117,7 @@ public class RobotContainer {
 				return this.controllers.driverController.getRightX();
 			};
 		}
-
+		/** 
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
 					this.subsystems.swerve.drive(
@@ -133,6 +127,7 @@ public class RobotContainer {
 							ControllerState.slowMode ? 0.5 : 1);
 
 				}, this.subsystems.swerve);
+		*/
 	}
 
 	/**
