@@ -431,7 +431,7 @@ public class Swerve extends SubsystemBase {
 
 	public class AlignToTag extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(1.3, 0, 0);
+		PIDController yawPID = new PIDController(0.05, 0, 0);
 		int tagId;
 
 		public AlignToTag(int tagId) {
@@ -443,16 +443,18 @@ public class Swerve extends SubsystemBase {
 		public void execute() {
 			var tags = cameraManager.getTagsById(tagId);
 			//sort tags by the tag's pose ambiguity
+
+			//tags.forEach(tag -> System.out.println(tag.getPoseAmbiguity()));
+
 			var tracked_tag = tags
 				.stream()
-				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
+				//.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
 				.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
 
 			tracked_tag.ifPresent(
 				tag -> {
 					double output = yawPID.calculate(tag.getYaw());
-					Swerve.this.drive(VecBuilder.fill(0, 0), 0, false, 1);
-					System.out.println(output);
+					Swerve.this.drive(VecBuilder.fill(0, 0), -output, false, 1);
 				}
 			);
 		}

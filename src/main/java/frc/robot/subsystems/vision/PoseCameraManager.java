@@ -21,7 +21,7 @@ public class PoseCameraManager extends SubsystemBase {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
 
     public PoseCameraManager() {
-        camList.add(new PoseCamera("photonvision", new Transform3d()));
+        camList.add(new PoseCamera("Front", new Transform3d()));
         //camList.add(new PoseCamera("cam2", new Transform3d()));
     }
 

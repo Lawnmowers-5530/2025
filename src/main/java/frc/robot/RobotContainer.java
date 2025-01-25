@@ -105,6 +105,7 @@ public class RobotContainer {
 
 			// set gyro yaw to 0
 			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+			this.controllers.driverController.rightBumper().toggleOnFalse(this.bindings.zeroGyroCommand);
 
 			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
 			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
