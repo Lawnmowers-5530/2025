@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -129,8 +131,9 @@ public class SwerveModule extends SubsystemBase {
 	 * @param idlemode Coast or brake
 	 */
 	public void setIdleMode(IdleMode idlemode) {
-		// drive.setIdleMode(idlemode); //TODO: bruh
-		// rotate.setIdleMode(idlemode);
+		SparkMaxConfig config = new SparkMaxConfig();
+		config.idleMode(idlemode);
+		drive.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+		rotate.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 	}
-
 }
