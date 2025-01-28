@@ -117,7 +117,7 @@ public class RobotContainer {
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftX(), this.controllers.driverController.getLeftY());
+				return VecBuilder.fill(this.controllers.driverController.getLeftY(), -this.controllers.driverController.getLeftX());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
@@ -127,8 +127,8 @@ public class RobotContainer {
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
 					this.subsystems.swerve.drive(
-							ControllerState.driveVector,
-							ControllerState.driveRotation,
+							this.suppliers.driveVectorSupplier.get(),
+							-this.suppliers.driveRotationSupplier.getAsDouble(),
 							true,
 							ControllerState.slowMode ? 0.5 : 1);
 

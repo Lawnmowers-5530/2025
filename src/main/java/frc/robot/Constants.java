@@ -19,8 +19,8 @@ public final class Constants {
 	public static final boolean debug = true;
 
 	public static final class SwerveConstants {
-		public static final double trackWidth = Units.inchesToMeters(24);
-		public static final double wheelBase = Units.inchesToMeters(24);
+		public static final double trackWidth = Units.inchesToMeters(23);
+		public static final double wheelBase = Units.inchesToMeters(23);
 
 		public static final class FrontLeftModule { // FL
 			public static final int driveMotor = 5;
@@ -33,7 +33,7 @@ public final class Constants {
 			public static final int driveMotor = 7;
 			public static final int turnMotor = 8;
 			public static final int canCoder = 14;
-			public static final double angleOffset = 0.1;
+			public static final double angleOffset = 0;
 		}
 
 		public static final class RearRightModule { // RR

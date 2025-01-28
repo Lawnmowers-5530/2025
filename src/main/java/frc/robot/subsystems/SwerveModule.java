@@ -19,6 +19,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import frc.robot.Constants.SwerveConstants.SwerveModuleConstants.SwerveAnglePIDConstants;
 import frc.robot.Constants;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 /**
  * Holds methods to easily change the state of modules.
  */
@@ -28,7 +30,7 @@ public class SwerveModule extends SubsystemBase {
 			SwerveAnglePIDConstants.i,
 			SwerveAnglePIDConstants.d);
 
-	private SparkMax drive;
+	private TalonFX drive;
 	private SparkMax rotate;
 	private RelativeEncoder encoder;
 	private CANcoder canCoder;
@@ -36,14 +38,10 @@ public class SwerveModule extends SubsystemBase {
 
 	public SwerveModule(int driveMotorID, int turnMotorID, int canCoderID, double angleOffset) { // initialize module
 
-		drive = new SparkMax(driveMotorID, MotorType.kBrushless);
+		drive = new TalonFX(driveMotorID);
 		rotate = new SparkMax(turnMotorID, MotorType.kBrushless);
-		// drive.setIdleMode(IdleMode.kBrake);
-		// rotate.setIdleMode(IdleMode.kBrake); //TODO: brooo
 
 		this.canCoder = new CANcoder(canCoderID);
-		encoder = drive.getEncoder();
-		encoder.setPosition(0);
 
 		anglePID.enableContinuousInput(0, Math.PI * 2);
 		this.angleOffset = angleOffset;
@@ -64,7 +62,7 @@ public class SwerveModule extends SubsystemBase {
 												// always chooses the shortest angle to
 												// rotate to
 
-		drive.set(state.speedMetersPerSecond);
+		drive.set(state.speedMetersPerSecond/4.6);
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
 		rotate.set(pidOut);
 	}
