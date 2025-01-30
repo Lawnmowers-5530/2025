@@ -281,17 +281,17 @@ public class Swerve extends SubsystemBase {
 		//}
 		updateOdometry();
 
-		if (DriverStation.isEnabled()) {
-			frontLeftModule.setIdleMode(IdleMode.kBrake);
-			frontRightModule.setIdleMode(IdleMode.kBrake);
-			rearRightModule.setIdleMode(IdleMode.kBrake);
-			rearLeftModule.setIdleMode(IdleMode.kBrake);
-		} else {
-			frontLeftModule.setIdleMode(IdleMode.kCoast);
-			frontRightModule.setIdleMode(IdleMode.kCoast);
-			rearRightModule.setIdleMode(IdleMode.kCoast);
-			rearLeftModule.setIdleMode(IdleMode.kCoast);
-		}
+		//if (DriverStation.isEnabled()) {
+		//	frontLeftModule.setIdleMode(IdleMode.kBrake);
+		//	frontRightModule.setIdleMode(IdleMode.kBrake);
+		//	rearRightModule.setIdleMode(IdleMode.kBrake);
+		//	rearLeftModule.setIdleMode(IdleMode.kBrake);
+		//} else {
+		//	frontLeftModule.setIdleMode(IdleMode.kCoast);
+		//	frontRightModule.setIdleMode(IdleMode.kCoast);
+		//	rearRightModule.setIdleMode(IdleMode.kCoast);
+		//	rearLeftModule.setIdleMode(IdleMode.kCoast);
+		//}
 	}
 
 	/**

@@ -130,10 +130,10 @@ public class SwerveModule extends SubsystemBase {
 	 * 
 	 * @param idlemode Coast or brake
 	 */
-	public void setIdleMode(IdleMode idlemode) {
-		SparkMaxConfig config = new SparkMaxConfig();
-		config.idleMode(idlemode);
-		drive.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-		rotate.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-	}
+	//public void setIdleMode(IdleMode idlemode) {
+	//	SparkMaxConfig config = new SparkMaxConfig();
+	//	config.idleMode(idlemode);
+	//	drive.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+	//	rotate.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+	//}
 }
