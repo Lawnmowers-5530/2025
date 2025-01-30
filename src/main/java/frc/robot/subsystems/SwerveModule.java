@@ -85,7 +85,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Velocity of drive motor
 	 */
 	public double getVelocity() { // convert rpm to m/s
-		return encoder.getVelocity() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor / 60;
+		return  drive.getVelocity().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor / 60;
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Total non-absolute distance travelled by drive motor
 	 */
 	public double getDistance() {
-		return encoder.getPosition() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
+		return drive.getPosition().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
 	}
 
 	/**
