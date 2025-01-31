@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -34,11 +34,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
+import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
- * Drivetrain control subsystem. Uses {@link SwerveModule}s to control the
+ * Drivetrain control subsystem. Uses {@link frc.robot.subsystems.SwerveModule}s to control the
  * movement of the robot. Also handles autonomous routines from PathPlanner.
  */
 public class Swerve extends SubsystemBase {
@@ -53,37 +54,23 @@ public class Swerve extends SubsystemBase {
 	private SwerveModule rearLeftModule;
 	Field2d a = new Field2d();
 
-	RobotConfig config;
+	public static class Config {
+		SwerveModule.Config frontLeftModuleConfig;
+		SwerveModule.Config frontRightModuleConfig;
+		SwerveModule.Config rearRightModuleConfig;
+		SwerveModule.Config rearLeftModuleConfig;
+		RobotConfig pathPlannerConfig;
+	}
 
 	/**
 	 * Initialize all swerve elements
 	 */
-	public Swerve() {
+	public Swerve(Config config) {
+		frontLeftModule = new SwerveModule(config.frontLeftModuleConfig);
+		frontRightModule = new SwerveModule(config.frontRightModuleConfig);
+		rearRightModule = new SwerveModule(config.rearRightModuleConfig);
+		rearLeftModule = new SwerveModule(config.rearLeftModuleConfig);
 		SmartDashboard.putData("Field", a);
-		this.frontLeftModule = new SwerveModule(
-				SwerveConstants.FrontLeftModule.driveMotor,
-				SwerveConstants.FrontLeftModule.turnMotor,
-				SwerveConstants.FrontLeftModule.canCoder,
-				SwerveConstants.FrontLeftModule.angleOffset
-		);
-		this.frontRightModule = new SwerveModule(
-				SwerveConstants.FrontRightModule.driveMotor,
-				SwerveConstants.FrontRightModule.turnMotor,
-				SwerveConstants.FrontRightModule.canCoder,
-				SwerveConstants.FrontRightModule.angleOffset
-		);
-		this.rearRightModule = new SwerveModule(
-				SwerveConstants.RearRightModule.driveMotor,
-				SwerveConstants.RearRightModule.turnMotor,
-				SwerveConstants.RearRightModule.canCoder,
-				SwerveConstants.RearRightModule.angleOffset
-		);
-		this.rearLeftModule = new SwerveModule(
-				SwerveConstants.RearLeftModule.driveMotor,
-				SwerveConstants.RearLeftModule.turnMotor,
-				SwerveConstants.RearLeftModule.canCoder,
-				SwerveConstants.RearLeftModule.angleOffset
-		);
 		rotationPID = new PIDController(
 				SwerveConstants.RotationConstants.kP,
 				SwerveConstants.RotationConstants.kI,
@@ -112,7 +99,7 @@ public class Swerve extends SubsystemBase {
 													// limelight feedback to set devs
 		
 		try{
-			config = RobotConfig.fromGUISettings();
+			config.pathPlannerConfig = RobotConfig.fromGUISettings();
 		  } catch (Exception e) {
 			// Handle exception as needed
 			e.printStackTrace();
@@ -126,7 +113,7 @@ public class Swerve extends SubsystemBase {
 						SwerveConstants.PathPlannerConstants.translationConstants,
 						SwerveConstants.PathPlannerConstants.rotationConstants
 						),
-				config,
+				config.pathPlannerConfig,
 				() -> {
 					// BooleanSupplier that controls when the path will be mirrored for the red
 					// alliance
@@ -281,17 +268,17 @@ public class Swerve extends SubsystemBase {
 		//}
 		updateOdometry();
 
-		//if (DriverStation.isEnabled()) {
-		//	frontLeftModule.setIdleMode(IdleMode.kBrake);
-		//	frontRightModule.setIdleMode(IdleMode.kBrake);
-		//	rearRightModule.setIdleMode(IdleMode.kBrake);
-		//	rearLeftModule.setIdleMode(IdleMode.kBrake);
-		//} else {
-		//	frontLeftModule.setIdleMode(IdleMode.kCoast);
-		//	frontRightModule.setIdleMode(IdleMode.kCoast);
-		//	rearRightModule.setIdleMode(IdleMode.kCoast);
-		//	rearLeftModule.setIdleMode(IdleMode.kCoast);
-		//}
+		if (DriverStation.isEnabled()) {
+			frontLeftModule.setIdleMode(Motor.IdleMode.Brake);
+			frontRightModule.setIdleMode(Motor.IdleMode.Brake);
+			rearRightModule.setIdleMode(Motor.IdleMode.Brake);
+			rearLeftModule.setIdleMode(Motor.IdleMode.Brake);
+		} else {
+			frontLeftModule.setIdleMode(Motor.IdleMode.Coast);
+			frontRightModule.setIdleMode(Motor.IdleMode.Coast);
+			rearRightModule.setIdleMode(Motor.IdleMode.Coast);
+			rearLeftModule.setIdleMode(Motor.IdleMode.Coast);
+		}
 	}
 
 	/**

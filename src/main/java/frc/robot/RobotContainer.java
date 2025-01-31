@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
-import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.swerve.SparkMaxMotor;
+import frc.robot.subsystems.swerve.Swerve;
+import frc.robot.subsystems.swerve.SwerveModule;
 import frc.robot.subsystems.vision.PoseCameraManager;
 
 /**
@@ -86,6 +88,10 @@ public class RobotContainer {
 			this.subsystems = new Subsystems();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller(this.controllers.driverController);
+
+			SwerveModule.Config frontRightConfig = new SwerveModule.Config();
+			frontRightConfig.drive = new SparkMaxMotor(Constants.SwerveConstants.)
+
 
 			this.subsystems.swerve = new Swerve();
 			// the death zone??

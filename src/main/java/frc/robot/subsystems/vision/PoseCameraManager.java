@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import frc.robot.subsystems.swerve.Swerve;
 import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.math.Matrix;
@@ -15,7 +16,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Manages all pose cameras. Designed to declutter
- * {@link frc.robot.subsystems.Swerve Swerve}.
+ * {@link Swerve Swerve}.
  */
 public class PoseCameraManager extends SubsystemBase {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
