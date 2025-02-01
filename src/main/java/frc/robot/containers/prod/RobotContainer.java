@@ -7,6 +7,7 @@ package frc.robot.containers.prod;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
@@ -14,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
@@ -31,8 +31,6 @@ import io.github.oblarg.oblog.Logger;
  * commands.
  */
 public class RobotContainer {
-	public static final Constants constants = new Constants();
-
 	private SendableChooser<Command> autoChooser;
 
 	private class Controllers {
@@ -73,8 +71,9 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
-
+		CanBridge.runTCP();
 		Logger.configureLoggingAndConfig(this, false);
+
 		/**
 		 * initalize controllers here
 		 */
