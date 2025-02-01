@@ -5,14 +5,13 @@
 package frc.robot.subsystems;
 
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -23,20 +22,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Drivetrain control subsystem. Uses {@link SwerveModule}s to control the
@@ -204,6 +199,7 @@ public class Swerve extends SubsystemBase {
 		frontRightModule.setState(states[1]);
 		rearRightModule.setState(states[2]);
 		rearLeftModule.setState(states[3]);
+		SmartDashboard.putString("Front Left State", states[0].toString());
 
 	}
 

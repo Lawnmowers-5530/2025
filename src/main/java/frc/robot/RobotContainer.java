@@ -101,7 +101,7 @@ public class RobotContainer {
 			this.bindings.swerveCommand = this.subsystems.swerve.drive();
 
 			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+			this.bindings.zeroGyroCommand =  Pgyro.zeroGyroCommand();
 
 			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
 			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
@@ -117,7 +117,7 @@ public class RobotContainer {
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftY(), this.controllers.driverController.getLeftX());
+				return VecBuilder.fill(this.controllers.driverController.getLeftY(), -this.controllers.driverController.getLeftX());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
@@ -133,6 +133,7 @@ public class RobotContainer {
 							ControllerState.slowMode ? 0.5 : 1);
 
 				}, this.subsystems.swerve);
+		this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
 	}
 
 	/**
