@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -120,5 +120,29 @@ public final class Constants {
 
 	public static final class LimelightConstants {
 		public static final String primaryTableKeyName = "limelight";
+	}
+	public static final class ElevatorConstants {
+		//WARNING - PLEASE CHANGE THESE BEFORE ACTUALLY RUNNING THE ELEVATOR CODE
+		public static final int inchesForLevel4 = 70;
+		public static final int inchesForLevel3 = 60;
+		public static final int inchesForLevel2 = 50;
+		public static final int inchesForLevel1 = 30;
+		public static final int inchesForIntake = 40;
+		public static final double kP1 = 0.01;
+		public static final double kI1 = 0.001;
+		public static final double kP2 = 0.01;
+		public static final double kI2 = 0.001;
+		public static final double maxAcceleration = 0.5;
+		public static final double maxDeacceleration = 0.5;
+		public static final double maxVelocity = 1;
+		public static final int motor1Id = 20;
+		public static final int motor2Id = 21;
+		public static final int limitSwitchChannel = 1;
+		public static final int ticksPerInch= 200;
+
+
+
+
+
 	}
 }
