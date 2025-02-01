@@ -16,12 +16,17 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import frc.robot.Constants.SwerveConstants.SwerveModuleConstants.SwerveAnglePIDConstants;
 import frc.robot.Constants;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 /**
  * Holds methods to easily change the state of modules.
@@ -34,7 +39,6 @@ public class SwerveModule extends SubsystemBase {
 
 	private TalonFX drive;
 	private SparkMax rotate;
-	private RelativeEncoder encoder;
 	private CANcoder canCoder;
 	private double angleOffset;
 
@@ -47,6 +51,18 @@ public class SwerveModule extends SubsystemBase {
 
 		anglePID.enableContinuousInput(0, Math.PI * 2);
 		this.angleOffset = angleOffset;
+
+		TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
+		MotorOutputConfigs talonOutputConfig = new MotorOutputConfigs();
+		talonOutputConfig.Inverted = InvertedValue.CounterClockwise_Positive; //invert the motor output because theres an extra gear on these swerve modules
+		driveConfiguration.withMotorOutput(talonOutputConfig);
+		drive.getConfigurator().apply(driveConfiguration);
+		
+
+		SparkMaxConfig rotateConfig = new SparkMaxConfig();
+		rotateConfig.idleMode(IdleMode.kBrake); // same invert logic as the talons
+		rotateConfig.inverted(true);
+		rotate.configure(rotateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
 	}
 
@@ -64,7 +80,7 @@ public class SwerveModule extends SubsystemBase {
 												// always chooses the shortest angle to
 												// rotate to
 
-		drive.set(state.speedMetersPerSecond/4.6);
+		drive.set(Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond/4.6)));
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
 		rotate.set(pidOut);
 	}
@@ -76,7 +92,7 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public Rotation2d getTurningPosition() {
 		return new Rotation2d(
-				(this.canCoder.getAbsolutePosition().getValueAsDouble() * Math.PI * 2 + this.angleOffset));
+				((this.canCoder.getAbsolutePosition().getValueAsDouble()) * Math.PI * 2 + this.angleOffset));
 	}
 
 	/**
@@ -85,7 +101,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Velocity of drive motor
 	 */
 	public double getVelocity() { // convert rpm to m/s
-		return  drive.getVelocity().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor / 60;
+		return  drive.getVelocity().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
 	}
 
 	/**

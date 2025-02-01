@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
@@ -117,7 +118,7 @@ public class Swerve extends SubsystemBase {
 			// Handle exception as needed
 			e.printStackTrace();
 		  }
-		AutoBuilder.configure(
+		/**AutoBuilder.configure(
 				this::getPose,
 				this::resetPose,
 				this::getRobotRelativeSpeeds,
@@ -138,7 +139,7 @@ public class Swerve extends SubsystemBase {
 					}
 					return false;
 				},
-				this);
+				this);**/
 	}
 
 	/**

@@ -117,7 +117,7 @@ public class RobotContainer {
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftY(), -this.controllers.driverController.getLeftX());
+				return VecBuilder.fill(this.controllers.driverController.getLeftY(), this.controllers.driverController.getLeftX());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();

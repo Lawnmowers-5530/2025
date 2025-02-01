@@ -26,28 +26,28 @@ public final class Constants {
 			public static final int driveMotor = 5;
 			public static final int turnMotor = 6;
 			public static final int canCoder = 13;
-			public static final double angleOffset = 0;
+			public static final double angleOffset = Math.PI/2;
 		}
 
 		public static final class FrontRightModule { // FR
 			public static final int driveMotor = 7;
 			public static final int turnMotor = 8;
 			public static final int canCoder = 14;
-			public static final double angleOffset = 0;
+			public static final double angleOffset = -(Math.PI/2);
 		}
 
 		public static final class RearRightModule { // RR
 			public static final int driveMotor = 9;
 			public static final int turnMotor = 10;
 			public static final int canCoder = 15;
-			public static final double angleOffset = 0;
+			public static final double angleOffset = -(Math.PI/3);
 		}
 
 		public static final class RearLeftModule { // RL
 			public static final int driveMotor = 11;
 			public static final int turnMotor = 12;
 			public static final int canCoder = 16;
-			public static final double angleOffset = 0;
+			public static final double angleOffset = -(4 * Math.PI / 6);
 		}
 
 		public static final class SwerveModuleConstants {
@@ -62,13 +62,13 @@ public final class Constants {
 
 			public static final class SwerveAnglePIDConstants {
 				public static final double p = 0.3;
-				public static final double i = 0.125;
+				public static final double i = 0;
 				public static final double d = 0;
 			}
 		}
 
 		public static final class RotationConstants {
-			public static final double kP = 0.75;
+			public static final double kP = 0.1;
 			public static final double kI = 0.0;
 			public static final double kD = 0.0;
 
