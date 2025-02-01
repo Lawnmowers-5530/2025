@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
@@ -68,6 +69,7 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
+		CanBridge.runTCP();
 		/**
 		 * initalize controllers here
 		 */
@@ -121,11 +123,12 @@ public class RobotContainer {
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
-			};
+			}; 
 		}
 
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
+					
 					this.subsystems.swerve.drive(
 							ControllerState.driveVector,
 							ControllerState.driveRotation,
