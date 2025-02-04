@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.Hang;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
@@ -36,6 +37,7 @@ public class RobotContainer {
 	}
 
 	class Subsystems {
+		Hang hang;
 		Swerve swerve;
 		Controller controller;
 		PoseCameraManager man;
@@ -46,7 +48,9 @@ public class RobotContainer {
 		public Command zeroGyroCommand;
 		public Command idTargeter;
 		public Command align;
-
+		public Command releaseRatchetOnHang;
+		public Command climbDeep;
+		public Command toggleManual;
 	}
 
 	public static class State {
@@ -61,7 +65,7 @@ public class RobotContainer {
 		public Supplier<Vector<N2>> driveVectorSupplier;
 		public DoubleSupplier driveRotationSupplier;
 	}
-
+	
 	private Controllers controllers;
 	private Subsystems subsystems;
 	private Bindings bindings;
@@ -84,6 +88,7 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
+			this.subsystems.hang = new Hang();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller(this.controllers.driverController);
 
@@ -110,6 +115,12 @@ public class RobotContainer {
 
 			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
+			this.bindings.climbDeep = this.subsystems.hang.autoHang();
+			this.bindings.releaseRatchetOnHang = this.subsystems.hang.releaseToZero();
+			
+			controllers.driverController.a().onTrue(this.bindings.climbDeep);
+			controllers.driverController.b().onTrue(this.bindings.releaseRatchetOnHang);
+		
 
 		}
 

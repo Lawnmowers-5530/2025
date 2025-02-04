@@ -118,7 +118,17 @@ public final class Constants {
 		public static final int pigeonPort = 17;
 	}
 
-	public static final class LimelightConstants {
-		public static final String primaryTableKeyName = "limelight";
+	public static final class HangConstants  {
+		public static final int leftMotorChannel = 12;
+		public static final int rightMotorChannel = 8;
+		public static final int servoLeftPWMId = 0;
+		public static final int servoRightPWMId = 1;
+		public static  final float servoReleaseLeft = 0;
+		public static final float servoHoldLeft = 0;
+		public static final float servoReleaseRight = 0;
+		public static final float servoHoldRight = 0;
+		public static final double hangPower = 0.25;
+
+
 	}
 }
