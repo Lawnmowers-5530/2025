@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class Hang extends  SubsystemBase {
@@ -17,7 +18,7 @@ public class Hang extends  SubsystemBase {
     Servo releaseRight;
     private boolean release = false;
     private boolean manual = false;
-    public boolean a;
+    public boolean hanged = false;
     //#endregion
     public Hang() {
         leftHang = new SparkMax(Constants.HangConstants.leftMotorChannel, MotorType.kBrushless);
@@ -38,9 +39,7 @@ public class Hang extends  SubsystemBase {
         leftHang.set(Constants.HangConstants.hangPower);
         rightHang.set(-Constants.HangConstants.hangPower);
     }
-    public boolean hangDownEnough() {
-        return leftHang.getEncoder().getPosition() >= Constants.HangConstants.leftHangDownMaxPos || rightHang.getEncoder().getPosition() >= Constants.HangConstants.rightHangDownMaxPos;
-    }
+
     public boolean hangAtZero() {
         return leftHang.getEncoder().getPosition() < 5.0 || rightHang.getEncoder().getPosition() <= 5.0;
     }
@@ -69,14 +68,18 @@ public class Hang extends  SubsystemBase {
     public void periodic() {
         releaseLeft.set(release ? 0.017 : 0.15);
         releaseRight.set(release ? 0.16 : 0);
+     
         
     }
     //#region Commands
     public Command autoHang() {
-        return new RunCommand(()->{release=false;hangDown();}, this).until(this::hangDownEnough).andThen(()->stop());
+        return new RunCommand(()->{release=false;hangDown();}, this).andThen(new WaitCommand(Constants.HangConstants.hangTime)).andThen(()->stop());
     }
     public Command releaseToZero() {
         return new RunCommand(()-> {release=true;hangUp();}, this).until(this::hangAtZero).andThen(()->stop());
+    }
+    public Command hardStop() {
+        return new RunCommand(()->stop(), this);
     }
 
 

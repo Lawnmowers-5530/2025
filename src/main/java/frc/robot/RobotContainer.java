@@ -51,6 +51,7 @@ public class RobotContainer {
 		public Command releaseRatchetOnHang;
 		public Command climbDeep;
 		public Command toggleManual;
+		public Command stopHang;
 	}
 
 	public static class State {

@@ -128,6 +128,9 @@ public final class Constants {
 		public static final float servoReleaseRight = 0;
 		public static final float servoHoldRight = 0;
 		public static final double hangPower = 0.25;
+		public static final double hangTime = 0.5;
+
+
 
 
 	}
