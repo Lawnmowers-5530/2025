@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
@@ -41,6 +42,7 @@ public class RobotContainer {
 		Swerve swerve;
 		Controller controller;
 		PoseCameraManager man;
+		CoralIntake coralIntake;
 	}
 
 	public class Bindings {
@@ -92,6 +94,7 @@ public class RobotContainer {
 			this.subsystems = new Subsystems();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller(this.controllers.driverController);
+			this.subsystems.coralIntake = new CoralIntake();
 
 			this.subsystems.swerve = new Swerve();
 			// the death zone??
