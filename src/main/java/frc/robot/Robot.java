@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,6 +21,9 @@ import frc.robot.containers.prod.RobotContainer;
  * respective commands.
  */
 public class Robot extends TimedRobot {
+	//import frc.robot.containers.prod.RobotContainer as Container;
+	public static final class Container extends RobotContainer {};
+
 	private Command autonomousCommand;
 
 	public RobotContainer robotContainer;
