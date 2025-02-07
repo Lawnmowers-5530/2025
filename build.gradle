@@ -72,6 +72,8 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation "com.github.Oblarg:Oblog:5.1.0"
 }
 
 test {
@@ -91,6 +93,10 @@ jar {
     from sourceSets.main.allSource
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+repositories {
+  maven { url 'https://jitpack.io' }
 }
 
 // Configure jar and deploy tasks
