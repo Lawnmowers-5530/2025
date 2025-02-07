@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.interfaces.Scoring;
@@ -20,18 +21,28 @@ public final class Elevator extends SubsystemBase implements Scoring{
     SparkMax motor1;
     SparkMax motor2;
     SparkMaxConfig motor1Config;
-    PIDController m1Controller;
-    PIDController m2Controller;
-    SimpleMotorFeedforward m1Feedforward;
-    SimpleMotorFeedforward m2Feedforward;
+    PIDController elevatorController;
+
+    SimpleMotorFeedforward feedforward;
+    
     TrapezoidProfile elevatorProfile;
+
+
+    //inches
     TrapezoidProfile.State goal;
+
+    //Inches
     TrapezoidProfile.State setpoint;
+
     DigitalInput limitSwitch;
     //KalmanFilter<N1, N2, N1> filter; Too lazy to get
     
+    //Inches
     int target = 0;
-    boolean resetting = false;
+
+
+
+    
     
     
     public Elevator() {
@@ -39,22 +50,25 @@ public final class Elevator extends SubsystemBase implements Scoring{
         motor2 = new SparkMax(Constants.ElevatorConstants.motor2Id, MotorType.kBrushless);
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(true);
+        motor1Config.follow(2);
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         
 
         limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
 
-        m1Controller = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
-        m2Controller = new PIDController(Constants.ElevatorConstants.kP2, 0, Constants.ElevatorConstants.kI2);
+        elevatorController = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
+       
         elevatorProfile = new TrapezoidProfile(new Constraints(
+            //Inches
             Constants.ElevatorConstants.maxVelocity,
+            //Inches
             Constants.ElevatorConstants.maxAcceleration
         ));
         setpoint = getCurrentState();
         goal = new TrapezoidProfile.State(target, 0);
-        m1Feedforward = new SimpleMotorFeedforward(0, 0);
-        m2Feedforward = new SimpleMotorFeedforward(0, 0);
+        feedforward = new SimpleMotorFeedforward(0, 0);
+        
         //filter = new KalmanFilter<>(null, null, null, null, null, target);
 
 
@@ -73,41 +87,33 @@ public final class Elevator extends SubsystemBase implements Scoring{
     }
     @Override
     public void periodic() {
-        if (!resetting) {
+
             goal.position = target;
+            goal.velocity = 0;
             setpoint = getCurrentState();
             
-            setpoint = elevatorProfile.calculate(0.2, setpoint, goal);
+            setpoint = elevatorProfile.calculate(0.02, setpoint, goal);
 
-            double pos1 = m1Controller.calculate(motor1.getEncoder().getPosition(), setpoint.position);
-            double vel1 = m1Feedforward.calculate(setpoint.velocity);
-            motor1.setVoltage(pos1 + vel1);
+            double pud = elevatorController.calculate(getCurrentState().position,setpoint.position);
+            double feed = feedforward.calculate(setpoint.velocity);
+            double[] states = {pud + feed, goal.position, getCurrentState().position};
+            SmartDashboard.putNumberArray("OUT, GOAL, CURRENT", states);
 
-            double pos2 = m2Controller.calculate(motor2.getEncoder().getPosition(), setpoint.position);
-            double vel2 = m2Feedforward.calculate(setpoint.velocity);
-            motor1.setVoltage(pos2 + vel2);
-        }else {
-            if (limitSwitch.get()) {
-                motor1.setVoltage(-1/12.0);
-                motor2.setVoltage(-1/12.0);
-            }else {
-                motor1.getEncoder().setPosition(0);
-                motor2.getEncoder().setPosition(0);
-                motor1.setVoltage(0);
-                motor2.setVoltage(0);
-                resetting= false;
-            }
-           
-        }
+            
+        
 
         
 
         
 
     }
-    public void reset() {
-        resetting = true;
+    double speed;
+
+    @Deprecated
+    public void setDirectSpeed(double speed) {
+        motor2.set(speed);
     }
+   
   
     
 
