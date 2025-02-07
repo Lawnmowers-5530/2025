@@ -32,12 +32,14 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * Drivetrain control subsystem. Uses {@link SwerveModule}s to control the
  * movement of the robot. Also handles autonomous routines from PathPlanner.
  */
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements Loggable {
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
 
@@ -47,6 +49,8 @@ public class Swerve extends SubsystemBase {
 	private SwerveModule frontRightModule;
 	private SwerveModule rearRightModule;
 	private SwerveModule rearLeftModule;
+
+	@Log
 	Field2d a = new Field2d();
 
 	RobotConfig config;

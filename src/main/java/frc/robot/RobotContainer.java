@@ -20,6 +20,7 @@ import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -52,8 +53,11 @@ public class RobotContainer {
 
 	public static class State {
 		public static class ControllerState {
+			@Log
 			public static Vector<N2> driveVector;
+			@Log
 			public static double driveRotation;
+			@Log
 			public static boolean slowMode;
 		}
 	}

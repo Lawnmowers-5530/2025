@@ -11,13 +11,15 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Manages all pose cameras. Designed to declutter
  * {@link frc.robot.subsystems.Swerve Swerve}.
  */
-public class PoseCameraManager extends SubsystemBase {
+public class PoseCameraManager implements Loggable {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
 
     public PoseCameraManager() {
