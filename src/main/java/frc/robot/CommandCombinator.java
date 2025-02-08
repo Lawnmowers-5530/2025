@@ -1,10 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.RobotContainer.Subsystems;
 
 /**
@@ -17,7 +12,7 @@ public class CommandCombinator {
 	public CommandCombinator(RobotContainer.Subsystems subsystems) {
 		this.subsystems = subsystems;
 	}
-
+	/* 
 	public Command exampleCombination(double angle) {
 		return new SequentialCommandGroup(
 				this.subsystems.swerve.yawController(
@@ -36,5 +31,5 @@ public class CommandCombinator {
 					System.out.println(cmdName + " finished");
 				},
 				new Subsystem[] {});
-	}
+	}*/
 }

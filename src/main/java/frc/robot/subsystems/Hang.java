@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -73,10 +74,11 @@ public class Hang extends  SubsystemBase {
     }
     //#region Commands
     public Command autoHang() {
-        return new RunCommand(()->{release=false;hangDown();}, this).andThen(new WaitCommand(Constants.HangConstants.hangTime)).andThen(()->stop());
+        //return new RunCommand(()->{release=false;hangDown();}, this).(new WaitCommand(Constants.HangConstants.hangTime)).andThen(()->stop());
+        return new ParallelDeadlineGroup(new WaitCommand(Constants.HangConstants.hangTime), new RunCommand(()->{release=false;hangDown();}, this)).andThen(new RunCommand(()->stop(), this));
     }
     public Command releaseToZero() {
-        return new RunCommand(()-> {release=true;hangUp();}, this).until(this::hangAtZero).andThen(()->stop());
+        return new ParallelDeadlineGroup(new WaitCommand(Constants.HangConstants.hangTime), new RunCommand(()->{release=true;hangUp();}, this)).andThen(new RunCommand(()->stop(), this));
     }
     public Command hardStop() {
         return new RunCommand(()->stop(), this);
