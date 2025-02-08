@@ -473,8 +473,8 @@ public class Swerve extends SubsystemBase {
 					SmartDashboard.putNumber("y", camTrans.getY());
 					SmartDashboard.putNumber("x", camTrans.getX());
 					SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
-					//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-0,-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
-					Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
+					Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-0,-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
+					//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
 				}
 			);
 		}
