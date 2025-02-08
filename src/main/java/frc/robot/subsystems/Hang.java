@@ -57,11 +57,11 @@ public class Hang extends  SubsystemBase {
     public void toggleManual() {
         manual = !manual;
     }
-    public void setPowerUsingManual(float manualInput) {
-        if (manual) {
+    public void setPowerUsingManual(double manualInput) {
+ 
             leftHang.set(release ? -manualInput * Constants.HangConstants.hangPower : Math.min(0, -manualInput * Constants.HangConstants.hangPower));
             rightHang.set(release ? manualInput * Constants.HangConstants.hangPower : Math.max(0, manualInput * Constants.HangConstants.hangPower));
-        }
+        
     }
 
 

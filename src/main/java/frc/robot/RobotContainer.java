@@ -53,6 +53,9 @@ public class RobotContainer {
 		public Command climbDeep;
 		public Command toggleManual;
 		public Command stopHang;
+		public Command hang;
+		public Command unhang;
+		public Command stop;
 	}
 
 	public static class State {
@@ -67,7 +70,7 @@ public class RobotContainer {
 		public Supplier<Vector<N2>> driveVectorSupplier;
 		public DoubleSupplier driveRotationSupplier;
 	}
-	
+
 	private Controllers controllers;
 	private Subsystems subsystems;
 	private Bindings bindings;
@@ -121,23 +124,32 @@ public class RobotContainer {
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
 			this.bindings.climbDeep = this.subsystems.hang.autoHang();
 			this.bindings.releaseRatchetOnHang = this.subsystems.hang.releaseToZero();
-			
+
 			controllers.driverController.a().onTrue(this.bindings.climbDeep);
 			controllers.driverController.b().onTrue(this.bindings.releaseRatchetOnHang);
-		
 
 		}
 
-		/**supps */
+		/** supps */
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftX(), this.controllers.driverController.getLeftY());
+				return VecBuilder.fill(this.controllers.driverController.getLeftX(),
+						this.controllers.driverController.getLeftY());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
 			};
 		}
+
+		this.controllers.driverController.y().onTrue(this.bindings.hang);
+		this.controllers.driverController.x().onTrue(this.bindings.unhang);
+		this.controllers.driverController.a().onTrue(this.bindings.stop);
+		this.controllers.driverController.leftStick().whileTrue(new RunCommand(() -> {
+			this.subsystems.hang.setPowerUsingManual(this.controllers.driverController.getLeftY() / 2.0);
+		}, this.subsystems.hang));
+
+		this.controllers.driverController.leftStick().onFalse(this.bindings.stop);
 
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
