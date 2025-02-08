@@ -20,6 +20,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
+import io.github.oblarg.oblog.Logger;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -71,6 +72,8 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
+
+		Logger.configureLoggingAndConfig(this, false);
 
 		/**
 		 * initalize controllers here
@@ -153,5 +156,9 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand() {
 		return autoChooser.getSelected();
+	}
+
+	public void periodic() {
+		Logger.updateEntries();
 	}
 }
