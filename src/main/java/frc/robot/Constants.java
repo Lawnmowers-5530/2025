@@ -134,8 +134,8 @@ public final class Constants {
 		public static final double maxAcceleration = 0.5;
 		public static final double maxDeacceleration = 0.5;
 		public static final double maxVelocity = 1;
-		public static final int motor1Id = 20;
-		public static final int motor2Id = 21;
+		public static final int motor1Id = 6;
+		public static final int motor2Id = 8;
 		public static final int limitSwitchChannel = 1;
 		public static final int ticksPerInch= 200;
 
