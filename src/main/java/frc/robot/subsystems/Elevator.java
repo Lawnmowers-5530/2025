@@ -21,11 +21,14 @@ public final class Elevator extends SubsystemBase implements Scoring{
     SparkMax motor1;
     SparkMax motor2;
     SparkMaxConfig motor1Config;
+    SparkMaxConfig motor2Config;
     PIDController elevatorController;
 
     SimpleMotorFeedforward feedforward;
     
     TrapezoidProfile elevatorProfile;
+
+    double manualSpeed;
 
 
     //inches
@@ -34,7 +37,8 @@ public final class Elevator extends SubsystemBase implements Scoring{
     //Inches
     TrapezoidProfile.State setpoint;
 
-    DigitalInput limitSwitch;
+    //DigitalInput limitSwitch;
+
     //KalmanFilter<N1, N2, N1> filter; Too lazy to get
     
     //Inches
@@ -46,16 +50,23 @@ public final class Elevator extends SubsystemBase implements Scoring{
     
     
     public Elevator() {
+        manualSpeed = 0;
+
         motor1 = new SparkMax(Constants.ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(Constants.ElevatorConstants.motor2Id, MotorType.kBrushless);
+
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(true);
         motor1Config.follow(2);
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
+        motor2Config = new SparkMaxConfig();
+        motor2Config.inverted(false);
+        motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
         
 
-        limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
+        //limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
 
         elevatorController = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
        
@@ -67,7 +78,7 @@ public final class Elevator extends SubsystemBase implements Scoring{
         ));
         setpoint = getCurrentState();
         goal = new TrapezoidProfile.State(target, 0);
-        feedforward = new SimpleMotorFeedforward(0, 0);
+        //feedforward = new SimpleMotorFeedforward(0, 0);
         
         //filter = new KalmanFilter<>(null, null, null, null, null, target);
 
@@ -90,28 +101,22 @@ public final class Elevator extends SubsystemBase implements Scoring{
 
             goal.position = target;
             goal.velocity = 0;
-            setpoint = getCurrentState();
+            //setpoint = getCurrentState();
             
-            setpoint = elevatorProfile.calculate(0.02, setpoint, goal);
+            //setpoint = elevatorProfile.calculate(0.02, setpoint, goal);
 
-            double pud = elevatorController.calculate(getCurrentState().position,setpoint.position);
-            double feed = feedforward.calculate(setpoint.velocity);
-            double[] states = {pud + feed, goal.position, getCurrentState().position};
-            SmartDashboard.putNumberArray("OUT, GOAL, CURRENT", states);
+            //double pud = elevatorController.calculate(getCurrentState().position,setpoint.position);
 
-            
-        
-
-        
-
-        
-
+            //double feed = feedforward.calculate(setpoint.velocity);
+            //double[] states = {pud + feed, goal.position, getCurrentState().position};
+            //SmartDashboard.putNumberArray("OUT, GOAL, CURRENT", states);
     }
     double speed;
 
     @Deprecated
     public void setDirectSpeed(double speed) {
         motor2.set(speed);
+        motor1.set(speed);
     }
    
   

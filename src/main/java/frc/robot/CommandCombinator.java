@@ -12,29 +12,29 @@ import frc.robot.RobotContainer.Subsystems;
  * to make different sequences of commands.
  */
 public class CommandCombinator {
-	Subsystems subsystems;
-
-	public CommandCombinator(RobotContainer.Subsystems subsystems) {
-		this.subsystems = subsystems;
-	}
-
-	public Command exampleCombination(double angle) {
-		return new SequentialCommandGroup(
-				this.subsystems.swerve.yawController(
-						() -> {
-							return VecBuilder.fill(0, 0);
-						}, () -> {
-							return angle;
-						},
-						1),
-				logFinish("exampleCombination"));
-	}
-
-	private Command logFinish(String cmdName) {
-		return new InstantCommand(
-				() -> {
-					System.out.println(cmdName + " finished");
-				},
-				new Subsystem[] {});
-	}
+//	Subsystems subsystems;
+//
+//	public CommandCombinator(RobotContainer.Subsystems subsystems) {
+//		this.subsystems = subsystems;
+//	}
+//
+//	public Command exampleCombination(double angle) {
+//		return new SequentialCommandGroup(
+//				this.subsystems.swerve.yawController(
+//						() -> {
+//							return VecBuilder.fill(0, 0);
+//						}, () -> {
+//							return angle;
+//						},
+//						1),
+//				logFinish("exampleCombination"));
+//	}
+//
+//	private Command logFinish(String cmdName) {
+//		return new InstantCommand(
+//				() -> {
+//					System.out.println(cmdName + " finished");
+//				},
+//				new Subsystem[] {});
+//	}
 }
