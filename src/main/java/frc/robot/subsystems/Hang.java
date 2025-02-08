@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -69,6 +70,8 @@ public class Hang extends  SubsystemBase {
     public void periodic() {
         releaseLeft.set(release ? 0.017 : 0.15);
         releaseRight.set(release ? 0.16 : 0);
+        SmartDashboard.putNumber("Left", leftHang.getEncoder().getPosition());
+        SmartDashboard.putNumber("Right",rightHang.getEncoder().getPosition());
      
         
     }
