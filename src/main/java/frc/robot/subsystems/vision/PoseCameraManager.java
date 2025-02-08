@@ -22,7 +22,7 @@ public class PoseCameraManager extends SubsystemBase {
 
     public PoseCameraManager() {
         camList.add(new PoseCamera("Front", new Transform3d()));
-        camList.add(new PoseCamera("Front2", new Transform3d()));
+        //camList.add(new PoseCamera("Front2", new Transform3d()));
     }
 
     /**

@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -39,6 +40,7 @@ public class SwerveModule extends SubsystemBase {
 
 		drive = new SparkMax(driveMotorID, MotorType.kBrushless);
 		rotate = new SparkMax(turnMotorID, MotorType.kBrushless);
+		SparkMaxConfig config = new SparkMaxConfig();
 		//drive.setIdleMode(IdleMode.kBrake);
 		//rotate.setIdleMode(IdleMode.kBrake); //TODO: brooo
 

@@ -117,7 +117,7 @@ public class RobotContainer {
 			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
 			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
 
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(4);
+			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
 
 		}

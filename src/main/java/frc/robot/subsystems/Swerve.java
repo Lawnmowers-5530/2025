@@ -467,13 +467,16 @@ public class Swerve extends SubsystemBase {
 			tracked_tag.ifPresent(
 				tag -> {
 					Transform3d camTrans = tag.getBestCameraToTarget();
-					Transform3d cameraToRobot = new Transform3d(0, 0, 0, new Rotation3d());
+					Transform3d cameraToRobot = new Transform3d(0, 0.5, 0, new Rotation3d());
 					Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
+					Rotation2d rot = estimate.getRotation().toRotation2d();
+					double y = estimate.getTranslation().getY();
+					double x = estimate.getTranslation().getX();
 					SmartDashboard.putString("pose", estimate.toString());
 					SmartDashboard.putNumber("y", camTrans.getY());
 					SmartDashboard.putNumber("x", camTrans.getX());
 					SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
-					Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-0,-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
+					Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),-yawPID.calculate(rot.getDegrees())));
 					//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
 				}
 			);
