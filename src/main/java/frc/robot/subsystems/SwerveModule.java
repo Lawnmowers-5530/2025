@@ -14,7 +14,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.servohub.ServoHub.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
 
@@ -41,6 +43,9 @@ public class SwerveModule extends SubsystemBase {
 		drive = new SparkMax(driveMotorID, MotorType.kBrushless);
 		rotate = new SparkMax(turnMotorID, MotorType.kBrushless);
 		SparkMaxConfig config = new SparkMaxConfig();
+		config.idleMode(IdleMode.kBrake);
+		this.drive.configure(config, com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+		this.rotate.configure(config, com.revrobotics.spark.SparkBase.ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 		//drive.setIdleMode(IdleMode.kBrake);
 		//rotate.setIdleMode(IdleMode.kBrake); //TODO: brooo
 

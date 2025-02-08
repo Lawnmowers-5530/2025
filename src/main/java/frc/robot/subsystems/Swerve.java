@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import javax.sound.sampled.SourceDataLine;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
@@ -439,17 +440,18 @@ public class Swerve extends SubsystemBase {
 
 	public class AlignToTag extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(0.01, 0, 0);
+		PIDController yawPID = new PIDController(0.03, 0.01, 0);
 		PIDController drivePID = new PIDController(0.15, 0.0, 0);
 		int tagId;
 
 		public AlignToTag(int tagId) {
 			this.tagId = tagId;
 			yawPID.setSetpoint(180);
+			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
 			drivePID.setSetpoint(0);
-			drivePID.setTolerance(0.15);
-			yawPID.setTolerance(2);
+			drivePID.setTolerance(0.02);
+			yawPID.setTolerance(1);
 		}
 
 		@Override
@@ -467,7 +469,8 @@ public class Swerve extends SubsystemBase {
 			tracked_tag.ifPresent(
 				tag -> {
 					Transform3d camTrans = tag.getBestCameraToTarget();
-					Transform3d cameraToRobot = new Transform3d(0, 0.5, 0, new Rotation3d());
+					System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
+					Transform3d cameraToRobot = new Transform3d(0.0762, 0.07, 0, new Rotation3d(0, 0, -0.18));
 					Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
 					Rotation2d rot = estimate.getRotation().toRotation2d();
 					double y = estimate.getTranslation().getY();
@@ -476,8 +479,10 @@ public class Swerve extends SubsystemBase {
 					SmartDashboard.putNumber("y", camTrans.getY());
 					SmartDashboard.putNumber("x", camTrans.getX());
 					SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
+					//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(0,0,-yawPID.calculate(rot.getDegrees())));
 					Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),-yawPID.calculate(rot.getDegrees())));
 					//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
+					SmartDashboard.putString("camTrans", camTrans.toString());
 				}
 			);
 		}
