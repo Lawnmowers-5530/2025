@@ -17,9 +17,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
+import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -38,6 +40,10 @@ public class RobotContainer {
 	}
 
 	class Subsystems {
+		Swerve swerve;
+		Controller controller;
+		PoseCameraManager man;
+		Elevator elevator;
 		//Swerve swerve;
 		//Controller controller;
 		//PoseCameraManager man;
@@ -49,6 +55,7 @@ public class RobotContainer {
 		public Command zeroGyroCommand;
 		public Command idTargeter;
 		public Command align;
+		public Command manualElevatorControl;
 		public Command manualElevatorControl;
 
 	}
@@ -72,6 +79,8 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
+
+		Logger.configureLoggingAndConfig(this, false);
 
 		Logger.configureLoggingAndConfig(this, false);
 
@@ -109,14 +118,14 @@ public class RobotContainer {
 			//this.bindings.swerveCommand = this.subsystems.swerve.drive();
 
 			// set gyro yaw to 0
-			//this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
-			//this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
-			//this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-			//this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
-			//this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
-//
-			//this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
-			//this.controllers.driverController.b().whileTrue(this.bindings.align);
+			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
+			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
+			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
+			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
+
+			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
+			this.controllers.driverController.b().whileTrue(this.bindings.align);
 
 		}
 
@@ -131,6 +140,22 @@ public class RobotContainer {
 			};
 		}
 
+		this.bindings.manualElevatorControl = new RunCommand(() -> {
+			this.subsystems.elevator.setDirectSpeed(this.controllers.driverController.getLeftY());
+		}, this.subsystems.elevator);
+
+		this.subsystems.elevator.setDefaultCommand(this.bindings.manualElevatorControl);
+
+
+		this.bindings.swerveCommand = new RunCommand(
+				() -> {
+					this.subsystems.swerve.drive(
+							ControllerState.driveVector,
+							ControllerState.driveRotation,
+							true,
+							ControllerState.slowMode ? 0.5 : 1);
+				}, this.subsystems.swerve);
+	}
 		this.bindings.manualElevatorControl = new RunCommand(() -> {
 			this.subsystems.elevator.setDirectSpeed(this.controllers.driverController.getLeftY());
 		}, this.subsystems.elevator);
