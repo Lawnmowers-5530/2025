@@ -19,20 +19,20 @@ public final class Constants {
 	public static final boolean debug = true;
 	public static final class PivotConstants {
 		
-		public static final int pivotId = 0;
-		public static final int intakeId = 6;
+		public static final int pivotId = 6;
+		public static final int intakeId = 0;
 		public static final int laserCan1Id = 42;
 		public static final int laserCan2Id = 0;
 		
 		public static final double intakePower = -0.6;
 
-		public static final double Kp = 0.01;
+		public static final double Kp = 1.65;
 
 		//Targets (Degrees)
-		public static final double intakePos = 0;
-		public static final double middlePos = 0;
-		public static final double topPos = 0;
-		public static final double bottomPos = 0;
+		public static final double intakePos = 0.712;
+		public static final double middlePos = 0.712;
+		public static final double topPos = 0.641;
+		public static final double bottomPos = 0.858;
 
 
 		//Feedforward Calculations

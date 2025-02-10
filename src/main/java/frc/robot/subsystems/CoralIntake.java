@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SoftLimitConfig;
@@ -17,20 +18,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class CoralIntake extends SubsystemBase {
-    SparkMax intake;
-    SparkMax pivot;
-    PIDController pivotController;
-    SimpleMotorFeedforward pivotFeedforward; 
-    SparkMaxConfig intakeConfig;
-    LaserCan fakeBeamBreak;
-    LaserCan fakeBeamBreak2;
-    public double target = 0;
+    private SparkMax intake;
+    private SparkMax pivot;
+    private PIDController pivotController;
+    private SimpleMotorFeedforward pivotFeedforward; 
+    private SparkMaxConfig intakeConfig;
+    private SparkMaxConfig pivotConfig;
+    private LaserCan fakeBeamBreak;
+    private LaserCan fakeBeamBreak2;
+    private AbsoluteEncoder pivotEncoder;
+    public double target = Constants.PivotConstants.bottomPos;
 
     boolean laserCanSwitch = false;
 
     public CoralIntake() {
         intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(20,20);
+
+        pivotConfig = new SparkMaxConfig();
+        pivotConfig.inverted(false);
         //intakeConfig.softLimit.
         fakeBeamBreak = new LaserCan(Constants.PivotConstants.laserCan1Id);
         fakeBeamBreak2 = new LaserCan(Constants.PivotConstants.laserCan2Id);
@@ -38,9 +44,12 @@ public class CoralIntake extends SubsystemBase {
         intake = new SparkMax(Constants.PivotConstants.intakeId, MotorType.kBrushless);
         intake.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         pivot = new SparkMax(Constants.PivotConstants.pivotId, MotorType.kBrushless);
+        pivot.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(Constants.PivotConstants.Kp, 0, 0);
      
     }
+    @Deprecated
     public double uff(double theta) {
         double cosTheta = Math.cos(theta);
         double numer = (Constants.PivotConstants.length * Constants.PivotConstants.restistance * Constants.PivotConstants.mass * Constants.PivotConstants.gravity);
@@ -49,13 +58,19 @@ public class CoralIntake extends SubsystemBase {
     }
     @Override
     public void periodic() {
-        double out = pivotController.calculate(target,Helper.ticksToDegree(pivot.getAbsoluteEncoder().getPosition())) + uff(Helper.ticksToDegree(pivot.getAbsoluteEncoder().getPosition()));
+        double out = pivotController.calculate(pivotEncoder.getPosition(), target);
+        pivot.set(out);
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("position", pivot.getAbsoluteEncoder().getPosition());
 
         
 
 
+    }
+
+    public void manualPivot(double speed) {
+        pivot.set(speed/5);
+        SmartDashboard.putNumber("joy speed", speed/5);
     }
 
     public void setTarget(Targets target) {
@@ -79,7 +94,7 @@ public class CoralIntake extends SubsystemBase {
         INTAKE, BOTTOM, MIDDLE, TOP
     }
     public void setPivotSpeed(double speed) {
-        pivot.set(speed / 3);
+        pivot.set(speed);
     }
     public void intake() {
         intake.set(Constants.PivotConstants.intakePower);
