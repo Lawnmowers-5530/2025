@@ -14,7 +14,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class CoralIntake extends SubsystemBase {
     //import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -95,21 +94,15 @@ public class CoralIntake extends SubsystemBase {
         intake.set(0);
     }
 
-    private  boolean coralDetected1() {
-        var measurement = fakeBeamBreak.getMeasurement();
-        if (measurement.distance_mm < 20) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean coralDetected1() {
+        double measurement = fakeBeamBreak.getMeasurement().distance_mm;
+        SmartDashboard.putNumber("measurement", measurement);
+        System.out.println("looping?");
+        return measurement < 20;
     }
     private boolean coralDetected2() {
         var measurement = fakeBeamBreak2.getMeasurement();
-        if (measurement.distance_mm < 20) {
-            return true;
-        } else {
-            return false;
-        }
+        return measurement.distance_mm < 20;
     }
     public boolean coralDetected() {
         return laserCanSwitch ? coralDetected1() : coralDetected2();
