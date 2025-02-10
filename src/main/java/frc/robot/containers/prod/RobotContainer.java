@@ -13,6 +13,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
@@ -20,6 +21,7 @@ import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
 
@@ -83,7 +85,7 @@ public class RobotContainer {
 			this.controllers = new Controllers();
 
 			this.controllers.driverController = new CommandXboxController(0);
-			this.controllers.secondaryController = new CommandXboxController(1);
+			 this.controllers.secondaryController = new CommandXboxController(1);
 		}
 
 		/**
@@ -122,20 +124,17 @@ public class RobotContainer {
 
 		}
 
-		/**supps */
+		/** supps */
 		{
 			this.suppliers = new Suppliers();
-			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftX(), this.controllers.driverController.getLeftY());
-			};
-			this.suppliers.driveRotationSupplier = () -> {
-				return this.controllers.driverController.getRightX();
-			};
+			this.suppliers.driveVectorSupplier = () -> VecBuilder.fill(this.controllers.driverController.getLeftX(),
+                    this.controllers.driverController.getLeftY());
+			this.suppliers.driveRotationSupplier = () -> this.controllers.driverController.getRightX();
 		}
 
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
-					
+
 					this.subsystems.swerve.drive(
 							ControllerState.driveVector,
 							ControllerState.driveRotation,
