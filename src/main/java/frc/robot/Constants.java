@@ -20,11 +20,11 @@ public final class Constants {
 	public static final class PivotConstants {
 		
 		public static final int pivotId = 0;
-		public static final int intakeId = 1;
-		public static final int laserCan1Id = 1;
-		public static final int laserCan2Id = 2;
+		public static final int intakeId = 6;
+		public static final int laserCan1Id = 42;
+		public static final int laserCan2Id = 0;
 		
-		public static final double intakePower = 0.3;
+		public static final double intakePower = -0.6;
 
 		public static final double Kp = 0.01;
 

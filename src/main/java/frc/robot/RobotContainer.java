@@ -72,7 +72,6 @@ public class RobotContainer {
 	private Suppliers suppliers;
 
 	public RobotContainer() {
-		CanBridge.runTCP();
 
 		Logger.configureLoggingAndConfig(this, false);
 		/**
@@ -82,7 +81,7 @@ public class RobotContainer {
 			this.controllers = new Controllers();
 
 			this.controllers.driverController = new CommandXboxController(0);
-			this.controllers.secondaryController = new CommandXboxController(1);
+			//this.controllers.secondaryController = new CommandXboxController(1);
 		}
 
 		/**
@@ -91,11 +90,11 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
-			this.subsystems.man = new PoseCameraManager();
-			this.subsystems.controller = new Controller(this.controllers.driverController);
+			//this.subsystems.man = new PoseCameraManager();
+			//this.subsystems.controller = new Controller(this.controllers.driverController);
 			this.subsystems.coralIntake = new CoralIntake();
 
-			this.subsystems.swerve = new Swerve();
+			//this.subsystems.swerve = new Swerve();
 			// the death zone??
 		}
 
@@ -106,18 +105,21 @@ public class RobotContainer {
 			this.bindings = new Bindings();
 
 			// drive swerve, slow mode with b
-			this.bindings.swerveCommand = this.subsystems.swerve.drive();
-
-			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
-
-			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
-			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
-			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
-
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
-			this.controllers.driverController.b().whileTrue(this.bindings.align);
+			//this.bindings.swerveCommand = this.subsystems.swerve.drive();
+//
+			//// set gyro yaw to 0
+			//this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+//
+			//this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
+			//this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
+			//this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
+			//this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
+//
+			//this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
+			//this.controllers.driverController.b().whileTrue(this.bindings.align);
+			this.controllers.driverController.b().onTrue(new RunCommand(() -> {
+				this.subsystems.coralIntake.intake();
+			}, this.subsystems.coralIntake).until(this.subsystems.coralIntake::coralDetected1).andThen(() -> {this.subsystems.coralIntake.stopIntake();}));
 
 		}
 
@@ -132,16 +134,16 @@ public class RobotContainer {
 			}; 
 		}
 
-		this.bindings.swerveCommand = new RunCommand(
-				() -> {
-					
-					this.subsystems.swerve.drive(
-							ControllerState.driveVector,
-							ControllerState.driveRotation,
-							true,
-							ControllerState.slowMode ? 0.5 : 1);
-
-				}, this.subsystems.swerve);
+		//this.bindings.swerveCommand = new RunCommand(
+		//		() -> {
+		//			
+		//			this.subsystems.swerve.drive(
+		//					ControllerState.driveVector,
+		//					ControllerState.driveRotation,
+		//					true,
+		//					ControllerState.slowMode ? 0.5 : 1);
+//
+		//		}, this.subsystems.swerve);
 	}
 
 	/**
