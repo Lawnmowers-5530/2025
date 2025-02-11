@@ -94,6 +94,7 @@ public class CoralIntake extends SubsystemBase {
     public void stopIntake() {
         intake.set(0);
     }
+
     private  boolean coralDetected1() {
         var measurement = fakeBeamBreak.getMeasurement();
         if (measurement.distance_mm < 20) {
