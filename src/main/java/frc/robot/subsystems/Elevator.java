@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -11,7 +12,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.interfaces.Scoring;
@@ -30,24 +32,18 @@ public final class Elevator extends SubsystemBase implements Scoring{
 
     double manualSpeed;
 
-
     //inches
     TrapezoidProfile.State goal;
 
     //Inches
     TrapezoidProfile.State setpoint;
 
-    //DigitalInput limitSwitch;
+    DigitalInput limitSwitch;
 
     //KalmanFilter<N1, N2, N1> filter; Too lazy to get
     
     //Inches
     int target = 0;
-
-
-
-    
-    
     
     public Elevator() {
         manualSpeed = 0;
@@ -64,9 +60,7 @@ public final class Elevator extends SubsystemBase implements Scoring{
         motor2Config.inverted(false);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        
-
-        //limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
+        limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
 
         elevatorController = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
        
@@ -81,9 +75,8 @@ public final class Elevator extends SubsystemBase implements Scoring{
         //feedforward = new SimpleMotorFeedforward(0, 0);
         
         //filter = new KalmanFilter<>(null, null, null, null, null, target);
-
-
     }
+
     public void setTarget(int target) {
         this.target = target;
     }
@@ -111,19 +104,12 @@ public final class Elevator extends SubsystemBase implements Scoring{
             //double[] states = {pud + feed, goal.position, getCurrentState().position};
             //SmartDashboard.putNumberArray("OUT, GOAL, CURRENT", states);
     }
-    double speed;
 
     @Deprecated
     public void setDirectSpeed(double speed) {
         motor2.set(speed);
         motor1.set(speed);
     }
-   
-  
-    
-
-
-
 
     private static class Helpers {
         public static double inches2Ticks(double inches) {
@@ -133,9 +119,6 @@ public final class Elevator extends SubsystemBase implements Scoring{
             return ticks/Constants.ElevatorConstants.ticksPerInch;
         }
     }
-
-
-
 
     @Override
     public void goToL1() {
@@ -160,5 +143,40 @@ public final class Elevator extends SubsystemBase implements Scoring{
     @Override
     public void goToL2() {
         setTarget(Constants.ElevatorConstants.inchesForLevel2);
+    }
+
+    public boolean calibrated = false;
+    public Command calibrate() {
+        return new RunCommand(() -> {
+            if (limitSwitch.get()) {
+                motor1.set(Constants.ElevatorConstants.calibrationRaiseSpeed);
+                motor2.set(Constants.ElevatorConstants.calibrationLowerSpeed);
+            }
+        }, this)
+        .until(() -> !limitSwitch.get())
+
+        .andThen(() -> {
+            motor1.set(Constants.ElevatorConstants.calibrationLowerSpeed);
+            motor2.set(Constants.ElevatorConstants.calibrationLowerSpeed);
+            if (limitSwitch.get()) {
+                motor1.set(0);
+                motor2.set(0);
+                motor1.getEncoder().setPosition(0);
+                motor2.getEncoder().setPosition(0);
+
+                SoftLimitConfig limits = new SoftLimitConfig()
+                    .forwardSoftLimitEnabled(true)
+                    .reverseSoftLimitEnabled(true)
+                    .reverseSoftLimit(Constants.ElevatorConstants.calibrationBottomBufferTicks)
+                    .forwardSoftLimit(Constants.ElevatorConstants.elevatorRangeTicks + Constants.ElevatorConstants.calibrationTopBufferTicks);
+
+                motor1Config.apply(limits);
+                motor2Config.apply(limits);
+                motor1.configure(motor1Config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+                motor2.configure(motor2Config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+                calibrated = true;
+            }
+        }, this);
     }
 }
