@@ -139,8 +139,11 @@ public final class Constants {
 		public static final int limitSwitchChannel = 1;
 		public static final int ticksPerInch= 200;
 
-
-
+		public static final int calibrationBottomBufferTicks = 10;
+		public static final int calibrationTopBufferTicks = 10;
+		public static final double calibrationRaiseSpeed = 0.5;
+		public static final double calibrationLowerSpeed = -0.05;
+		public static final int elevatorRangeTicks = 0;
 
 
 	}
