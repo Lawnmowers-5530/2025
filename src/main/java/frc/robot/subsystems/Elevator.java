@@ -1,5 +1,12 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -12,10 +19,21 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.TimeUnit;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.interfaces.Scoring;
 
@@ -39,7 +57,44 @@ public final class Elevator extends SubsystemBase implements Scoring {
 
     private DigitalInput limitSwitch;
 
+    private SysIdRoutine routine;
+    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
+    private final MutDistance m_distance = Meters.mutable(0);
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid
+    // reallocation.
+    private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
+
     public Elevator() {
+        routine = new SysIdRoutine(
+            new SysIdRoutine.Config(Velocity.ofBaseUnits(3, VelocityUnit.combine(Volts, Seconds)), Voltage.ofBaseUnits(3, Volts), Time.ofBaseUnits(5, Second)),
+                new SysIdRoutine.Mechanism(this::voltageDrive,
+                        log -> {
+                            // Record a frame for the left motors. Since these share an encoder, we consider
+                            // the entire group to be one motor.
+                            log.motor("motor1")
+                                    .voltage(
+                                            m_appliedVoltage.mut_replace(
+                                                    motor1.get() * RobotController.getBatteryVoltage(), Volts))
+                                    .linearPosition(m_distance.mut_replace(motor1.getEncoder().getPosition(), Meters))
+                                    .linearVelocity(
+                                            m_velocity.mut_replace(motor1.getEncoder().getVelocity(), MetersPerSecond));
+                            // Record a frame for the right motors. Since these share an encoder, we
+                            // consider
+                            // the entire group to be one motor.
+                            log.motor("motor2")
+                                    .voltage(
+                                            m_appliedVoltage.mut_replace(
+                                                    motor2.get() * RobotController.getBatteryVoltage(), Volts))
+                                    .linearPosition(m_distance.mut_replace(motor2.getEncoder().getPosition(), Meters))
+                                    .linearVelocity(
+                                            m_velocity.mut_replace(motor2.getEncoder().getVelocity(), MetersPerSecond));
+                        },
+                        // Tell SysId to make generated commands require this subsystem, suffix test
+                        // state in
+                        // WPILog with this subsystem's name ("drive")
+                        this));
+
         feedforward = new ElevatorFeedforward(Constants.ElevatorConstants.kS,
                 Constants.ElevatorConstants.kV, Constants.ElevatorConstants.kA);
 
@@ -101,7 +156,11 @@ public final class Elevator extends SubsystemBase implements Scoring {
     public void setDirectSpeed(double speed) {
         motor2.set((speed / 4) + 0.018);
         motor1.set((speed / 4) + 0.018);
+    }
 
+    public void voltageDrive(Voltage voltage) {
+        motor1.setVoltage(voltage);
+        motor2.setVoltage(voltage);
     }
 
     @Override
@@ -195,5 +254,24 @@ public final class Elevator extends SubsystemBase implements Scoring {
                         calibrated = true;
                     }
                 }, this);
+    }
+
+    /**
+     * Returns a command that will execute a quasistatic test in the given
+     * direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 }
