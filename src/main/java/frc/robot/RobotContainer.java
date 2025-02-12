@@ -7,17 +7,21 @@ package frc.robot;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
 
@@ -40,6 +44,7 @@ public class RobotContainer {
 		Swerve swerve;
 		Controller controller;
 		PoseCameraManager man;
+		CoralIntake coralIntake;
 	}
 
 	public class Bindings {
@@ -78,7 +83,7 @@ public class RobotContainer {
 			this.controllers = new Controllers();
 
 			this.controllers.driverController = new CommandXboxController(0);
-			this.controllers.secondaryController = new CommandXboxController(1);
+			// this.controllers.secondaryController = new CommandXboxController(1);
 		}
 
 		/**
@@ -87,10 +92,12 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
-			this.subsystems.man = new PoseCameraManager();
-			this.subsystems.controller = new Controller(this.controllers.driverController);
+			// this.subsystems.man = new PoseCameraManager();
+			// this.subsystems.controller = new
+			// Controller(this.controllers.driverController);
+			this.subsystems.coralIntake = new CoralIntake();
 
-			this.subsystems.swerve = new Swerve();
+			// this.subsystems.swerve = new Swerve();
 			// the death zone??
 		}
 
@@ -101,41 +108,72 @@ public class RobotContainer {
 			this.bindings = new Bindings();
 
 			// drive swerve, slow mode with b
-			this.bindings.swerveCommand = this.subsystems.swerve.drive();
+			// this.bindings.swerveCommand = this.subsystems.swerve.drive();
+			//
+			//// set gyro yaw to 0
+			// this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+			//
+			// this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1,
+			// 0);
+			// this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
+			// this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
+			// this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
+			//
+			// this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
+			// this.controllers.driverController.b().whileTrue(this.bindings.align);
 
-			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
-
-			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
-			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
-			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
-
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
-			this.controllers.driverController.b().whileTrue(this.bindings.align);
+			// this.controllers.driverController.b().onTrue(new RunCommand(() -> {
+			// this.subsystems.coralIntake.intake();
+			// },
+			// this.subsystems.coralIntake).until(this.subsystems.coralIntake::coralDetected1).andThen(()
+			// -> {this.subsystems.coralIntake.stopIntake();}));
 
 		}
 
-		/**supps */
+		/** supps */
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftX(), this.controllers.driverController.getLeftY());
+				return VecBuilder.fill(this.controllers.driverController.getLeftX(),
+						this.controllers.driverController.getLeftY());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
 			};
+
+			this.subsystems.coralIntake.setDefaultCommand(
+					new RunCommand(
+							() -> {
+								this.subsystems.coralIntake.manualPivot(this.controllers.driverController.getLeftY());
+							}, this.subsystems.coralIntake));
+
+			this.controllers.driverController.b().onTrue(new InstantCommand(
+					() -> {
+						this.subsystems.coralIntake.setTarget(Targets.INTAKE);
+					}, this.subsystems.coralIntake));
+
+			this.controllers.driverController.x().onTrue(new InstantCommand(
+					() -> {
+						this.subsystems.coralIntake.setTarget(Targets.TOP);
+					}, this.subsystems.coralIntake));
+
+			this.controllers.driverController.y().onTrue(new InstantCommand(
+					() -> {
+						this.subsystems.coralIntake.setTarget(Targets.BOTTOM);
+					}, this.subsystems.coralIntake));
+
 		}
 
-		this.bindings.swerveCommand = new RunCommand(
-				() -> {
-					this.subsystems.swerve.drive(
-							ControllerState.driveVector,
-							ControllerState.driveRotation,
-							true,
-							ControllerState.slowMode ? 0.5 : 1);
-
-				}, this.subsystems.swerve);
+		// this.bindings.swerveCommand = new RunCommand(
+		// () -> {
+		//
+		// this.subsystems.swerve.drive(
+		// ControllerState.driveVector,
+		// ControllerState.driveRotation,
+		// true,
+		// ControllerState.slowMode ? 0.5 : 1);
+		//
+		// }, this.subsystems.swerve);
 	}
 
 	/**
