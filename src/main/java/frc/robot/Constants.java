@@ -128,8 +128,8 @@ public final class Constants {
 		public static final int inchesForLevel2 = 50;
 		public static final int inchesForLevel1 = 30;
 		public static final int inchesForIntake = 40;
-		public static final double kP1 = 0.01;
-		public static final double kI1 = 0.001;
+		public static final double kP1 = 0.8;
+		public static final double kI1 = 0.1;
 		
 		public static final double maxAcceleration = 0.5;
 		public static final double maxDeacceleration = 0.5;

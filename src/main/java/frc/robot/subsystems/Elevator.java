@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -36,7 +37,7 @@ public final class Elevator extends SubsystemBase implements Scoring{
     TrapezoidProfile.State goal;
 
     //Inches
-    TrapezoidProfile.State setpoint;
+    double sp;
 
     DigitalInput limitSwitch;
 
@@ -52,33 +53,35 @@ public final class Elevator extends SubsystemBase implements Scoring{
         motor2 = new SparkMax(Constants.ElevatorConstants.motor2Id, MotorType.kBrushless);
 
         motor1Config = new SparkMaxConfig();
-        motor1Config.inverted(true);
-        motor1Config.follow(2);
+        motor1Config.inverted(false);
+        motor1Config.idleMode(IdleMode.kBrake);
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         motor2Config = new SparkMaxConfig();
-        motor2Config.inverted(false);
+        motor2Config.inverted(true);
+        motor2Config.idleMode(IdleMode.kBrake);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
 
         elevatorController = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
-       
+        elevatorController.setIZone(2);
+        elevatorController.setIntegratorRange(-0.2, 0.2);
         elevatorProfile = new TrapezoidProfile(new Constraints(
             //Inches
             Constants.ElevatorConstants.maxVelocity,
             //Inches
             Constants.ElevatorConstants.maxAcceleration
         ));
-        setpoint = getCurrentState();
+        sp = getCurrentState().position;
         goal = new TrapezoidProfile.State(target, 0);
         //feedforward = new SimpleMotorFeedforward(0, 0);
         
         //filter = new KalmanFilter<>(null, null, null, null, null, target);
     }
 
-    public void setTarget(int target) {
-        this.target = target;
+    public void setTarget(double sp) {
+        this.sp = sp;
     }
    
     public TrapezoidProfile.State getCurrentState() {
@@ -98,7 +101,11 @@ public final class Elevator extends SubsystemBase implements Scoring{
             
             //setpoint = elevatorProfile.calculate(0.02, setpoint, goal);
 
-            //double pud = elevatorController.calculate(getCurrentState().position,setpoint.position);
+            double pud = elevatorController.calculate(getCurrentState().position,sp);
+            //System.out.println("pud: " + pud);
+            System.out.println(this.getCurrentState().position);
+            motor1.set(pud);
+            motor2.set(pud);
 
             //double feed = feedforward.calculate(setpoint.velocity);
             //double[] states = {pud + feed, goal.position, getCurrentState().position};
@@ -107,8 +114,10 @@ public final class Elevator extends SubsystemBase implements Scoring{
 
     @Deprecated
     public void setDirectSpeed(double speed) {
-        motor2.set(speed);
-        motor1.set(speed);
+        motor2.set((speed/4) +0.018);
+        motor1.set((speed/4) +0.018);
+       // System.out.println(getCurrentState().position);
+
     }
 
     private static class Helpers {
