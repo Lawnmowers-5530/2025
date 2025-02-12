@@ -15,30 +15,59 @@ import frc.robot.RobotContainer.State.ControllerState;
  */
 public class Controller extends SubsystemBase {
     public CommandXboxController driverController;
+    public CommandXboxController secondaryController;
 
-    public Controller(CommandXboxController driverController) {
-        this.driverController = driverController;
+    public Controller() {
+        this.driverController = new CommandXboxController(0);
+        this.secondaryController = new CommandXboxController(1);
+
+        ControllerState.driveVector = () -> {
+            return VecBuilder.fill(
+                MathUtil.applyDeadband(
+                    driverController.getLeftY(),
+                    ControllerConstants.driveControllerJoystickDeadband,
+                    1),
+                MathUtil.applyDeadband(
+                    -driverController.getLeftX(),
+                    ControllerConstants.driveControllerJoystickDeadband,
+                    1)
+            );
+        };
+
+        ControllerState.driveRotation = () -> {
+            return MathUtil.applyDeadband(
+                -driverController.getRightX(),
+                ControllerConstants.driveControllerJoystickDeadband,
+                1
+            );
+        };
+
+        ControllerState.slowMode = () -> {
+            return driverController.b().getAsBoolean();
+        };
+
+        ControllerState.zeroGyro = driverController.x();
     }
 
-    public void periodic() {
-
-        ControllerState.driveVector = VecBuilder.fill(
-			MathUtil.applyDeadband(
-				driverController.getLeftY(),
-				ControllerConstants.driveControllerJoystickDeadband,
-				1),
-			MathUtil.applyDeadband(
-				-driverController.getLeftX(),
-				ControllerConstants.driveControllerJoystickDeadband,
-				1)
-        );
-
-        ControllerState.driveRotation = MathUtil.applyDeadband(
-            -driverController.getRightX(),
-            ControllerConstants.driveControllerJoystickDeadband,
-            1
-        );
-
-        ControllerState.slowMode = driverController.b().getAsBoolean();
-    }
+    //public void periodic() {
+//
+    //    ControllerState.driveVector = VecBuilder.fill(
+	//		MathUtil.applyDeadband(
+	//			driverController.getLeftY(),
+	//			ControllerConstants.driveControllerJoystickDeadband,
+	//			1),
+	//		MathUtil.applyDeadband(
+	//			-driverController.getLeftX(),
+	//			ControllerConstants.driveControllerJoystickDeadband,
+	//			1)
+    //    );
+//
+    //    ControllerState.driveRotation = MathUtil.applyDeadband(
+    //        -driverController.getRightX(),
+    //        ControllerConstants.driveControllerJoystickDeadband,
+    //        1
+    //    );
+//
+    //    ControllerState.slowMode = driverController.b().getAsBoolean();
+    //}
 }

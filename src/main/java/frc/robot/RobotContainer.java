@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
@@ -32,18 +33,13 @@ import io.github.oblarg.oblog.annotations.Log;
 public class RobotContainer {
 	private SendableChooser<Command> autoChooser;
 
-	private class Controllers {
-		public CommandXboxController driverController;
-		public CommandXboxController secondaryController;
+	public class Subsystems {
+		public Swerve swerve;
+		public Controller controller;
+		public PoseCameraManager man;
 	}
 
-	class Subsystems {
-		Swerve swerve;
-		Controller controller;
-		PoseCameraManager man;
-	}
-
-	public class Bindings {
+	private class Bindings {
 		public Command swerveCommand;
 		public Command zeroGyroCommand;
 		public Command idTargeter;
@@ -54,36 +50,22 @@ public class RobotContainer {
 	public static class State {
 		public static class ControllerState {
 			@Log
-			public static Vector<N2> driveVector;
+			public static Supplier<Vector<N2>> driveVector;
 			@Log
-			public static double driveRotation;
+			public static Supplier<Double> driveRotation;
 			@Log
-			public static boolean slowMode;
+			public static Supplier<Boolean> slowMode;
+			@Log
+			public static Trigger zeroGyro;
 		}
 	}
 
-	public class Suppliers {
-		public Supplier<Vector<N2>> driveVectorSupplier;
-		public DoubleSupplier driveRotationSupplier;
-	}
-
-	private Controllers controllers;
 	private Subsystems subsystems;
 	private Bindings bindings;
-	private Suppliers suppliers;
 
 	public RobotContainer() {
 
 		Logger.configureLoggingAndConfig(this, false);
-		/**
-		 * initalize controllers here
-		 */
-		{
-			this.controllers = new Controllers();
-
-			this.controllers.driverController = new CommandXboxController(0);
-			this.controllers.secondaryController = new CommandXboxController(1);
-		}
 
 		/**
 		 * initalize subsystems here
@@ -92,7 +74,6 @@ public class RobotContainer {
 
 			this.subsystems = new Subsystems();
 			this.subsystems.man = new PoseCameraManager();
-			this.subsystems.controller = new Controller(this.controllers.driverController);
 
 			this.subsystems.swerve = new Swerve();
 			// the death zone??
@@ -111,36 +92,16 @@ public class RobotContainer {
 			this.bindings.zeroGyroCommand =  Pgyro.zeroGyroCommand();
 
 			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
-			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
-			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
-
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
-			this.controllers.driverController.b().whileTrue(this.bindings.align);
-
 		}
 
-		/**supps */
+		/**
+		 * bind commands here
+		 */
 		{
-			this.suppliers = new Suppliers();
-			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftY(), -this.controllers.driverController.getLeftX());
-			};
-			this.suppliers.driveRotationSupplier = () -> {
-				return this.controllers.driverController.getRightX();
-			};
+			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
+			
+			State.ControllerState.zeroGyro.onTrue(this.bindings.zeroGyroCommand);
 		}
-
-		this.bindings.swerveCommand = new RunCommand(
-				() -> {
-					this.subsystems.swerve.drive(
-							this.suppliers.driveVectorSupplier.get(),
-							-this.suppliers.driveRotationSupplier.getAsDouble(),
-							true,
-							ControllerState.slowMode ? 0.5 : 1);
-
-				}, this.subsystems.swerve);
-		this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
 	}
 
 	/**
