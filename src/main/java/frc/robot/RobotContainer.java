@@ -35,10 +35,7 @@ public class RobotContainer {
 	}
 
 	private class Bindings {
-		public Command swerveCommand;
 		public Command zeroGyroCommand;
-		public Command idTargeter;
-		public Command align;
 
 	}
 
@@ -80,13 +77,8 @@ public class RobotContainer {
 		{
 			this.bindings = new Bindings();
 
-			// drive swerve, slow mode with b
-			this.bindings.swerveCommand = this.subsystems.swerve.drive();
-
 			// set gyro yaw to 0
 			this.bindings.zeroGyroCommand =  Pgyro.zeroGyroCommand();
-
-			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
 		}
 
 		/**
