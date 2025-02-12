@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -19,29 +20,28 @@ import frc.robot.Constants;
 import frc.robot.interfaces.Scoring;
 
 public final class Elevator extends SubsystemBase implements Scoring {
-    SparkMax motor1;
-    SparkMax motor2;
-    SparkMaxConfig motor1Config;
-    SparkMaxConfig motor2Config;
+    private SparkMax motor1;
+    private SparkMax motor2;
+    private SparkMaxConfig motor1Config;
+    private SparkMaxConfig motor2Config;
 
-    TrapezoidProfile.State goal;
+    private TrapezoidProfile elevatorProfile;
+    private TrapezoidProfile.State goal;
+    private TrapezoidProfile.State setpoint;
 
-    PIDController elevatorController;
+    private ElevatorFeedforward feedforward;
 
-    TrapezoidProfile elevatorProfile;
+    private double kDt = 0.02;
 
-    double manualSpeed;
+    private PIDController elevatorController;
 
-    double sp;
+    private double sp;
 
-    DigitalInput limitSwitch;
-
-    // Inches
-    int target;
+    private DigitalInput limitSwitch;
 
     public Elevator() {
-        target = 0;
-        manualSpeed = 0;
+        feedforward = new ElevatorFeedforward(Constants.ElevatorConstants.kS,
+                Constants.ElevatorConstants.kV, Constants.ElevatorConstants.kA);
 
         motor1 = new SparkMax(Constants.ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(Constants.ElevatorConstants.motor2Id, MotorType.kBrushless);
@@ -67,6 +67,9 @@ public final class Elevator extends SubsystemBase implements Scoring {
                 Constants.ElevatorConstants.maxAcceleration));
 
         sp = getCurrentState().position;
+
+        goal = new TrapezoidProfile.State(0, 0);
+        setpoint = new TrapezoidProfile.State(0, 0);
     }
 
     public void setTarget(double sp) {
@@ -83,12 +86,15 @@ public final class Elevator extends SubsystemBase implements Scoring {
     @Override
     public void periodic() {
 
-        goal.position = target;
+        goal.position = sp;
         goal.velocity = 0;
 
-        double pud = elevatorController.calculate(getCurrentState().position, sp);
-        motor1.set(pud + 0.018);
-        motor2.set(pud + 0.018);
+        setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
+
+        double pud = elevatorController.calculate(getCurrentState().position, setpoint.position);
+        double ff = feedforward.calculate(setpoint.velocity);
+        motor1.set(pud + ff);
+        motor2.set(pud + ff);
     }
 
     @Deprecated
@@ -105,27 +111,27 @@ public final class Elevator extends SubsystemBase implements Scoring {
 
     @Override
     public void goToIntake() {
-        setTarget(Constants.ElevatorConstants.inchesForIntake);
+        setTarget(Constants.ElevatorConstants.intake);
     }
 
     @Override
     public void goToL1() {
-        setTarget(Constants.ElevatorConstants.inchesForLevel1);
+        setTarget(Constants.ElevatorConstants.level1);
     }
 
     @Override
     public void goToL2() {
-        setTarget(Constants.ElevatorConstants.inchesForLevel2);
+        setTarget(Constants.ElevatorConstants.level2);
     }
 
     @Override
     public void goToL3() {
-        setTarget(Constants.ElevatorConstants.inchesForLevel3);
+        setTarget(Constants.ElevatorConstants.level3);
     }
 
     @Override
     public void goToL4() {
-        setTarget(Constants.ElevatorConstants.inchesForLevel4);
+        setTarget(Constants.ElevatorConstants.level4);
     }
 
     public Command goToTarget(int level) {
@@ -157,15 +163,15 @@ public final class Elevator extends SubsystemBase implements Scoring {
     public Command calibrate() {
         return new RunCommand(() -> {
             if (limitSwitch.get()) {
-                motor1.set(Constants.ElevatorConstants.calibrationRaiseSpeed);
-                motor2.set(Constants.ElevatorConstants.calibrationLowerSpeed);
+                motor1.set(Constants.ElevatorConstants.calibrationSpeed);
+                motor2.set(Constants.ElevatorConstants.calibrationSpeed);
             }
         }, this)
                 .until(() -> !limitSwitch.get())
 
                 .andThen(() -> {
-                    motor1.set(Constants.ElevatorConstants.calibrationLowerSpeed);
-                    motor2.set(Constants.ElevatorConstants.calibrationLowerSpeed);
+                    motor1.set(Constants.ElevatorConstants.calibrationSpeed);
+                    motor2.set(Constants.ElevatorConstants.calibrationSpeed);
                     if (limitSwitch.get()) {
                         motor1.set(0);
                         motor2.set(0);
