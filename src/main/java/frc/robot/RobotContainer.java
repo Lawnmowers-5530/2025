@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
@@ -40,6 +41,7 @@ public class RobotContainer {
 		Swerve swerve;
 		Controller controller;
 		PoseCameraManager man;
+		Elevator elevator;
 	}
 
 	public class Bindings {
@@ -47,6 +49,7 @@ public class RobotContainer {
 		public Command zeroGyroCommand;
 		public Command idTargeter;
 		public Command align;
+		public Command manualElevatorControl;
 
 	}
 
@@ -91,6 +94,7 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller(this.controllers.driverController);
 
 			this.subsystems.swerve = new Swerve();
+			this.subsystems.elevator = new Elevator();
 			// the death zone??
 		}
 
@@ -105,7 +109,6 @@ public class RobotContainer {
 
 			// set gyro yaw to 0
 			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
-
 			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
 			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
 			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
@@ -127,6 +130,13 @@ public class RobotContainer {
 			};
 		}
 
+		this.bindings.manualElevatorControl = new RunCommand(() -> {
+			this.subsystems.elevator.setDirectSpeed(this.controllers.driverController.getLeftY());
+		}, this.subsystems.elevator);
+
+		this.subsystems.elevator.setDefaultCommand(this.bindings.manualElevatorControl);
+
+
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
 					this.subsystems.swerve.drive(
@@ -134,7 +144,6 @@ public class RobotContainer {
 							ControllerState.driveRotation,
 							true,
 							ControllerState.slowMode ? 0.5 : 1);
-
 				}, this.subsystems.swerve);
 	}
 
