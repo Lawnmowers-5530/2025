@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -24,23 +26,24 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionTargeterConstants;
 import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * Drivetrain control subsystem. Uses {@link SwerveModule}s to control the
  * movement of the robot. Also handles autonomous routines from PathPlanner.
  */
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements Loggable {
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
 
@@ -50,9 +53,9 @@ public class Swerve extends SubsystemBase {
 	private SwerveModule frontRightModule;
 	private SwerveModule rearRightModule;
 	private SwerveModule rearLeftModule;
-	Field2d a = new Field2d();
 
-	private boolean isCoasting;
+	@Log
+	Pose2d currentPose;
 
 	RobotConfig config;
 
@@ -60,36 +63,33 @@ public class Swerve extends SubsystemBase {
 	 * Initialize all swerve elements
 	 */
 	public Swerve() {
-		SmartDashboard.putData("Field", a);
+		currentPose = new Pose2d();
+
 		this.frontLeftModule = new SwerveModule(
 				SwerveConstants.FrontLeftModule.driveMotor,
 				SwerveConstants.FrontLeftModule.turnMotor,
 				SwerveConstants.FrontLeftModule.canCoder,
-				SwerveConstants.FrontLeftModule.angleOffset
-		);
+				SwerveConstants.FrontLeftModule.angleOffset);
 		this.frontRightModule = new SwerveModule(
 				SwerveConstants.FrontRightModule.driveMotor,
 				SwerveConstants.FrontRightModule.turnMotor,
 				SwerveConstants.FrontRightModule.canCoder,
-				SwerveConstants.FrontRightModule.angleOffset
-		);
+				SwerveConstants.FrontRightModule.angleOffset);
 		this.rearRightModule = new SwerveModule(
 				SwerveConstants.RearRightModule.driveMotor,
 				SwerveConstants.RearRightModule.turnMotor,
 				SwerveConstants.RearRightModule.canCoder,
-				SwerveConstants.RearRightModule.angleOffset
-		);
+				SwerveConstants.RearRightModule.angleOffset);
 		this.rearLeftModule = new SwerveModule(
 				SwerveConstants.RearLeftModule.driveMotor,
 				SwerveConstants.RearLeftModule.turnMotor,
 				SwerveConstants.RearLeftModule.canCoder,
-				SwerveConstants.RearLeftModule.angleOffset
-		);
+				SwerveConstants.RearLeftModule.angleOffset);
 		rotationPID = new PIDController(
 				SwerveConstants.RotationConstants.kP,
 				SwerveConstants.RotationConstants.kI,
-				SwerveConstants.RotationConstants.kD
-				);
+				SwerveConstants.RotationConstants.kD);
+
 		rotationPID.setTolerance(SwerveConstants.RotationConstants.controllerTolerance); // useful to tell commands when
 																							// the
 																							// target angle has been
@@ -111,35 +111,36 @@ public class Swerve extends SubsystemBase {
 				VecBuilder.fill(100, 100, 100)); // initialize vision std devs to 100,100,100 to
 													// allow
 													// limelight feedback to set devs
-		
-		try{
+
+		try {
 			config = RobotConfig.fromGUISettings();
-		  } catch (Exception e) {
+		} catch (Exception e) {
 			// Handle exception as needed
 			e.printStackTrace();
-		  }
-		AutoBuilder.configure(
-				this::getPose,
-				this::resetPose,
-				this::getRobotRelativeSpeeds,
-				(speeds, feedforwards) -> autoDriveRobotRelative(speeds),
-				new PPHolonomicDriveController(
-						SwerveConstants.PathPlannerConstants.translationConstants,
-						SwerveConstants.PathPlannerConstants.rotationConstants
-						),
-				config,
-				() -> {
-					// BooleanSupplier that controls when the path will be mirrored for the red
-					// alliance
-					// This will flip the path being followed to the red side of the field.
-					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-					Optional<Alliance> alliance = DriverStation.getAlliance();
-					if (alliance.isPresent()) {
-						return alliance.get() == DriverStation.Alliance.Red;
-					}
-					return false;
-				},
-				this);
+		}
+		
+		 AutoBuilder.configure(
+		 this::getPose,
+		 this::resetPose,
+		 this::getRobotRelativeSpeeds,
+		 (speeds, feedforwards) -> autoDriveRobotRelative(speeds),
+		 new PPHolonomicDriveController(
+			Constants.SwerveConstants.PathPlannerConstants.translationConstants,
+			Constants.SwerveConstants.PathPlannerConstants.rotationConstants
+		 ),
+		 config,
+		 () -> {
+		 // BooleanSupplier that controls when the path will be mirrored for the red
+		 // alliance
+		 // This will flip the path being followed to the red side of the field.
+		 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+		 Optional<Alliance> alliance = DriverStation.getAlliance();
+		 if (alliance.isPresent()) {
+		 return alliance.get() == DriverStation.Alliance.Red;
+		 }
+		 return false;
+		 },
+		 this);
 	}
 
 	/**
@@ -168,10 +169,10 @@ public class Swerve extends SubsystemBase {
 	public Command drive() {
 		return new RunCommand(
 				() -> {
-					this.drive(ControllerState.driveVector, ControllerState.driveRotation, true, ControllerState.slowMode ? 0.5 : 1);
+					this.drive(ControllerState.driveVector.get(), ControllerState.driveRotation.get(), true,
+							ControllerState.slowMode.get() ? 0.5 : 1);
 				}, this);
 	};
-
 
 	/**
 	 * 
@@ -204,6 +205,7 @@ public class Swerve extends SubsystemBase {
 		frontRightModule.setState(states[1]);
 		rearRightModule.setState(states[2]);
 		rearLeftModule.setState(states[3]);
+		SmartDashboard.putString("Front Left State", states[0].toString());
 
 	}
 
@@ -272,15 +274,8 @@ public class Swerve extends SubsystemBase {
 	 */
 	@Override
 	public void periodic() {
-		// System.out.println(this.getPose().toString());
-		//if (isCoasting && GlobalState.isEnabled) {
-		//	frontLeftModule.setIdleMode(IdleMode.kBrake);
-		//	frontRightModule.setIdleMode(IdleMode.kBrake);
-		//	rearRightModule.setIdleMode(IdleMode.kBrake);  //TODO: replace this thing
-		//	rearLeftModule.setIdleMode(IdleMode.kBrake);
-		//	isCoasting = false;
-		//}
 		updateOdometry();
+		currentPose = getPose();
 	}
 
 	/**
@@ -293,7 +288,7 @@ public class Swerve extends SubsystemBase {
 				getModulePositions());
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
-		
+
 		for (var visionEstimate : visionEstimates) {
 			var estimate = visionEstimate.getFirst();
 			var deviations = visionEstimate.getSecond();
@@ -306,13 +301,13 @@ public class Swerve extends SubsystemBase {
 	 * enabled
 	 */
 	public void disabledPeriodic() {
-		//if (!isCoasting) {
-		//	isCoasting = true;
-		//	frontLeftModule.setIdleMode(IdleMode.kCoast);
-		//	frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
-		//	rearRightModule.setIdleMode(IdleMode.kCoast);
-		//	rearLeftModule.setIdleMode(IdleMode.kCoast);
-		//}
+		// if (!isCoasting) {
+		// isCoasting = true;
+		// frontLeftModule.setIdleMode(IdleMode.kCoast);
+		// frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
+		// rearRightModule.setIdleMode(IdleMode.kCoast);
+		// rearLeftModule.setIdleMode(IdleMode.kCoast);
+		// }
 	}
 
 	/**
@@ -337,12 +332,12 @@ public class Swerve extends SubsystemBase {
 	 */
 	public Pose2d getPose() {
 
-		// this probably seems dumb, but somehow this gets called before odometry exists soo...
+		// this probably seems dumb, but somehow this gets called before odometry exists
+		// soo...
 		if (odometry == null) {
-			System.out.println("uhhhhhh");
 			return new Pose2d();
 		}
-	
+
 		return odometry.getEstimatedPosition();
 	}
 
@@ -351,7 +346,8 @@ public class Swerve extends SubsystemBase {
 	 * @return {@link SwerveModulePosition} array of each module position
 	 */
 	public SwerveModulePosition[] getModulePositions() {
-		return new SwerveModulePosition[] { frontLeftModule.getPos(), frontRightModule.getPos(), rearRightModule.getPos(), rearLeftModule.getPos() };
+		return new SwerveModulePosition[] { frontLeftModule.getPos(), frontRightModule.getPos(),
+				rearRightModule.getPos(), rearLeftModule.getPos() };
 	}
 
 	/**
@@ -442,19 +438,18 @@ public class Swerve extends SubsystemBase {
 		@Override
 		public void execute() {
 			var tags = cameraManager.getTagsById(tagId);
-			//sort tags by the tag's pose ambiguity
+			// sort tags by the tag's pose ambiguity
 			var tracked_tag = tags
-				.stream()
-				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
-				.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+					.stream()
+					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
+					.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
 
 			tracked_tag.ifPresent(
-				tag -> {
-					double output = yawPID.calculate(tag.getYaw());
-					Swerve.this.drive(VecBuilder.fill(0, 0), 0, false, 1);
-					System.out.println(output);
-				}
-			);
+					tag -> {
+						double output = yawPID.calculate(tag.getYaw());
+						Swerve.this.drive(VecBuilder.fill(0, 0), 0, false, 1);
+						System.out.println(output);
+					});
 		}
 
 	}

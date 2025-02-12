@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -19,8 +19,8 @@ public final class Constants {
 	public static final boolean debug = true;
 
 	public static final class SwerveConstants {
-		public static final double trackWidth = Units.inchesToMeters(24);
-		public static final double wheelBase = Units.inchesToMeters(24);
+		public static final double trackWidth = Units.inchesToMeters(23);
+		public static final double wheelBase = Units.inchesToMeters(23);
 
 		public static final class FrontLeftModule { // FL
 			public static final int driveMotor = 5;
@@ -33,14 +33,14 @@ public final class Constants {
 			public static final int driveMotor = 7;
 			public static final int turnMotor = 8;
 			public static final int canCoder = 14;
-			public static final double angleOffset = 0.1;
+			public static final double angleOffset = 0;
 		}
 
 		public static final class RearRightModule { // RR
 			public static final int driveMotor = 9;
 			public static final int turnMotor = 10;
 			public static final int canCoder = 15;
-			public static final double angleOffset = 0;
+			public static final double angleOffset =0;
 		}
 
 		public static final class RearLeftModule { // RL
@@ -62,13 +62,13 @@ public final class Constants {
 
 			public static final class SwerveAnglePIDConstants {
 				public static final double p = 0.3;
-				public static final double i = 0.125;
+				public static final double i = 0;
 				public static final double d = 0;
 			}
 		}
 
 		public static final class RotationConstants {
-			public static final double kP = 0.75;
+			public static final double kP = 0.1;
 			public static final double kI = 0.0;
 			public static final double kD = 0.0;
 
