@@ -4,18 +4,13 @@
 
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
-import edu.wpi.first.math.VecBuilder;
+import java.util.function.Supplier;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
@@ -99,7 +94,7 @@ public class RobotContainer {
 		 */
 		{
 			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
-			
+
 			State.ControllerState.zeroGyro.onTrue(this.bindings.zeroGyroCommand);
 		}
 	}
