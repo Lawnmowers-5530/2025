@@ -24,7 +24,7 @@ public class Controller extends SubsystemBase {
         ControllerState.driveVector = () -> {
             return VecBuilder.fill(
                 MathUtil.applyDeadband(
-                    driverController.getLeftY(),
+                    -driverController.getLeftY(),
                     ControllerConstants.driveControllerJoystickDeadband,
                     1),
                 MathUtil.applyDeadband(

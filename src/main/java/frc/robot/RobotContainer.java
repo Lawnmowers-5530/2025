@@ -6,6 +6,8 @@ package frc.robot;
 
 
 import java.util.function.Supplier;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -51,6 +53,8 @@ public class RobotContainer {
 			public static Trigger zeroGyro;
 		}
 	}
+
+	Controller controller = new Controller();
 
 	private Subsystems subsystems;
 	private Bindings bindings;

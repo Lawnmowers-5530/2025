@@ -186,6 +186,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 * @param scalar        A double to scale all inputs by
 	 */
 	public void drive(Vector<N2> vector, double omegaRadSec, boolean fieldRelative, double scalar) {
+		SmartDashboard.putString("Vec: ", vector.toString());
 		vector = vector.times(scalar);
 		omegaRadSec = omegaRadSec * scalar;
 
@@ -205,7 +206,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		frontRightModule.setState(states[1]);
 		rearRightModule.setState(states[2]);
 		rearLeftModule.setState(states[3]);
-		SmartDashboard.putString("Front Left State", states[0].toString());
+		SmartDashboard.putString("rr", states[2].toString());
 
 	}
 
