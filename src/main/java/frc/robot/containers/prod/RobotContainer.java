@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.containers.prod;
 
 
 import java.util.function.Supplier;
@@ -38,11 +38,10 @@ public class RobotContainer {
 
 	private class Bindings {
 		public Command zeroGyroCommand;
-
 	}
 
-	public static class State {
-		public static class ControllerState {
+	public class State {
+		public class ControllerState {
 			@Log
 			public static Supplier<Vector<N2>> driveVector;
 			@Log

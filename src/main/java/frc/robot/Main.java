@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * {@link Robot} and starting it.
  */
 public final class Main {
-  private Main() {
-  }
-
+  private Main() {}
   public static void main(String... args) {
     RobotBase.startRobot(Robot::new);
   }

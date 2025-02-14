@@ -21,13 +21,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.SwerveConstants.SwerveModuleConstants.SwerveAnglePIDConstants;
+import frc.robot.constants.Swerve;
+import frc.robot.constants.Swerve.SwerveModule.SwerveAnglePIDConstants;
 
 /**
  * Holds methods to easily change the state of modules.
  */
 public class SwerveModule extends SubsystemBase {
+
+	static final class SwerveModuleConstants extends Swerve.SwerveModule {};
+	static final class SwerveAnglePIDConstants extends Swerve.SwerveModule.SwerveAnglePIDConstants {};
+
 	private final PIDController anglePID = new PIDController(
 			SwerveAnglePIDConstants.p,
 			SwerveAnglePIDConstants.i,
@@ -53,7 +57,7 @@ public class SwerveModule extends SubsystemBase {
 		talonOutputConfig.Inverted = InvertedValue.CounterClockwise_Positive; //invert the motor output because theres an extra gear on these swerve modules
 		driveConfiguration.withMotorOutput(talonOutputConfig);
 		drive.getConfigurator().apply(driveConfiguration);
-		
+
 
 		SparkMaxConfig rotateConfig = new SparkMaxConfig();
 		rotateConfig.idleMode(IdleMode.kBrake); // same invert logic as the talons
@@ -88,8 +92,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Absolute angle of module including angleOffset
 	 */
 	public Rotation2d getTurningPosition() {
-		return new Rotation2d(
-				((this.canCoder.getAbsolutePosition().getValueAsDouble()) * Math.PI * 2 + this.angleOffset));
+		return new Rotation2d(((this.canCoder.getAbsolutePosition().getValueAsDouble()) * Math.PI * 2 + this.angleOffset));
 	}
 
 	/**
@@ -98,7 +101,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Velocity of drive motor
 	 */
 	public double getVelocity() { // convert rpm to m/s
-		return  drive.getVelocity().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
+		return  drive.getVelocity().getValueAsDouble() * SwerveModuleConstants.conversionFactor;
 	}
 
 	/**
@@ -116,7 +119,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Total non-absolute distance travelled by drive motor
 	 */
 	public double getDistance() {
-		return drive.getPosition().getValueAsDouble() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
+		return drive.getPosition().getValueAsDouble() * SwerveModuleConstants.conversionFactor;
 	}
 
 	/**

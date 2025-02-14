@@ -8,6 +8,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+
+//change this to switch container
+import frc.robot.containers.prod.RobotContainer;
+
+
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
  * a command-based structure. The only action in {@link Robot} is to schedule
@@ -16,13 +21,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * respective commands.
  */
 public class Robot extends TimedRobot {
-	private Command m_autonomousCommand;
+	//import RobotContainer as Container
+	public static final class Container extends RobotContainer {};
 
-	private RobotContainer m_robotContainer;
+	private Command autonomousCommand;
+
+	public Container container;
 
 	@Override
 	public void robotInit() {
-		m_robotContainer = new RobotContainer();
+		container = new Container();
 	}
 
 	@Override
@@ -44,10 +52,10 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		autonomousCommand = container.getAutonomousCommand();
 
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.schedule();
+		if (autonomousCommand != null) {
+			autonomousCommand.schedule();
 		}
 	}
 
@@ -61,8 +69,8 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.cancel();
+		if (autonomousCommand != null) {
+			autonomousCommand.cancel();
 		}
 	}
 
