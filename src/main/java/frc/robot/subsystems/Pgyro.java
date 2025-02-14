@@ -9,14 +9,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.GyroConstants;
-import frc.robot.interfaces.Gyro;
 
 /**
  * Class with static methods to access {@link Pigeon2}. Very convenient in
  * command-based structure
  */
-public class Pgyro extends SubsystemBase implements Gyro<Pigeon2> {
+public class Pgyro extends SubsystemBase {
+	static final class GyroConstants extends frc.robot.constants.Gyro {};
+
 	/** Creates a new Gyro. */
 	public Pgyro() {
 	}
@@ -66,53 +66,6 @@ public class Pgyro extends SubsystemBase implements Gyro<Pigeon2> {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-	}
-
-	@Override
-	public Pigeon2 interfaceGetGyro() {
-		return pigeon;
-	}
-
-	@Override
-	public Rotation2d interfaceGetRot() {
-		return pigeon.getRotation2d();
-	}
-
-	@Override
-	public double interfaceGetDeg() {
-		return pigeon.getYaw().getValueAsDouble();
-	}
-
-	@Override
-	public double interfaceGetRad() {
-		return getDeg() * Math.PI / 180;
-	}
-
-	@Override
-	public void interfaceZeroGyro() {
-		pigeon.setYaw((0));
-	}
-
-	@Override
-	public double interfaceGetHdgDeg() {
-		double a;
-		if (getDeg() > 0) {
-			a = Math.abs(getDeg() % 360);
-		} else {
-			a = 360 - Math.abs(getDeg() % 360);
-		}
-		return a;
-	}
-
-	@Override
-	public double interfaceGetHdgRad() {
-		double a;
-		if (getRad() > 0) {
-			a = Math.abs(getRad() % (Math.PI * 2));
-		} else {
-			a = (Math.PI * 2) - Math.abs(getRad() % (Math.PI * 2));
-		}
-		return a;
 	}
 
 	public static Command zeroGyroCommand() {

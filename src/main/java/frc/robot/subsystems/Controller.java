@@ -4,8 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.ControllerConstants;
-import frc.robot.RobotContainer.State.ControllerState;
+import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 
 
 /**
@@ -14,6 +13,8 @@ import frc.robot.RobotContainer.State.ControllerState;
  * Done here so we only do the math once, and every subsystem using the same data
  */
 public class Controller extends SubsystemBase {
+    static final class ControllerConstants extends frc.robot.constants.Controller {};
+
     public CommandXboxController driverController;
 
     public Controller(CommandXboxController driverController) {
