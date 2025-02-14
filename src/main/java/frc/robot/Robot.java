@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,6 +19,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * respective commands.
  */
 public class Robot extends TimedRobot {
+	DoubleLogEntry xLog;
+	DoubleLogEntry yLog;
+	DataLog log;
+	public Robot() {
+	}
+
 	private Command m_autonomousCommand;
 
 	private RobotContainer m_robotContainer;

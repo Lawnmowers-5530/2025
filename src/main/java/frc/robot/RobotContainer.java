@@ -4,12 +4,14 @@
 
 package frc.robot;
 
-
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +30,9 @@ import io.github.oblarg.oblog.annotations.Log;
  * commands.
  */
 public class RobotContainer {
+	DoubleLogEntry xLog;
+	DoubleLogEntry yLog;
+	DataLog log;
 	private SendableChooser<Command> autoChooser;
 
 	public class Subsystems {
@@ -60,6 +65,10 @@ public class RobotContainer {
 	private Bindings bindings;
 
 	public RobotContainer() {
+		DataLogManager.start();
+		log = DataLogManager.getLog();
+		xLog = new DoubleLogEntry(log, "/my/x");
+		yLog = new DoubleLogEntry(log, "/my/y");
 
 		Logger.configureLoggingAndConfig(this, false);
 
@@ -82,7 +91,7 @@ public class RobotContainer {
 			this.bindings = new Bindings();
 
 			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand =  Pgyro.zeroGyroCommand();
+			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
 		}
 
 		/**
@@ -106,5 +115,7 @@ public class RobotContainer {
 
 	public void periodic() {
 		Logger.updateEntries();
+		xLog.append(this.subsystems.man.getEstimatedPoses().get(0).getFirst().estimatedPose.getTranslation().getX());
+		yLog.append(this.subsystems.man.getEstimatedPoses().get(0).getFirst().estimatedPose.getTranslation().getY());
 	}
 }
