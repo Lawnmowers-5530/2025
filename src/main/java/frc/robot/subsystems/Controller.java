@@ -35,7 +35,7 @@ public class Controller extends SubsystemBase {
             );
         };
 
-        ControllerState.driveRotation = () -> {
+        Container.State.ControllerState.driveRotation = () -> {
             return MathUtil.applyDeadband(
                 -driverController.getRightX(),
                 ControllerConstants.driveControllerJoystickDeadband,
@@ -43,11 +43,11 @@ public class Controller extends SubsystemBase {
             );
         };
 
-        ControllerState.slowMode = () -> {
+        Container.State.ControllerState.slowMode = () -> {
             return driverController.b().getAsBoolean();
         };
 
-        ControllerState.zeroGyro = driverController.x();
+        Container.State.ControllerState.zeroGyro = driverController.x();
     }
 
     //public void periodic() {
