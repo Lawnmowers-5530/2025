@@ -15,15 +15,20 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
 
-import frc.robot.Constants.SwerveConstants.SwerveModuleConstants.SwerveAnglePIDConstants;
-import frc.robot.Constants;
+import frc.robot.constants.Swerve;
 
 /**
  * Holds methods to easily change the state of modules.
  */
 public class SwerveModule extends SubsystemBase {
+	static final class SwerveModuleConstants extends Swerve.SwerveModule {};
+	static final class SwerveAnglePIDConstants extends Swerve.SwerveModule.SwerveAnglePIDConstants {};
+
+	;
+
+
+
 	private final PIDController anglePID = new PIDController(
 			SwerveAnglePIDConstants.p,
 			SwerveAnglePIDConstants.i,
@@ -85,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Velocity of drive motor
 	 */
 	public double getVelocity() { // convert rpm to m/s
-		return encoder.getVelocity() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor / 60;
+		return encoder.getVelocity() * SwerveModuleConstants.conversionFactor / 60;
 	}
 
 	/**
@@ -103,7 +108,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Total non-absolute distance travelled by drive motor
 	 */
 	public double getDistance() {
-		return encoder.getPosition() * Constants.SwerveConstants.SwerveModuleConstants.conversionFactor;
+		return encoder.getPosition() * SwerveModuleConstants.conversionFactor;
 	}
 
 	/**

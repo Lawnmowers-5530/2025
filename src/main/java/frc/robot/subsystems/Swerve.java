@@ -30,9 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.Constants.VisionTargeterConstants;
-import frc.robot.RobotContainer.State.ControllerState;
+import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -41,6 +39,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  * movement of the robot. Also handles autonomous routines from PathPlanner.
  */
 public class Swerve extends SubsystemBase {
+
+	//impart frc.robot.constants.Swerve as SwerveConstants
+	static final class SwerveConstants extends frc.robot.constants.Swerve {};
+	//import frc.robot.constants.VisionTargeter as VisionTargeterConstants
+	static final class VisionTargeterConstants extends frc.robot.constants.VisionTargeter {};
+
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
 
@@ -86,11 +90,11 @@ public class Swerve extends SubsystemBase {
 				SwerveConstants.RearLeftModule.angleOffset
 		);
 		rotationPID = new PIDController(
-				SwerveConstants.RotationConstants.kP,
-				SwerveConstants.RotationConstants.kI,
-				SwerveConstants.RotationConstants.kD
+				frc.robot.constants.Swerve.Rotation.kP,
+				frc.robot.constants.Swerve.Rotation.kI,
+				frc.robot.constants.Swerve.Rotation.kD
 				);
-		rotationPID.setTolerance(SwerveConstants.RotationConstants.controllerTolerance); // useful to tell commands when
+		rotationPID.setTolerance(frc.robot.constants.Swerve.Rotation.controllerTolerance); // useful to tell commands when
 																							// the
 																							// target angle has been
 																							// reached
@@ -124,8 +128,8 @@ public class Swerve extends SubsystemBase {
 				this::getRobotRelativeSpeeds,
 				(speeds, feedforwards) -> autoDriveRobotRelative(speeds),
 				new PPHolonomicDriveController(
-						SwerveConstants.PathPlannerConstants.translationConstants,
-						SwerveConstants.PathPlannerConstants.rotationConstants
+						frc.robot.constants.Swerve.PathPlanner.translationConstants,
+						frc.robot.constants.Swerve.PathPlanner.rotationConstants
 						),
 				config,
 				() -> {
@@ -151,7 +155,7 @@ public class Swerve extends SubsystemBase {
 	public Command pathFind(Pose2d endPose) {
 		return AutoBuilder.pathfindToPose(
 				endPose,
-				SwerveConstants.PathPlannerConstants.constraints);
+				frc.robot.constants.Swerve.PathPlanner.constraints);
 	}
 
 	/**
