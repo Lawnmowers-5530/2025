@@ -34,10 +34,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
-import frc.robot.interfaces.Scoring;
 
-public final class Elevator extends SubsystemBase implements Scoring {
+public final class Elevator extends SubsystemBase {
+    //import frc.robot.constants.Elevator as ElevatorConstants
+    static final class ElevatorConstants extends frc.robot.constants.Elevator {};
+
+
     private SparkMax motor1;
     private SparkMax motor2;
     private SparkMaxConfig motor1Config;
@@ -95,11 +97,10 @@ public final class Elevator extends SubsystemBase implements Scoring {
                         // WPILog with this subsystem's name ("drive")
                         this));
 
-        feedforward = new ElevatorFeedforward(Constants.ElevatorConstants.kS,
-                Constants.ElevatorConstants.kV, Constants.ElevatorConstants.kA);
+        feedforward = new ElevatorFeedforward(ElevatorConstants.kS, ElevatorConstants.kV, ElevatorConstants.kA);
 
-        motor1 = new SparkMax(Constants.ElevatorConstants.motor1Id, MotorType.kBrushless);
-        motor2 = new SparkMax(Constants.ElevatorConstants.motor2Id, MotorType.kBrushless);
+        motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
+        motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
 
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(false);
@@ -111,15 +112,15 @@ public final class Elevator extends SubsystemBase implements Scoring {
         motor2Config.idleMode(IdleMode.kBrake);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        limitSwitch = new DigitalInput(Constants.ElevatorConstants.limitSwitchChannel);
+        limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
 
-        elevatorController = new PIDController(Constants.ElevatorConstants.kP1, Constants.ElevatorConstants.kI1, 0);
+        elevatorController = new PIDController(ElevatorConstants.kP1, ElevatorConstants.kI1, 0);
         elevatorController.setIZone(2);
         elevatorController.setIntegratorRange(-0.2, 0.2);
 
         elevatorProfile = new TrapezoidProfile(new Constraints(
-                Constants.ElevatorConstants.maxVelocity,
-                Constants.ElevatorConstants.maxAcceleration));
+                ElevatorConstants.maxVelocity,
+                ElevatorConstants.maxAcceleration));
 
         sp = getCurrentState().position;
 
@@ -163,34 +164,28 @@ public final class Elevator extends SubsystemBase implements Scoring {
         motor2.setVoltage(voltage);
     }
 
-    @Override
     public void resetForHang() {
         setTarget(0);
     }
 
-    @Override
     public void goToIntake() {
-        setTarget(Constants.ElevatorConstants.intake);
+        setTarget(ElevatorConstants.intake);
     }
 
-    @Override
     public void goToL1() {
-        setTarget(Constants.ElevatorConstants.level1);
+        setTarget(ElevatorConstants.level1);
     }
 
-    @Override
     public void goToL2() {
-        setTarget(Constants.ElevatorConstants.level2);
+        setTarget(ElevatorConstants.level2);
     }
 
-    @Override
     public void goToL3() {
-        setTarget(Constants.ElevatorConstants.level3);
+        setTarget(ElevatorConstants.level3);
     }
 
-    @Override
     public void goToL4() {
-        setTarget(Constants.ElevatorConstants.level4);
+        setTarget(ElevatorConstants.level4);
     }
 
     public Command goToTarget(int level) {
@@ -222,15 +217,15 @@ public final class Elevator extends SubsystemBase implements Scoring {
     public Command calibrate() {
         return new RunCommand(() -> {
             if (limitSwitch.get()) {
-                motor1.set(Constants.ElevatorConstants.calibrationSpeed);
-                motor2.set(Constants.ElevatorConstants.calibrationSpeed);
+                motor1.set(ElevatorConstants.calibrationSpeed);
+                motor2.set(ElevatorConstants.calibrationSpeed);
             }
         }, this)
                 .until(() -> !limitSwitch.get())
 
                 .andThen(() -> {
-                    motor1.set(Constants.ElevatorConstants.calibrationSpeed);
-                    motor2.set(Constants.ElevatorConstants.calibrationSpeed);
+                    motor1.set(ElevatorConstants.calibrationSpeed);
+                    motor2.set(ElevatorConstants.calibrationSpeed);
                     if (limitSwitch.get()) {
                         motor1.set(0);
                         motor2.set(0);
@@ -240,9 +235,9 @@ public final class Elevator extends SubsystemBase implements Scoring {
                         SoftLimitConfig limits = new SoftLimitConfig()
                                 .forwardSoftLimitEnabled(true)
                                 .reverseSoftLimitEnabled(true)
-                                .reverseSoftLimit(Constants.ElevatorConstants.calibrationBottomBufferTicks)
-                                .forwardSoftLimit(Constants.ElevatorConstants.elevatorRangeTicks
-                                        + Constants.ElevatorConstants.calibrationTopBufferTicks);
+                                .reverseSoftLimit(ElevatorConstants.calibrationBottomBufferTicks)
+                                .forwardSoftLimit(ElevatorConstants.elevatorRangeTicks
+                                        + ElevatorConstants.calibrationTopBufferTicks);
 
                         motor1Config.apply(limits);
                         motor2Config.apply(limits);
