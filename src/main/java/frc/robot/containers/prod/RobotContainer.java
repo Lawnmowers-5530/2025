@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
@@ -32,8 +31,6 @@ import io.github.oblarg.oblog.Logger;
  * commands.
  */
 public class RobotContainer {
-	public static final Constants constants = new Constants();
-
 	private SendableChooser<Command> autoChooser;
 
 	private class Controllers {
@@ -126,8 +123,6 @@ public class RobotContainer {
 
 			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
-			this.bindings.climbDeep = this.subsystems.hang.autoHang();
-			this.bindings.releaseRatchetOnHang = this.subsystems.hang.releaseToZero();
 
 			controllers.driverController.a().onTrue(this.bindings.climbDeep);
 			controllers.driverController.b().onTrue(this.bindings.releaseRatchetOnHang);
@@ -149,9 +144,6 @@ public class RobotContainer {
 		this.controllers.driverController.y().onTrue(this.bindings.hang);
 		this.controllers.driverController.x().onTrue(this.bindings.unhang);
 		this.controllers.driverController.a().onTrue(this.bindings.stop);
-		this.controllers.driverController.leftStick().whileTrue(new RunCommand(() -> {
-			this.subsystems.hang.setPowerUsingManual(this.controllers.driverController.getLeftY() / 2.0);
-		}, this.subsystems.hang));
 
 		this.controllers.driverController.leftStick().onFalse(this.bindings.stop);
 
