@@ -17,8 +17,8 @@ public class Elevator {
     public static final double maxAcceleration = 0.1;
     public static final double maxDeacceleration = 0.1;
     public static final double maxVelocity = 0.15;
-    public static final int motor1Id = 6;
-    public static final int motor2Id = 8;
+    public static final int motor1Id = 20;
+    public static final int motor2Id = 21;
     public static final int limitSwitchChannel = 1;
     public static final int ticksPerInch = 200;
 
@@ -26,4 +26,6 @@ public class Elevator {
     public static final int calibrationTopBufferTicks = 10;
     public static final double calibrationSpeed = 0.2;
     public static final int elevatorRangeTicks = 0;
+
+    public static final double tolerance = 0.02;
 }

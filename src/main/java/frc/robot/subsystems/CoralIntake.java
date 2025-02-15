@@ -12,6 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 public class CoralIntake extends SubsystemBase {
     //import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -108,8 +110,7 @@ public class CoralIntake extends SubsystemBase {
 
     public boolean coralDetected1() {
         double measurement = fakeBeamBreak.getMeasurement().distance_mm;
-        SmartDashboard.putNumber("measurement", measurement);
-        System.out.println("looping?");
+        SmartDashboard.putNumber("measurement", measurement);;
         return measurement < 20;
     }
     private boolean coralDetected2() {
@@ -127,6 +128,18 @@ public class CoralIntake extends SubsystemBase {
             return ticks * 360;//domath
         }
         
+    }
+
+    public Command intakeCommand() {
+        return new RunCommand(() -> {
+            intake();
+        }, this);
+    }
+
+    public Command stopIntakeCommand() {
+        return new RunCommand(() -> {
+            stopIntake();
+        }, this);
     }
 
 }

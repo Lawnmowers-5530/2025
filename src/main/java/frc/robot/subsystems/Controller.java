@@ -15,8 +15,8 @@ import frc.robot.Robot.Container;
 public class Controller extends SubsystemBase {
     static final class ControllerConstants extends frc.robot.constants.Controller {};
 
-    public CommandXboxController driverController;
-    public CommandXboxController secondaryController;
+    private CommandXboxController driverController;
+    private CommandXboxController secondaryController;
 
     public Controller() {
         this.driverController = new CommandXboxController(0);
@@ -48,6 +48,14 @@ public class Controller extends SubsystemBase {
         };
 
         Container.State.ControllerState.zeroGyro = driverController.x();
+
+        Container.State.ControllerState.L0 = driverController.a();
+        Container.State.ControllerState.L1 = driverController.povDown();
+        Container.State.ControllerState.L2 = driverController.povLeft();
+        Container.State.ControllerState.L3 = driverController.povUp();
+        Container.State.ControllerState.L4 = driverController.povRight();
+
+        Container.State.ControllerState.intake = driverController.y();
     }
 
     //public void periodic() {

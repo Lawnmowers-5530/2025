@@ -2,8 +2,8 @@ package frc.robot.constants;
 
 public class CoralIntake {
     public static class Pivot {
-        public static final int pivotId = 6;
-        public static final int intakeId = 0;
+        public static final int pivotId = 22;
+        public static final int intakeId = 23;
         public static final int laserCan1Id = 42;
         public static final int laserCan2Id = 0;
 

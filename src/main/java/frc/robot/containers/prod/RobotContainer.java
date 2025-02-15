@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
+import frc.robot.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
@@ -36,9 +36,7 @@ public class RobotContainer {
 		public Controller controller;
 		public PoseCameraManager man;
 		public CoralIntake coralIntake;
-	}
-	private class Bindings {
-		public Command zeroGyroCommand;
+		public Elevator elevator;
 	}
 
 	public class State {
@@ -51,6 +49,14 @@ public class RobotContainer {
 			public static Supplier<Boolean> slowMode;
 			@Log
 			public static Trigger zeroGyro;
+			
+			public static Trigger L0;
+			public static Trigger L1;
+			public static Trigger L2;
+			public static Trigger L3;
+			public static Trigger L4;
+
+			public static Trigger intake;
 		}
 	}
 
@@ -72,29 +78,28 @@ public class RobotContainer {
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
+			this.subsystems.elevator = new Elevator();
 
 			this.subsystems.swerve = new Swerve();
 			// the death zone??
 		}
 
 		/**
-		 * initalize bindings here
-		 */
-		{
-			this.bindings = new Bindings();
-
-			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand =  Pgyro.zeroGyroCommand();
-		}
-
-
-		/**
 		 * bind commands here
 		 */
 		{
+			this.bindings = new Bindings(this.subsystems);
+
 			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
 
-			State.ControllerState.zeroGyro.onTrue(this.bindings.zeroGyroCommand);
+			State.ControllerState.L1.onTrue(this.bindings.elevator.goToL1);
+			State.ControllerState.L2.onTrue(this.bindings.elevator.goToL2);
+			State.ControllerState.L3.onTrue(this.bindings.elevator.goToL3);
+			State.ControllerState.L4.onTrue(this.bindings.elevator.goToL4);
+
+			State.ControllerState.zeroGyro.onTrue(this.bindings.swerve.zeroGyro);
+
+			State.ControllerState.intake.onTrue(this.bindings.coral.runIntake);
 		}
 	}
 

@@ -139,6 +139,10 @@ public final class Elevator extends SubsystemBase {
 
     }
 
+    public boolean atTarget() {
+        return Math.abs(sp - getCurrentState().position) < ElevatorConstants.tolerance;
+    }
+
     @Override
     public void periodic() {
 
@@ -147,8 +151,12 @@ public final class Elevator extends SubsystemBase {
 
         setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
 
-        double pud = elevatorController.calculate(getCurrentState().position, setpoint.position);
-        double ff = feedforward.calculate(setpoint.velocity);
+        //double pud = elevatorController.calculate(getCurrentState().position, setpoint.position); //TODO switch to trap profile
+        //double ff = feedforward.calculate(setpoint.velocity);
+
+        double pud = elevatorController.calculate(getCurrentState().position, sp);
+        double ff = 0.018; //temp
+
         motor1.set(pud + ff);
         motor2.set(pud + ff);
     }
