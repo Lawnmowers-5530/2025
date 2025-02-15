@@ -7,7 +7,6 @@ package frc.robot.containers.elevator;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Robot;
 import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
-import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import frc.robot.subsystems.Elevator;
@@ -93,7 +91,7 @@ public class RobotContainer {
 			this.subsystems = new Subsystems();
 			this.subsystems.elevator = new Elevator();
 			this.subsystems.man = new PoseCameraManager();
-			this.subsystems.controller = new Controller(this.controllers.driverController);
+			this.subsystems.controller = new Controller();
 
 			this.subsystems.swerve = new Swerve();
 			// the death zone??
@@ -114,10 +112,10 @@ public class RobotContainer {
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
 					this.subsystems.swerve.drive(
-							ControllerState.driveVector,
-							ControllerState.driveRotation,
+							ControllerState.driveVector.get(),
+							ControllerState.driveRotation.get(),
 							true,
-							ControllerState.slowMode ? 0.5 : 1);
+							ControllerState.slowMode.get() ? 0.5 : 1);
 
 				}, this.subsystems.swerve);
 

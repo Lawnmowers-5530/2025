@@ -7,7 +7,6 @@ package frc.robot.containers.coral_intake;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import au.grapplerobotics.CanBridge;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
@@ -15,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
-import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
@@ -55,9 +54,10 @@ public class RobotContainer {
 
     public static class State {
         public static class ControllerState {
-            public static Vector<N2> driveVector;
-            public static double driveRotation;
-            public static boolean slowMode;
+            public static Supplier<Vector<N2>> driveVector;
+            public static Supplier<Double> driveRotation;
+            public static Supplier<Boolean> slowMode;
+            public static Trigger zeroGyro;
         }
     }
 
@@ -72,7 +72,6 @@ public class RobotContainer {
     private Suppliers suppliers;
 
     public RobotContainer() {
-        CanBridge.runTCP();
 
         Logger.configureLoggingAndConfig(this, false);
         /**
@@ -92,7 +91,7 @@ public class RobotContainer {
 
             this.subsystems = new Subsystems();
             this.subsystems.man = new PoseCameraManager();
-            this.subsystems.controller = new Controller(this.controllers.driverController);
+            this.subsystems.controller = new Controller();
             this.subsystems.coralIntake = new CoralIntake();
 
             // this.subsystems.swerve = new Swerve();

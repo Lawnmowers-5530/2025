@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import frc.robot.Robot;
 import io.github.oblarg.oblog.Loggable;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -35,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot.Container;
 import frc.robot.subsystems.vision.PoseCameraManager;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
