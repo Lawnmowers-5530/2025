@@ -4,13 +4,14 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 
 //change this to switch container
-import frc.robot.containers.prod.RobotContainer;
+import frc.robot.containers.coral_intake.RobotContainer;
 
 
 /**
@@ -21,9 +22,12 @@ import frc.robot.containers.prod.RobotContainer;
  * respective commands.
  */
 public class Robot extends TimedRobot {
-	//import RobotContainer as Container
+	//import frc.robot.containers.coral_intake.RobotContainer as Container;
 	public static final class Container extends RobotContainer {};
 
+	public Robot() {
+		CanBridge.runTCP();
+	}
 	private Command autonomousCommand;
 
 	public Container container;
