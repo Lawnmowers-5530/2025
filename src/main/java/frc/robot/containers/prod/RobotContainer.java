@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.Hang;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
@@ -31,8 +31,6 @@ import io.github.oblarg.oblog.Logger;
  * commands.
  */
 public class RobotContainer {
-	public static final Constants constants = new Constants();
-
 	private SendableChooser<Command> autoChooser;
 
 	private class Controllers {
@@ -41,6 +39,7 @@ public class RobotContainer {
 	}
 
 	class Subsystems {
+		Hang hang;
 		Swerve swerve;
 		Controller controller;
 		PoseCameraManager man;
@@ -51,7 +50,13 @@ public class RobotContainer {
 		public Command zeroGyroCommand;
 		public Command idTargeter;
 		public Command align;
-
+		public Command releaseRatchetOnHang;
+		public Command climbDeep;
+		public Command toggleManual;
+		public Command stopHang;
+		public Command hang;
+		public Command unhang;
+		public Command stop;
 	}
 
 	public static class State {
@@ -91,6 +96,7 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
+			this.subsystems.hang = new Hang();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller(this.controllers.driverController);
 
@@ -118,18 +124,28 @@ public class RobotContainer {
 			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
 			this.controllers.driverController.b().whileTrue(this.bindings.align);
 
+			controllers.driverController.a().onTrue(this.bindings.climbDeep);
+			controllers.driverController.b().onTrue(this.bindings.releaseRatchetOnHang);
+
 		}
 
-		/**supps */
+		/** supps */
 		{
 			this.suppliers = new Suppliers();
 			this.suppliers.driveVectorSupplier = () -> {
-				return VecBuilder.fill(this.controllers.driverController.getLeftX(), this.controllers.driverController.getLeftY());
+				return VecBuilder.fill(this.controllers.driverController.getLeftX(),
+						this.controllers.driverController.getLeftY());
 			};
 			this.suppliers.driveRotationSupplier = () -> {
 				return this.controllers.driverController.getRightX();
 			};
 		}
+
+		this.controllers.driverController.y().onTrue(this.bindings.hang);
+		this.controllers.driverController.x().onTrue(this.bindings.unhang);
+		this.controllers.driverController.a().onTrue(this.bindings.stop);
+
+		this.controllers.driverController.leftStick().onFalse(this.bindings.stop);
 
 		this.bindings.swerveCommand = new RunCommand(
 				() -> {
