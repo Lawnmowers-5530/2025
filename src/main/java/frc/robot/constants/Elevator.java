@@ -12,7 +12,7 @@ public class Elevator {
 
     public static final double kS = 0.1;
     public static final double kV = 0.1; //TODO: need to fix ff vals
-    public static final double kA = 0.1;
+    public static final double kA = 0;
 
     public static final double maxAcceleration = 0.1;
     public static final double maxDeacceleration = 0.1;

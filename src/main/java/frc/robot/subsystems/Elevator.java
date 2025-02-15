@@ -68,34 +68,34 @@ public final class Elevator extends SubsystemBase {
     private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
 
     public Elevator() {
-        routine = new SysIdRoutine(
-            new SysIdRoutine.Config(Velocity.ofBaseUnits(3, VelocityUnit.combine(Volts, Seconds)), Voltage.ofBaseUnits(3, Volts), Time.ofBaseUnits(5, Second)),
-                new SysIdRoutine.Mechanism(this::voltageDrive,
-                        log -> {
-                            // Record a frame for the left motors. Since these share an encoder, we consider
-                            // the entire group to be one motor.
-                            log.motor("motor1")
-                                    .voltage(
-                                            m_appliedVoltage.mut_replace(
-                                                    motor1.get() * RobotController.getBatteryVoltage(), Volts))
-                                    .linearPosition(m_distance.mut_replace(motor1.getEncoder().getPosition(), Meters))
-                                    .linearVelocity(
-                                            m_velocity.mut_replace(motor1.getEncoder().getVelocity(), MetersPerSecond));
-                            // Record a frame for the right motors. Since these share an encoder, we
-                            // consider
-                            // the entire group to be one motor.
-                            log.motor("motor2")
-                                    .voltage(
-                                            m_appliedVoltage.mut_replace(
-                                                    motor2.get() * RobotController.getBatteryVoltage(), Volts))
-                                    .linearPosition(m_distance.mut_replace(motor2.getEncoder().getPosition(), Meters))
-                                    .linearVelocity(
-                                            m_velocity.mut_replace(motor2.getEncoder().getVelocity(), MetersPerSecond));
-                        },
-                        // Tell SysId to make generated commands require this subsystem, suffix test
-                        // state in
-                        // WPILog with this subsystem's name ("drive")
-                        this));
+       // routine = new SysIdRoutine(
+       //     new SysIdRoutine.Config(Velocity.ofBaseUnits(3, VelocityUnit.combine(Volts, Seconds)), Voltage.ofBaseUnits(3, Volts), Time.ofBaseUnits(5, Second)),
+       //         new SysIdRoutine.Mechanism(this::voltageDrive,
+       //                 log -> {
+       //                     // Record a frame for the left motors. Since these share an encoder, we consider
+       //                     // the entire group to be one motor.
+       //                     log.motor("motor1")
+       //                             .voltage(
+       //                                     m_appliedVoltage.mut_replace(
+       //                                             motor1.get() * RobotController.getBatteryVoltage(), Volts))
+       //                             .linearPosition(m_distance.mut_replace(motor1.getEncoder().getPosition(), Meters))
+       //                             .linearVelocity(
+       //                                     m_velocity.mut_replace(motor1.getEncoder().getVelocity(), MetersPerSecond));
+       //                     // Record a frame for the right motors. Since these share an encoder, we
+       //                     // consider
+       //                     // the entire group to be one motor.
+       //                     log.motor("motor2")
+       //                             .voltage(
+       //                                     m_appliedVoltage.mut_replace(
+       //                                             motor2.get() * RobotController.getBatteryVoltage(), Volts))
+       //                             .linearPosition(m_distance.mut_replace(motor2.getEncoder().getPosition(), Meters))
+       //                             .linearVelocity(
+       //                                     m_velocity.mut_replace(motor2.getEncoder().getVelocity(), MetersPerSecond));
+       //                 },
+       //                 // Tell SysId to make generated commands require this subsystem, suffix test
+       //                 // state in
+       //                 // WPILog with this subsystem's name ("drive")
+       //                 this));
 
         feedforward = new ElevatorFeedforward(ElevatorConstants.kS, ElevatorConstants.kV, ElevatorConstants.kA);
 
@@ -251,22 +251,22 @@ public final class Elevator extends SubsystemBase {
                 }, this);
     }
 
-    /**
-     * Returns a command that will execute a quasistatic test in the given
-     * direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
-    }
-
-    /**
-     * Returns a command that will execute a dynamic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
-    }
+    ///**
+    // * Returns a command that will execute a quasistatic test in the given
+    // * direction.
+    // *
+    // * @param direction The direction (forward or reverse) to run the test in
+    // */
+    //public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //    return routine.quasistatic(direction);
+    //}
+//
+    ///**
+    // * Returns a command that will execute a dynamic test in the given direction.
+    // *
+    // * @param direction The direction (forward or reverse) to run the test in
+    // */
+    //public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //    return routine.dynamic(direction);
+    //}
 }
