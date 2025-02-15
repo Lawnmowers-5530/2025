@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //change this to switch container
 import frc.robot.containers.coral_intake.RobotContainer;
 
+
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
  * a command-based structure. The only action in {@link Robot} is to schedule
@@ -27,14 +28,13 @@ public class Robot extends TimedRobot {
 	public Robot() {
 		CanBridge.runTCP();
 	}
-
 	private Command autonomousCommand;
 
-	public RobotContainer robotContainer;
+	public Container container;
 
 	@Override
 	public void robotInit() {
-		robotContainer = new RobotContainer();
+		container = new Container();
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		autonomousCommand = robotContainer.getAutonomousCommand();
+		autonomousCommand = container.getAutonomousCommand();
 
 		if (autonomousCommand != null) {
 			autonomousCommand.schedule();
