@@ -20,6 +20,7 @@ import frc.robot.containers.prod.RobotContainer;
  * respective commands.
  */
 public class Robot extends TimedRobot {
+	public static final class Container extends RobotContainer {};
 	private Command autonomousCommand;
 
 	public RobotContainer robotContainer;
