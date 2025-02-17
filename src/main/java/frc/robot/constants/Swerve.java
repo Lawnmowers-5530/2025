@@ -14,6 +14,7 @@ public class Swerve {
         public static final int turnMotor = 6;
         public static final int canCoder = 13;
         public static final double angleOffset = 0;
+        public static final boolean inverted = true;
     }
 
     public static final class FrontRightModule { // FR
@@ -21,6 +22,7 @@ public class Swerve {
         public static final int turnMotor = 8;
         public static final int canCoder = 14;
         public static final double angleOffset = 0.1;
+        public static final boolean inverted = true;
     }
 
     public static final class RearRightModule { // RR
@@ -28,6 +30,7 @@ public class Swerve {
         public static final int turnMotor = 10;
         public static final int canCoder = 15;
         public static final double angleOffset = 0;
+        public static final boolean inverted = true;
     }
 
     public static final class RearLeftModule { // RL
@@ -35,6 +38,7 @@ public class Swerve {
         public static final int turnMotor = 12;
         public static final int canCoder = 16;
         public static final double angleOffset = 0;
+        public static final boolean inverted = false;
     }
 
     public static class SwerveModule {

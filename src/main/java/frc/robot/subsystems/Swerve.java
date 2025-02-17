@@ -72,22 +72,27 @@ public class Swerve extends SubsystemBase implements Loggable {
 				SwerveConstants.FrontLeftModule.driveMotor,
 				SwerveConstants.FrontLeftModule.turnMotor,
 				SwerveConstants.FrontLeftModule.canCoder,
-				SwerveConstants.FrontLeftModule.angleOffset);
+				SwerveConstants.FrontLeftModule.angleOffset,
+				SwerveConstants.FrontLeftModule.inverted);
+				
 		this.frontRightModule = new SwerveModule(
 				SwerveConstants.FrontRightModule.driveMotor,
 				SwerveConstants.FrontRightModule.turnMotor,
 				SwerveConstants.FrontRightModule.canCoder,
-				SwerveConstants.FrontRightModule.angleOffset);
+				SwerveConstants.FrontRightModule.angleOffset,
+				SwerveConstants.FrontRightModule.inverted);
 		this.rearRightModule = new SwerveModule(
 				SwerveConstants.RearRightModule.driveMotor,
 				SwerveConstants.RearRightModule.turnMotor,
 				SwerveConstants.RearRightModule.canCoder,
-				SwerveConstants.RearRightModule.angleOffset);
+				SwerveConstants.RearRightModule.angleOffset,
+				SwerveConstants.RearRightModule.inverted);
 		this.rearLeftModule = new SwerveModule(
 				SwerveConstants.RearLeftModule.driveMotor,
 				SwerveConstants.RearLeftModule.turnMotor,
 				SwerveConstants.RearLeftModule.canCoder,
-				SwerveConstants.RearLeftModule.angleOffset);
+				SwerveConstants.RearLeftModule.angleOffset,
+				SwerveConstants.RearLeftModule.inverted);
 		rotationPID = new PIDController(
 				SwerveConstants.Rotation.kP,
 				SwerveConstants.Rotation.kI,
@@ -171,7 +176,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	public Command drive() {
 		return new RunCommand(
 				() -> {
-					this.drive(Container.State.ControllerState.driveVector.get(), Container.State.ControllerState.driveRotation.get(), true, Container.State.ControllerState.slowMode.get() ? 0.5 : 1);
+					this.drive(Controller.driveVector.get(), Controller.driveRotation.get(), true, Controller.slowMode.get() ? 0.5 : 1);
 				}, this);
 	};
 

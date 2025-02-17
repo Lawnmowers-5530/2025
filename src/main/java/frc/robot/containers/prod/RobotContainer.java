@@ -11,6 +11,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
@@ -39,25 +40,7 @@ public class RobotContainer {
 		public Elevator elevator;
 	}
 
-	public class State {
-		public class ControllerState {
-			@Log
-			public static Supplier<Vector<N2>> driveVector;
-			@Log
-			public static Supplier<Double> driveRotation;
-			@Log
-			public static Supplier<Boolean> slowMode;
-			@Log
-			public static Trigger zeroGyro;
-			
-			public static Trigger L1;
-			public static Trigger L2;
-			public static Trigger L3;
-			public static Trigger L4;
-
-			public static Trigger intake;
-		}
-	}
+	public class State {}
 
 	Controller controller = new Controller();
 
@@ -74,6 +57,7 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
+
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
@@ -91,14 +75,26 @@ public class RobotContainer {
 
 			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
 
-			State.ControllerState.L1.onTrue(this.bindings.elevator.goToL1);
-			State.ControllerState.L2.onTrue(this.bindings.elevator.goToL2);
-			State.ControllerState.L3.onTrue(this.bindings.elevator.goToL3);
-			State.ControllerState.L4.onTrue(this.bindings.elevator.goToL4);
+			Controller.L1.onTrue(this.bindings.elevator.goToL1);
+			Controller.L2.onTrue(this.bindings.elevator.goToL2);
+			Controller.L3.onTrue(this.bindings.elevator.goToL3);
+			Controller.L4.onTrue(this.bindings.elevator.goToL4);
 
-			State.ControllerState.zeroGyro.onTrue(this.bindings.swerve.zeroGyro);
+			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro);
 
-			State.ControllerState.intake.onTrue(this.bindings.coral.runIntake);
+			Controller.intake.onTrue(this.bindings.coral.runIntake);
+
+			this.controller.secondaryController.x().onTrue(this.bindings.elevator.manualElevator);
+			this.controller.driverController.b().onTrue(this.bindings.coral.outtake);
+			this.controller.driverController.a().whileTrue(
+				new RunCommand(
+					() -> {
+						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
+					}, this.subsystems.coralIntake)
+			);
+
+			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator);
+
 		}
 	}
 

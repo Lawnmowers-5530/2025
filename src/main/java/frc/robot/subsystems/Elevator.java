@@ -51,6 +51,7 @@ public final class Elevator extends SubsystemBase {
     private TrapezoidProfile.State setpoint;
 
     private ElevatorFeedforward feedforward;
+    
 
     private double kDt = 0.02;
 
@@ -129,6 +130,11 @@ public final class Elevator extends SubsystemBase {
         setpoint = new TrapezoidProfile.State(0, 0);
     }
 
+    public void manualSetSpeed(double speed) {
+        motor1.set(speed);
+        motor2.set(speed);
+    }
+
     public void setTarget(double sp) {
         this.sp = sp;
     }
@@ -151,8 +157,6 @@ public final class Elevator extends SubsystemBase {
         goal.velocity = 0;
 
         setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
-        SmartDashboard.putNumber("setpointP", setpoint.position);
-        SmartDashboard.putNumber("setpointV", setpoint.velocity);
 
         //double pud = elevatorController.calculate(getCurrentState().position, setpoint.position); //TODO switch to trap profile
         //double ff = feedforward.calculate(setpoint.velocity);
@@ -162,7 +166,7 @@ public final class Elevator extends SubsystemBase {
 
         motor1.set(pud + ff);
         motor2.set(pud + ff);
-        System.out.println(pud+ff);
+        SmartDashboard.putNumber("elevatorout", pud+ff);
     }
 
     @Deprecated

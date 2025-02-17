@@ -61,9 +61,10 @@ public class CoralIntake extends SubsystemBase {
     @Override
     public void periodic() {
         double out = pivotController.calculate(pivotEncoder.getPosition(), target);
-        pivot.set(out);
+        //pivot.set(out);
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("position", pivot.getAbsoluteEncoder().getPosition());
+        SmartDashboard.putNumber("motor.get", pivot.get());
 
         
 
@@ -102,14 +103,11 @@ public class CoralIntake extends SubsystemBase {
     public enum Targets {
         INTAKE, BOTTOM, MIDDLE, TOP
     }
-    public void setPivotSpeed(double speed) {
-        pivot.set(speed);
-    }
     public void intake() {
         intake.set(PivotConstants.intakePower);
     }
     public void outtake() {
-        intake.set(-PivotConstants.intakePower);
+        intake.set(PivotConstants.intakePower);
     }
 
     public void stopIntake() {
@@ -118,8 +116,11 @@ public class CoralIntake extends SubsystemBase {
 
     public boolean coralDetected1() {
         double measurement = fakeBeamBreak.getMeasurement().distance_mm;
-        SmartDashboard.putNumber("measurement", measurement);;
+        SmartDashboard.putNumber("measurement", measurement);
         return measurement < 20;
+    }
+    public boolean notCoralDetected1() {
+        return !coralDetected1();
     }
     private boolean coralDetected2() {
         var measurement = fakeBeamBreak2.getMeasurement();
