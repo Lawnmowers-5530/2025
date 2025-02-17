@@ -14,10 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Hang;
-import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
@@ -49,13 +47,12 @@ public class RobotContainer {
 		public Command zeroGyroCommand;
 		public Command idTargeter;
 		public Command align;
-		public Command releaseRatchetOnHang;
-		public Command climbDeep;
-		public Command toggleManual;
-		public Command stopHang;
-		public Command hang;
-		public Command unhang;
-		public Command stop;
+
+		public Command setPowerUsingManualJoystick;
+		public Command autoHang;
+		public Command autoUnhang;
+		public Command toggleRelease;
+		
 	}
 
 	public static class State {
@@ -110,23 +107,28 @@ public class RobotContainer {
 			this.bindings = new Bindings();
 
 			// drive swerve, slow mode with b
-			this.bindings.swerveCommand = this.subsystems.swerve.drive();
+	//		this.bindings.swerveCommand = this.subsystems.swerve.drive();
 
 			// set gyro yaw to 0
-			this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
+	//		this.bindings.zeroGyroCommand = Pgyro.zeroGyroCommand();
 
-			this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
-			this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-			this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
-			this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
+	//		this.bindings.idTargeter = this.subsystems.swerve.getPointTargeterCommand(1, 0);
+	//		this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
+	//		this.controllers.secondaryController.a().whileTrue(this.bindings.idTargeter);
+		//	this.controllers.driverController.x().onTrue(this.bindings.zeroGyroCommand);
 
-			this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
-			this.controllers.driverController.b().whileTrue(this.bindings.align);
-			this.bindings.climbDeep = this.subsystems.hang.autoHang();
-			this.bindings.releaseRatchetOnHang = this.subsystems.hang.releaseToZero();
+	//		this.bindings.align = this.subsystems.swerve.new AlignToTag(2);
+			//this.controllers.driverController.b().whileTrue(this.bindings.align);
 
-			controllers.driverController.a().onTrue(this.bindings.climbDeep);
-			controllers.driverController.b().onTrue(this.bindings.releaseRatchetOnHang);
+
+			this.bindings.autoHang = this.subsystems.hang.autoHang();
+			this.bindings.autoUnhang = this.subsystems.hang.autoOut();
+			this.bindings.toggleRelease = this.subsystems.hang.toggleRelease();
+			this.bindings.setPowerUsingManualJoystick = new RunCommand(()-> {
+				this.subsystems.hang.manualInput(this.controllers.driverController.getLeftY());
+			}, this.subsystems.hang);
+			
+		
 
 		}
 
@@ -142,16 +144,9 @@ public class RobotContainer {
 			};
 		}
 
-		this.controllers.driverController.y().onTrue(this.bindings.hang);
-		this.controllers.driverController.x().onTrue(this.bindings.unhang);
-		this.controllers.driverController.a().onTrue(this.bindings.stop);
-		this.controllers.driverController.leftStick().whileTrue(new RunCommand(() -> {
-			this.subsystems.hang.setPowerUsingManual(this.controllers.driverController.getLeftY() / 2.0);
-		}, this.subsystems.hang));
-
-		this.controllers.driverController.leftStick().onFalse(this.bindings.stop);
-
-		this.bindings.swerveCommand = new RunCommand(
+	
+		this.subsystems.hang.setDefaultCommand(this.bindings.setPowerUsingManualJoystick);
+		/*this.bindings.swerveCommand = new RunCommand(
 				() -> {
 					this.subsystems.swerve.drive(
 							ControllerState.driveVector,
@@ -159,7 +154,9 @@ public class RobotContainer {
 							true,
 							ControllerState.slowMode ? 0.5 : 1);
 
-				}, this.subsystems.swerve);
+				}, this.subsystems.swerve);*/
+
+
 	}
 
 	/**

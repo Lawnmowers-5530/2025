@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -120,15 +120,16 @@ public final class Constants {
 
 	public static final class HangConstants  {
 		public static final int leftMotorChannel = 8;
-		public static final int rightMotorChannel = 6;
+		
 		public static final int servoLeftPWMId = 0;
-		public static final int servoRightPWMId = 1;
+		
 		public static  final float servoReleaseLeft = 0;
 		public static final float servoHoldLeft = 0;
-		public static final float servoReleaseRight = 0;
-		public static final float servoHoldRight = 0;
+
 		public static final double hangPower = 0.15;
-		public static final double hangTime = 0.2;
+		public static final double toHangPos = -0.2;
+		public static final double doneHangPos = 0;
+
 
 
 

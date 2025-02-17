@@ -6,87 +6,89 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class Hang extends  SubsystemBase {
     //#region
     SparkMax leftHang;
-    SparkMax rightHang;
+    
     Servo releaseLeft;
-    Servo releaseRight;
+    
     private boolean release = false;
-    private boolean manual = false;
-    public boolean hanged = false;
+  
     //#endregion
     public Hang() {
         leftHang = new SparkMax(Constants.HangConstants.leftMotorChannel, MotorType.kBrushless);
-        rightHang = new SparkMax(Constants.HangConstants.rightMotorChannel, MotorType.kBrushless);
+       
         releaseLeft = new Servo(Constants.HangConstants.servoLeftPWMId);
-        releaseRight = new Servo(Constants.HangConstants.servoRightPWMId);
     }
-    public void hangDown() {
-        leftHang.set(-Constants.HangConstants.hangPower);
-        rightHang.set(Constants.HangConstants.hangPower);
-
+    public Command autoHang() {
+        return new RunCommand(()-> {
+            leftHang.set(Constants.HangConstants.hangPower);
+        }, this).until(this::isHanged).andThen(new RunCommand(()->stop(), this));
+    }
+    public Command autoOut() {
+        return new RunCommand(()-> {
+            leftHang.set(-Constants.HangConstants.hangPower);
+        }, this).until(this::isUnhinged).andThen(new RunCommand(()->stop(), this));
     }
     public void stop() {
         leftHang.set(0);
-        rightHang.set(0);
     }
-    public void hangUp() {
-        leftHang.set(Constants.HangConstants.hangPower);
-        rightHang.set(-Constants.HangConstants.hangPower);
-    }
+    public boolean isHanged() {
+        return (leftHang.getEncoder().getPosition() > Constants.HangConstants.doneHangPos);
 
-    public boolean hangAtZero() {
-        return leftHang.getEncoder().getPosition() < 5.0 || rightHang.getEncoder().getPosition() <= 5.0;
     }
+    public boolean isUnhinged() {
+        return (leftHang.getEncoder().getPosition() < Constants.HangConstants.toHangPos);
+    }
+    public void manualInput(double input) {
+        if (input < 0){
+            releaseLeft.set(input);
+            release();
+        }else {
+            hold();
+            releaseLeft.set(input);
+        }
+    }
+    public Command toggleRelease() {
+        return new RunCommand(()-> {
+            toggleServos();
+        }, this);
 
-    public void toggleRelease() {
-        release = !release;
     }
-    public void releaseRatchet() {
+    public void toggleServos() {
+        if (release) {
+            releaseLeft.set(0.15);
+            release = false;
+            
+        }else{
+            releaseLeft.set(0.017);
+            release = true;
+        }
+    }
+    public void release() {
+        release = true;
+        releaseLeft.set(0.017);
+    }
+    public void hold() {
+        releaseLeft.set(0.15);
         release = false;
     }
-    public void stopRatchet() {
-        release = true;
-    }
-    public void toggleManual() {
-        manual = !manual;
-    }
-    public void setPowerUsingManual(double manualInput) {
- 
-            leftHang.set(release ? -manualInput * Constants.HangConstants.hangPower : Math.min(0, -manualInput * Constants.HangConstants.hangPower));
-            rightHang.set(release ? manualInput * Constants.HangConstants.hangPower : Math.max(0, manualInput * Constants.HangConstants.hangPower));
-        
-    }
-
-
     @Override 
     public void periodic() {
-        releaseLeft.set(release ? 0.017 : 0.15);
-        releaseRight.set(release ? 0.16 : 0);
-        SmartDashboard.putNumber("Left", leftHang.getEncoder().getPosition());
-        SmartDashboard.putNumber("Right",rightHang.getEncoder().getPosition());
+        SmartDashboard.putNumber("Hang Pos", leftHang.getEncoder().getPosition());
      
         
     }
-    //#region Commands
-    public Command autoHang() {
-        //return new RunCommand(()->{release=false;hangDown();}, this).(new WaitCommand(Constants.HangConstants.hangTime)).andThen(()->stop());
-        return new ParallelDeadlineGroup(new WaitCommand(Constants.HangConstants.hangTime), new RunCommand(()->{release=false;hangDown();}, this)).andThen(new RunCommand(()->stop(), this));
-    }
-    public Command releaseToZero() {
-        return new ParallelDeadlineGroup(new WaitCommand(Constants.HangConstants.hangTime), new RunCommand(()->{release=true;hangUp();}, this)).andThen(new RunCommand(()->stop(), this));
-    }
-    public Command hardStop() {
-        return new RunCommand(()->stop(), this);
-    }
+   
 
-
-    //#endregion
+  
 }
+
+
+    
+  
+
