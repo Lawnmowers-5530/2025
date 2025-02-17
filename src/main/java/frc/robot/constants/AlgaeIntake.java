@@ -10,4 +10,7 @@ public class AlgaeIntake {
     public static final double maxAcceleration = 0;
     public static final double maxVelocity = 0;
     public static final double rollerPower = 0;
+    public static final double setpointDown = 0;
+    public static final double setpointUp = 0;
+    public static final double setpointIntake = 0;
 }
