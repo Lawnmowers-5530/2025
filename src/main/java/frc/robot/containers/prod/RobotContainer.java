@@ -50,7 +50,6 @@ public class RobotContainer {
 			@Log
 			public static Trigger zeroGyro;
 			
-			public static Trigger L0;
 			public static Trigger L1;
 			public static Trigger L2;
 			public static Trigger L3;

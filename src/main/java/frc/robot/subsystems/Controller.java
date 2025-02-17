@@ -49,7 +49,6 @@ public class Controller extends SubsystemBase {
 
         Container.State.ControllerState.zeroGyro = driverController.x();
 
-        Container.State.ControllerState.L0 = driverController.a();
         Container.State.ControllerState.L1 = driverController.povDown();
         Container.State.ControllerState.L2 = driverController.povLeft();
         Container.State.ControllerState.L3 = driverController.povUp();

@@ -30,6 +30,7 @@ import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -114,7 +115,7 @@ public final class Elevator extends SubsystemBase {
 
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
 
-        elevatorController = new PIDController(ElevatorConstants.kP1, ElevatorConstants.kI1, 0);
+        elevatorController = new PIDController(ElevatorConstants.kP1, 0, 0);
         elevatorController.setIZone(2);
         elevatorController.setIntegratorRange(-0.2, 0.2);
 
@@ -145,11 +146,13 @@ public final class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("pos", getCurrentState().position);
         goal.position = sp;
         goal.velocity = 0;
 
         setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
+        SmartDashboard.putNumber("setpointP", setpoint.position);
+        SmartDashboard.putNumber("setpointV", setpoint.velocity);
 
         //double pud = elevatorController.calculate(getCurrentState().position, setpoint.position); //TODO switch to trap profile
         //double ff = feedforward.calculate(setpoint.velocity);
@@ -159,12 +162,14 @@ public final class Elevator extends SubsystemBase {
 
         motor1.set(pud + ff);
         motor2.set(pud + ff);
+        System.out.println(pud+ff);
     }
 
     @Deprecated
     public void setDirectSpeed(double speed) {
         motor2.set((speed / 4) + 0.018);
         motor1.set((speed / 4) + 0.018);
+        SmartDashboard.putNumber("cont speed", speed);
     }
 
     public void voltageDrive(Voltage voltage) {

@@ -48,6 +48,7 @@ public class CoralIntake extends SubsystemBase {
         pivot.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
+        pivotController.setTolerance(PivotConstants.tolerance);
 
     }
     @Deprecated
@@ -74,7 +75,7 @@ public class CoralIntake extends SubsystemBase {
         SmartDashboard.putNumber("joy speed", speed/5);
     }
 
-    public void setTarget(Targets target) {
+    private void setTarget(Targets target) {
         switch (target) {
             case INTAKE:
             this.target = PivotConstants.intakePos;
@@ -91,6 +92,13 @@ public class CoralIntake extends SubsystemBase {
 
         }
     }
+
+    public Command anglePivot(Targets target) {
+        return new RunCommand(() -> {
+            setTarget(target);
+        }, this).until(this.pivotController::atSetpoint);
+    }
+
     public enum Targets {
         INTAKE, BOTTOM, MIDDLE, TOP
     }

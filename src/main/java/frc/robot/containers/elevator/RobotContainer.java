@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 import frc.robot.containers.prod.RobotContainer.State.ControllerState;
 import frc.robot.subsystems.Controller;
@@ -20,6 +21,7 @@ import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import frc.robot.subsystems.Elevator;
 import io.github.oblarg.oblog.Logger;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -52,11 +54,23 @@ public class RobotContainer {
 
 	}
 
-	public static class State {
-		public static class ControllerState {
-			public static Vector<N2> driveVector;
-			public static double driveRotation;
-			public static boolean slowMode;
+	public class State {
+		public class ControllerState {
+			@Log
+			public static Supplier<Vector<N2>> driveVector;
+			@Log
+			public static Supplier<Double> driveRotation;
+			@Log
+			public static Supplier<Boolean> slowMode;
+			@Log
+			public static Trigger zeroGyro;
+			
+			public static Trigger L1;
+			public static Trigger L2;
+			public static Trigger L3;
+			public static Trigger L4;
+
+			public static Trigger intake;
 		}
 	}
 
@@ -90,47 +104,25 @@ public class RobotContainer {
 
 			this.subsystems = new Subsystems();
 			this.subsystems.elevator = new Elevator();
-			this.subsystems.man = new PoseCameraManager();
+			//this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();
 
-			this.subsystems.swerve = new Swerve();
+			//this.subsystems.swerve = new Swerve();
 			// the death zone??
 		}
 
-		/**
-		 * initalize bindings here
-		 */
-		{
-
-		}
-
-		/** supps */
-		{
-
-		}
-
-		this.bindings.swerveCommand = new RunCommand(
-				() -> {
-					this.subsystems.swerve.drive(
-							ControllerState.driveVector.get(),
-							ControllerState.driveRotation.get(),
-							true,
-							ControllerState.slowMode.get() ? 0.5 : 1);
-
-				}, this.subsystems.swerve);
-
-		// this.subsystems.swerve.setDefaultCommand(this.bindings.swerveCommand);
-		this.subsystems.elevator.setDefaultCommand(new RunCommand(
+		this.controllers.driverController.povUp().onTrue(
+			new RunCommand(
 				() -> {
 					this.subsystems.elevator.setDirectSpeed(
-							this.controllers.driverController.getLeftY() * 0.5);
-				},
-				this.subsystems.elevator));
-
+						this.controllers.driverController.getLeftY()
+					);
+				}, this.subsystems.elevator)
+		);
 		this.controllers.driverController.a().onTrue(this.subsystems.elevator.goToTarget(0));
-		this.controllers.driverController.b().onTrue(this.subsystems.elevator.goToTarget(1));
-		this.controllers.driverController.x().onTrue(this.subsystems.elevator.goToTarget(2));
-		this.controllers.driverController.y().onTrue(this.subsystems.elevator.goToTarget(3));
+		this.controllers.driverController.x().onTrue(this.subsystems.elevator.goToTarget(1));
+		this.controllers.driverController.y().onTrue(this.subsystems.elevator.goToTarget(2));
+		this.controllers.driverController.b().onTrue(this.subsystems.elevator.goToTarget(3));
 
 	}
 
