@@ -119,7 +119,7 @@ public final class Constants {
 	}
 
 	public static final class HangConstants  {
-		public static final int leftMotorChannel = 8;
+		public static final int leftMotorChannel = 17;
 		
 		public static final int servoLeftPWMId = 0;
 		

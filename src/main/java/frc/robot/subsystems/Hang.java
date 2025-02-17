@@ -45,12 +45,13 @@ public class Hang extends  SubsystemBase {
         return (leftHang.getEncoder().getPosition() < Constants.HangConstants.toHangPos);
     }
     public void manualInput(double input) {
-        if (input < 0){
-            releaseLeft.set(input);
-            release();
-        }else {
+        if (input > 0){
             hold();
-            releaseLeft.set(input);
+            leftHang.set(input);
+        }else {
+           
+            leftHang.set(input);
+            release();
         }
     }
     public Command toggleRelease() {
