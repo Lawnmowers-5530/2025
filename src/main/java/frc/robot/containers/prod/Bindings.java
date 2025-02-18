@@ -54,4 +54,7 @@ public class Bindings {
         .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 
     }
+
+    final class Hang {
+    }
 }

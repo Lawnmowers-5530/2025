@@ -16,6 +16,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Hang;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
@@ -38,6 +39,7 @@ public class RobotContainer {
 		public PoseCameraManager man;
 		public CoralIntake coralIntake;
 		public Elevator elevator;
+		public Hang hang;
 	}
 
 	public class State {}
@@ -58,6 +60,7 @@ public class RobotContainer {
 
 			this.subsystems = new Subsystems();
 
+			this.subsystems.hang = new Hang();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
@@ -92,6 +95,10 @@ public class RobotContainer {
 						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
 					}, this.subsystems.coralIntake)
 			);
+
+			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
+				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY());
+			}, this.subsystems.hang));
 
 			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator);
 
