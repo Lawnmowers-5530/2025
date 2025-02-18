@@ -21,17 +21,23 @@ public class Bindings {
     }
 
     Elevator elevator;
+
     final class Elevator {
         final Command manualElevator = new RunCommand(
                 () -> {
                     Bindings.this.subsystems.elevator.manualSetSpeed(subsystems.controller.elevatorPower());
                 }, Bindings.this.subsystems.elevator);
 
-        final Command goToL0 = Bindings.this.subsystems.elevator.goToTarget(0);
-        final Command goToL1 = Bindings.this.subsystems.elevator.goToTarget(1);
-        final Command goToL2 = Bindings.this.subsystems.elevator.goToTarget(2);// TODO add angle to L4 while in transit
-        final Command goToL3 = Bindings.this.subsystems.elevator.goToTarget(3);
-        final Command goToL4 = Bindings.this.subsystems.elevator.goToTarget(4);
+        final Command goToL0 = Bindings.this.subsystems.elevator.goToTarget(0)
+                .until(Bindings.this.subsystems.elevator::atTarget);
+        final Command goToL1 = Bindings.this.subsystems.elevator.goToTarget(1)
+                .until(Bindings.this.subsystems.elevator::atTarget);
+        final Command goToL2 = Bindings.this.subsystems.elevator.goToTarget(2)
+                .until(Bindings.this.subsystems.elevator::atTarget);// TODO add angle to L4 while in transit
+        final Command goToL3 = Bindings.this.subsystems.elevator.goToTarget(3)
+                .until(Bindings.this.subsystems.elevator::atTarget);
+        final Command goToL4 = Bindings.this.subsystems.elevator.goToTarget(4)
+                .until(Bindings.this.subsystems.elevator::atTarget);
     }
 
     Swerve swerve;
@@ -41,17 +47,31 @@ public class Bindings {
     }
 
     Coral coral;
+
     final class Coral {
-        public Command runIntake = Bindings.this.subsystems.elevator.goToTarget(0)
+        public Command runIntake = Bindings.this.elevator.goToL0
                 .until(Bindings.this.subsystems.elevator::atTarget)
                 .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
                 .until(Bindings.this.subsystems.coralIntake::coralDetected1)
                 .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
-        public Command scoreL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
-        public Command outtake = new RunCommand(() -> {
-            Bindings.this.subsystems.coralIntake.outtake();
-        }, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
-        .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+        public Command angleL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
+        public Command angleIntake = Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+
+        public Command outtake = Bindings.this.subsystems.coralIntake.intakeCommand()
+                .until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+
+        public Command compoundL2 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                .andThen(Bindings.this.elevator.goToL2)
+                .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
+                .andThen(this.outtake);
+        public Command compoundL3 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                .andThen(Bindings.this.elevator.goToL3)
+                .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
+                .andThen(this.outtake);
+        public Command compoundL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                .andThen(Bindings.this.elevator.goToL4)
+                .andThen(this.outtake);
 
     }
 

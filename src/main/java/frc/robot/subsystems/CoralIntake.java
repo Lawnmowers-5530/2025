@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CoralIntake.Pivot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 
@@ -35,6 +36,7 @@ public class CoralIntake extends SubsystemBase {
     public CoralIntake() {
         intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(20,20);
+
 
         pivotConfig = new SparkMaxConfig();
         pivotConfig.inverted(false);
@@ -60,7 +62,7 @@ public class CoralIntake extends SubsystemBase {
     }
     @Override
     public void periodic() {
-        double out = pivotController.calculate(pivotEncoder.getPosition(), target);
+        double out = pivotController.calculate(pivotEncoder.getPosition(), Math.max(PivotConstants.bottomPos, Math.min(PivotConstants.topPos, target)));
         //pivot.set(out);
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("position", pivot.getAbsoluteEncoder().getPosition());
@@ -72,8 +74,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void manualPivot(double speed) {
-        pivot.set(speed/5);
-        SmartDashboard.putNumber("joy speed", speed/5);
+        this.target += speed/30;
     }
 
     private void setTarget(Targets target) {
