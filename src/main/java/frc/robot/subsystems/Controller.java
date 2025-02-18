@@ -54,10 +54,10 @@ public class Controller extends SubsystemBase {
 
         zeroGyro = driverController.x();
 
-        L1 = driverController.povDown();
-        L2 = driverController.povLeft();
-        L3 = driverController.povUp();
-        L4 = driverController.povRight();
+        L1 = secondaryController.povDown();
+        L2 = secondaryController.povLeft();
+        L3 = secondaryController.povUp();
+        L4 = secondaryController.povRight();
 
         intake = driverController.y();
     }

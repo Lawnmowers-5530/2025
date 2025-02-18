@@ -85,6 +85,7 @@ public class RobotContainer {
 
 			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro);
 
+
 			Controller.intake.onTrue(this.bindings.coral.runIntake);
 
 			this.controller.secondaryController.x().onTrue(this.bindings.elevator.manualElevator);
@@ -95,6 +96,7 @@ public class RobotContainer {
 						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
 					}, this.subsystems.coralIntake)
 			);
+			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtakeL4);
 
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY());

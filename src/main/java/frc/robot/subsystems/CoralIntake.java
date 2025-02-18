@@ -12,8 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.CoralIntake.Pivot;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 
 public class CoralIntake extends SubsystemBase {
@@ -62,11 +62,11 @@ public class CoralIntake extends SubsystemBase {
     }
     @Override
     public void periodic() {
-        double out = pivotController.calculate(pivotEncoder.getPosition(), Math.max(PivotConstants.bottomPos, Math.min(PivotConstants.topPos, target)));
-        //pivot.set(out);
+        double out = pivotController.calculate(pivotEncoder.getPosition(), Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
+        pivot.set(out);
         SmartDashboard.putNumber("Pivot out", out);
-        SmartDashboard.putNumber("position", pivot.getAbsoluteEncoder().getPosition());
-        SmartDashboard.putNumber("motor.get", pivot.get());
+        SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
+        SmartDashboard.putNumber("pivot target", this.target);
 
         
 
@@ -96,9 +96,9 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public Command anglePivot(Targets target) {
-        return new RunCommand(() -> {
+        return new InstantCommand(() -> {
             setTarget(target);
-        }, this).until(this.pivotController::atSetpoint);
+        }, this);
     }
 
     public enum Targets {

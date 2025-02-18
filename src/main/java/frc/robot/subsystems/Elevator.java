@@ -1,17 +1,11 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
-
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -19,17 +13,11 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.TimeUnit;
-import edu.wpi.first.units.VelocityUnit;
-import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -46,12 +34,7 @@ public final class Elevator extends SubsystemBase {
     private SparkMaxConfig motor1Config;
     private SparkMaxConfig motor2Config;
 
-    private TrapezoidProfile elevatorProfile;
     private TrapezoidProfile.State goal;
-    private TrapezoidProfile.State setpoint;
-
-    private ElevatorFeedforward feedforward;
-    
 
     private double kDt = 0.02;
 
@@ -61,48 +44,17 @@ public final class Elevator extends SubsystemBase {
 
     private DigitalInput limitSwitch;
 
-    private SysIdRoutine routine;
-    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
-    private final MutDistance m_distance = Meters.mutable(0);
-    // Mutable holder for unit-safe linear velocity values, persisted to avoid
-    // reallocation.
-    private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
-
     public Elevator() {
-       // routine = new SysIdRoutine(
-       //     new SysIdRoutine.Config(Velocity.ofBaseUnits(3, VelocityUnit.combine(Volts, Seconds)), Voltage.ofBaseUnits(3, Volts), Time.ofBaseUnits(5, Second)),
-       //         new SysIdRoutine.Mechanism(this::voltageDrive,
-       //                 log -> {
-       //                     // Record a frame for the left motors. Since these share an encoder, we consider
-       //                     // the entire group to be one motor.
-       //                     log.motor("motor1")
-       //                             .voltage(
-       //                                     m_appliedVoltage.mut_replace(
-       //                                             motor1.get() * RobotController.getBatteryVoltage(), Volts))
-       //                             .linearPosition(m_distance.mut_replace(motor1.getEncoder().getPosition(), Meters))
-       //                             .linearVelocity(
-       //                                     m_velocity.mut_replace(motor1.getEncoder().getVelocity(), MetersPerSecond));
-       //                     // Record a frame for the right motors. Since these share an encoder, we
-       //                     // consider
-       //                     // the entire group to be one motor.
-       //                     log.motor("motor2")
-       //                             .voltage(
-       //                                     m_appliedVoltage.mut_replace(
-       //                                             motor2.get() * RobotController.getBatteryVoltage(), Volts))
-       //                             .linearPosition(m_distance.mut_replace(motor2.getEncoder().getPosition(), Meters))
-       //                             .linearVelocity(
-       //                                     m_velocity.mut_replace(motor2.getEncoder().getVelocity(), MetersPerSecond));
-       //                 },
-       //                 // Tell SysId to make generated commands require this subsystem, suffix test
-       //                 // state in
-       //                 // WPILog with this subsystem's name ("drive")
-       //                 this));
-
-        feedforward = new ElevatorFeedforward(ElevatorConstants.kS, ElevatorConstants.kV, ElevatorConstants.kA);
 
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
+
+        //SparkMaxConfig pidConfig = new SparkMaxConfig();
+        //pidConfig.closedLoop
+        //.p(ElevatorConstants.kP)
+        //.i(ElevatorConstants.kI)
+        //.d(ElevatorConstants.kD)
+        //.outputRange(-0.5, 0.5);
 
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(false);
@@ -116,18 +68,13 @@ public final class Elevator extends SubsystemBase {
 
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
 
-        elevatorController = new PIDController(ElevatorConstants.kP1, 0, 0);
+        elevatorController = new PIDController(ElevatorConstants.kP, 0, 0);
         elevatorController.setIZone(2);
         elevatorController.setIntegratorRange(-0.2, 0.2);
-
-        elevatorProfile = new TrapezoidProfile(new Constraints(
-                ElevatorConstants.maxVelocity,
-                ElevatorConstants.maxAcceleration));
 
         sp = getCurrentState().position;
 
         goal = new TrapezoidProfile.State(0, 0);
-        setpoint = new TrapezoidProfile.State(0, 0);
     }
 
     public void manualSetSpeed(double speed) {
@@ -155,8 +102,6 @@ public final class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("pos", getCurrentState().position);
         goal.position = sp;
         goal.velocity = 0;
-
-        setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
 
         //double pud = elevatorController.calculate(getCurrentState().position, setpoint.position); //TODO switch to trap profile
         //double ff = feedforward.calculate(setpoint.velocity);
