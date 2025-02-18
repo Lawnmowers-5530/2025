@@ -15,7 +15,6 @@ public class Bindings {
         elevator = this.new Elevator();
         coral = this.new Coral();
 
-
     }
 
     Elevator elevator;
@@ -26,7 +25,9 @@ public class Bindings {
         /**
          * Angle pivot to intake angle / L2 & L3 angle
          */
-        public Command angleIntake = Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+        Command angleIntake() {
+            return Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+        }
     }
 
     final class Elevator {
@@ -34,7 +35,7 @@ public class Bindings {
          * Intake angle, then move elevator to L0, ends when within tolerance of target
          */
         Command goToL0() {
-            return Bindings.this.intake.angleIntake
+            return Bindings.this.intake.angleIntake()
                     .andThen(Bindings.this.subsystems.elevator.goToTarget(0))
                     .until(Bindings.this.subsystems.elevator::atTarget);
         }
@@ -51,7 +52,7 @@ public class Bindings {
          * Intake angle, then move elevator to L2, ends when within tolerance of target
          */
         Command goToL2() {
-            return Bindings.this.intake.angleIntake
+            return Bindings.this.intake.angleIntake()
                     .andThen(Bindings.this.subsystems.elevator.goToTarget(2))
                     .until(Bindings.this.subsystems.elevator::atTarget);
         }
@@ -60,7 +61,7 @@ public class Bindings {
          * Intake angle, then move elevator to L3, ends when within tolerance of target
          */
         Command goToL3() {
-            return Bindings.this.intake.angleIntake
+            return Bindings.this.intake.angleIntake()
                     .andThen(Bindings.this.subsystems.elevator.goToTarget(3))
                     .until(Bindings.this.subsystems.elevator::atTarget);
         }
@@ -70,7 +71,7 @@ public class Bindings {
          * Then angles to L4
          */
         Command goToL4() {
-            return Bindings.this.intake.angleIntake
+            return Bindings.this.intake.angleIntake()
                     .andThen(Bindings.this.subsystems.elevator.goToTarget(4))
                     .until(Bindings.this.subsystems.elevator::atTarget)
                     .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP));
@@ -93,15 +94,13 @@ public class Bindings {
          * detected
          */
         Command runIntake() {
-            return
-                    (
-                            Bindings.this.elevator.goToL0()
-                                    .alongWith(Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE))
-                    )
-                            .until(Bindings.this.subsystems.elevator::atTarget)
-                            .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-                            .until(Bindings.this.subsystems.coralIntake::coralDetected1)
-                            .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+            return 
+                    Bindings.this.elevator.goToL0()
+                  
+                    .until(Bindings.this.subsystems.elevator::atTarget)
+                    .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+                    .until(Bindings.this.subsystems.coralIntake::coralDetected1)
+                    .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
         }
 
         Command outtake() {
