@@ -71,8 +71,6 @@ public class Hang extends  SubsystemBase {
            
         }
 
-        System.out.println(funnelRelease.get());
-
     }
     
     public Command toggleRelease() {

@@ -93,6 +93,7 @@ public final class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("pos", getCurrentState().position);
+        SmartDashboard.putNumber("Elevator setpoint", sp);
         goal.position = sp;
         goal.velocity = 0;
 
@@ -144,6 +145,7 @@ public final class Elevator extends SubsystemBase {
     }
 
     public Command goToTarget(int level) {
+        System.out.println("going");
         return new RunCommand(() -> {
             switch (level) {
                 case 0:

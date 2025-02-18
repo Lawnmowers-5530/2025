@@ -35,35 +35,40 @@ public class Bindings {
          * Intake angle, then move elevator to L0, ends when within tolerance of target
          */
         Command goToL0() {
-            return Bindings.this.intake.angleIntake()
-                    .andThen(Bindings.this.subsystems.elevator.goToTarget(0))
-                    .until(Bindings.this.subsystems.elevator::atTarget);
+            return (Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                    .alongWith(Bindings.this.subsystems.elevator.goToTarget(0)))
+                    .until(Bindings.this.subsystems.elevator::atTarget)
+                    .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE));
         }
 
         /**
          * Intake angle, then move elevator to L1, ends when within tolerance of target
          */
         Command goToL1() {
-            return Bindings.this.subsystems.elevator.goToTarget(1)
-                    .until(Bindings.this.subsystems.elevator::atTarget);
+            return (Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+            .alongWith(Bindings.this.subsystems.elevator.goToTarget(1)))
+            .until(Bindings.this.subsystems.elevator::atTarget)
+            .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE));
         }
 
         /**
          * Intake angle, then move elevator to L2, ends when within tolerance of target
          */
         Command goToL2() {
-            return Bindings.this.intake.angleIntake()
-                    .andThen(Bindings.this.subsystems.elevator.goToTarget(2))
-                    .until(Bindings.this.subsystems.elevator::atTarget);
+            return (Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                    .alongWith(Bindings.this.subsystems.elevator.goToTarget(2)))
+                    .until(Bindings.this.subsystems.elevator::atTarget)
+                    .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE));
         }
 
         /**
          * Intake angle, then move elevator to L3, ends when within tolerance of target
          */
         Command goToL3() {
-            return Bindings.this.intake.angleIntake()
-                    .andThen(Bindings.this.subsystems.elevator.goToTarget(3))
-                    .until(Bindings.this.subsystems.elevator::atTarget);
+            return (Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                    .alongWith(Bindings.this.subsystems.elevator.goToTarget(3)))
+                    .until(Bindings.this.subsystems.elevator::atTarget)
+                    .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE));
         }
 
         /**
@@ -71,10 +76,10 @@ public class Bindings {
          * Then angles to L4
          */
         Command goToL4() {
-            return Bindings.this.intake.angleIntake()
-                    .andThen(Bindings.this.subsystems.elevator.goToTarget(4))
+            return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+                    .alongWith(Bindings.this.subsystems.elevator.goToTarget(4))
                     .until(Bindings.this.subsystems.elevator::atTarget)
-                    .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP));
+                   ;
         }
     }
 

@@ -2,13 +2,13 @@ package frc.robot.constants;
 
 public class Elevator {
     public static final double level4 = 88.5;
-    public static final double level3 = 70; //unsure of actual value
-    public static final double level2 = 50; //unsure of actual value
-    public static final double level1 = 30; //unsure of actual value
+    public static final double level3 = 45; //unsure of actual value
+    public static final double level2 = 30; //unsure of actual value
+    public static final double level1 = 15; //unsure of actual value
     public static final double intake = 3.5;
 
-    public static final double kP = 0.0088888888;
-    public static final double kI = 0.1;
+    public static final double kP = 0.0088;
+    public static final double kI = 0.0;
     public static final double kD = 0.0;
 
     public static final double maxAcceleration = 15;
