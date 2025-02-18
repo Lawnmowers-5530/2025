@@ -73,6 +73,10 @@ public class CoralIntake extends SubsystemBase {
 
     }
 
+    public boolean atTarget() {
+        return this.pivotController.atSetpoint();
+    }
+
     public void manualPivot(double speed) {
         this.target += speed/30;
     }
@@ -96,9 +100,9 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public Command anglePivot(Targets target) {
-        return new InstantCommand(() -> {
+        return new RunCommand(() -> {
             setTarget(target);
-        }, this);
+        }, this).until(this::atTarget);
     }
 
     public enum Targets {

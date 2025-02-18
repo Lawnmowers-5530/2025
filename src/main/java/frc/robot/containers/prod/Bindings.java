@@ -1,89 +1,135 @@
 package frc.robot.containers.prod;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.CoralIntake.Targets;
-import frc.robot.containers.prod.RobotContainer.Subsystems;
-import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
 
 public class Bindings {
-        RobotContainer.Subsystems subsystems;
+	RobotContainer.Subsystems subsystems;
 
-        public Bindings(RobotContainer.Subsystems subsystems) {
-                this.subsystems = subsystems;
-                elevator = this.new Elevator();
-                swerve = this.new Swerve();
-                coral = this.new Coral();
+	public Bindings(RobotContainer.Subsystems subsystems) {
+		this.subsystems = subsystems;
+		swerve = this.new Swerve();
+		intake = this.new Intake();
+		elevator = this.new Elevator();
+		coral = this.new Coral();
+		
 
-        }
+	}
 
-        Elevator elevator;
+	Elevator elevator;
 
-        final class Elevator {
-                final Command manualElevator = new RunCommand(
-                                () -> {
-                                        Bindings.this.subsystems.elevator
-                                                        .manualSetSpeed(subsystems.controller.elevatorPower());
-                                }, Bindings.this.subsystems.elevator);
+	Intake intake;
 
-                final Command goToL0 = Bindings.this.subsystems.elevator.goToTarget(0)
-                                .until(Bindings.this.subsystems.elevator::atTarget);
-                final Command goToL1 = Bindings.this.subsystems.elevator.goToTarget(1)
-                                .until(Bindings.this.subsystems.elevator::atTarget);
-                final Command goToL2 = Bindings.this.subsystems.elevator.goToTarget(2)
-                                .until(Bindings.this.subsystems.elevator::atTarget);// TODO add angle to L4 while in
-                                                                                    // transit
-                final Command goToL3 = Bindings.this.subsystems.elevator.goToTarget(3)
-                                .until(Bindings.this.subsystems.elevator::atTarget);
-                final Command goToL4 = Bindings.this.subsystems.elevator.goToTarget(4)
-                                .until(Bindings.this.subsystems.elevator::atTarget);
-        }
+	final class Intake {
+		/**
+		 * Angle pivot to intake angle / L2 & L3 angle
+		 */
+		public Command angleIntake = Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+	}
 
-        Swerve swerve;
+	final class Elevator {
+		/**
+		 * Intake angle, then move elevator to L0, ends when within tolerance of target
+		 */
+		final Command goToL0 = Bindings.this.intake.angleIntake
+				.andThen(Bindings.this.subsystems.elevator.goToTarget(0))
+				.until(Bindings.this.subsystems.elevator::atTarget);
+		/**
+		 * Intake angle, then move elevator to L1, ends when within tolerance of target
+		 */
+		final Command goToL1 = Bindings.this.subsystems.elevator.goToTarget(1)
+				.until(Bindings.this.subsystems.elevator::atTarget);
+		/**
+		 * Intake angle, then move elevator to L2, ends when within tolerance of target
+		 */
+		final Command goToL2 = Bindings.this.intake.angleIntake
+				.andThen(Bindings.this.subsystems.elevator.goToTarget(2))
+				.until(Bindings.this.subsystems.elevator::atTarget);
+		
+		/**
+		 * Intake angle, then move elevator to L3, ends when within tolerance of target
+		 */
+		final Command goToL3 = Bindings.this.intake.angleIntake
+				.andThen(Bindings.this.subsystems.elevator.goToTarget(3))
+				.until(Bindings.this.subsystems.elevator::atTarget);
+		/**
+		 * Intake angle, then move elevator to L4, ends when within tolerance of target.
+		 * Then angles to L4
+		 */
+		final Command goToL4 = Bindings.this.intake.angleIntake
+				.andThen(Bindings.this.subsystems.elevator.goToTarget(4))
+				.until(Bindings.this.subsystems.elevator::atTarget)
+				.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP));
+	}
 
-        final class Swerve {
-                final Command zeroGyro = Pgyro.zeroGyroCommand();
-        }
+	Swerve swerve;
 
-        Coral coral;
+	final class Swerve {
+		final Command zeroGyro = Pgyro.zeroGyroCommand();
+	}
 
-        final class Coral {
-                public Command runIntake = (Bindings.this.elevator.goToL0.alongWith(Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE)))
-                                .until(Bindings.this.subsystems.elevator::atTarget)
-                                .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-                                .until(Bindings.this.subsystems.coralIntake::coralDetected1)
-                                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
-                public Command angleL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
-                public Command angleIntake = Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+	Coral coral;
 
-                public Command outtake = Bindings.this.subsystems.coralIntake.intakeCommand()
-                                .until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
-                                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+	final class Coral {
+		/**
+		 * Move elevator to L0, angle to intake, run intake, and stop intake when coral
+		 * detected
+		 */
+		public Command runIntake = (Bindings.this.elevator.goToL0
+				.alongWith(Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE)))
+				.until(Bindings.this.subsystems.elevator::atTarget)
+				.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+				.until(Bindings.this.subsystems.coralIntake::coralDetected1)
+				.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 
-                public Command outtakeL4 = angleL4.andThen(outtake);
-                public Command compoundL2 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
-                                .andThen(Bindings.this.elevator.goToL2)
-                                .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
-                                .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-                                .until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
-                                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
-                public Command compoundL3 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
-                                .andThen(Bindings.this.elevator.goToL3)
-                                .andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
-                                .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-                                .until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
-                                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
-                public Command compoundL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
-                                .andThen(Bindings.this.elevator.goToL4)
-                                .andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-                                .until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
-                                .andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		public Command outtake = Bindings.this.subsystems.coralIntake.intakeCommand()
+				.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+				.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		/**
+		 * Move elevator and angle and outtake coral at L2, built for auton use
+		 */
+		public Command compoundL2 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+				.andThen(Bindings.this.elevator.goToL2)
+				.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
+				.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+				.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+				.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		/**
+		 * Move elevator and angle and outtake coral at L3, built for auton use
+		 */
+		public Command compoundL3 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+				.andThen(Bindings.this.elevator.goToL3)
+				.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE))
+				.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+				.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+				.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		/**
+		 * Move elevator and angle and outtake coral at L4, built for auton use
+		 */
+		public Command compoundL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+				.andThen(Bindings.this.elevator.goToL4)
+				.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+				.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+				.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		/**
+		 * Angle pivot to L4 angle
+		 */
+		public Command angleL4 = Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
 
-        }
+		/**
+		 * Manually manipulate {@link frc.robot.subsystems.Elevator Elevator} with
+		 * {@link frc.robot.subsystems.Controller Controller} Elevatorpower value
+		 */
+		final Command manualElevator = new RunCommand(
+				() -> {
+					Bindings.this.subsystems.elevator
+							.manualSetSpeed(subsystems.controller.elevatorPower());
+				}, Bindings.this.subsystems.elevator);
 
-        final class Hang {
-        }
+	}
+
+	final class Hang {
+	}
 }

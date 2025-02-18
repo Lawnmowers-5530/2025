@@ -4,11 +4,6 @@
 
 package frc.robot.containers.prod;
 
-
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -17,11 +12,9 @@ import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Hang;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
-import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -88,7 +81,7 @@ public class RobotContainer {
 
 			Controller.intake.onTrue(this.bindings.coral.runIntake);
 
-			this.controller.secondaryController.x().onTrue(this.bindings.elevator.manualElevator);
+			this.controller.secondaryController.x().onTrue(this.bindings.coral.manualElevator);
 			this.controller.driverController.b().onTrue(this.bindings.coral.outtake);
 			this.controller.driverController.a().whileTrue(
 				new RunCommand(
@@ -96,7 +89,7 @@ public class RobotContainer {
 						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
 					}, this.subsystems.coralIntake)
 			);
-			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtakeL4);
+			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake);
 
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY());
