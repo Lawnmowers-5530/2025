@@ -79,7 +79,7 @@ public class Bindings {
             return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
                     .alongWith(Bindings.this.subsystems.elevator.goToTarget(4))
                     .until(Bindings.this.subsystems.elevator::atTarget)
-                   ;
+					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4));
         }
     }
 

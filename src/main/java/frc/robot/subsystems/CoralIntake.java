@@ -95,6 +95,8 @@ public class CoralIntake extends SubsystemBase {
             case TOP:
             this.target = PivotConstants.topPos;
             break;
+            case L4:
+            this.target = PivotConstants.L4;
 
         }
     }
@@ -106,7 +108,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public enum Targets {
-        INTAKE, BOTTOM, MIDDLE, TOP
+        INTAKE, BOTTOM, MIDDLE, TOP, L4
     }
     public void intake() {
         intake.set(PivotConstants.intakePower);
