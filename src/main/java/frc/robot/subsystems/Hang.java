@@ -21,19 +21,23 @@ public class Hang extends  SubsystemBase {
         public static final double hangPower = 0.15;
         public static final double toHangPos = -0.2;
         public static final double doneHangPos = 0;
+        public static final int funnelRelease = 1;
     }
 
     //#region
     SparkMax leftHang;
+    Servo funnelRelease;
     
     Servo releaseLeft;
     
     private boolean release = false;
+    private boolean releaseFunnel = false;
   
     //#endregion
     public Hang() {
+
         leftHang = new SparkMax(HangConstants.leftMotorChannel, MotorType.kBrushless);
-       
+        funnelRelease = new Servo(HangConstants.funnelRelease);
         releaseLeft = new Servo(HangConstants.servoLeftPWMId);
     }
     public Command autoHang() {
@@ -56,7 +60,7 @@ public class Hang extends  SubsystemBase {
     public boolean isUnhinged() {
         return (leftHang.getEncoder().getPosition() < HangConstants.toHangPos);
     }
-    public void manualInput(double input) {
+    public void manualInput(double input, double input2) {
         if (input < -0.01){
             
             leftHang.set(input+0.01);
@@ -66,12 +70,21 @@ public class Hang extends  SubsystemBase {
             leftHang.set(input);
            
         }
+
+        System.out.println(funnelRelease.get());
+
     }
+    
     public Command toggleRelease() {
         return new RunCommand(()-> {
             toggleServos();
         }, this);
 
+    }
+    public Command toggleFunnel() {
+        return new RunCommand(()-> {
+            releaseFunnel = !releaseFunnel;
+        }, this);
     }
     public void toggleServos() {
         if (release) {
@@ -94,6 +107,7 @@ public class Hang extends  SubsystemBase {
     @Override 
     public void periodic() {
         SmartDashboard.putNumber("Hang Pos", leftHang.getEncoder().getPosition());
+        funnelRelease.set(releaseFunnel ? 1: 0);
      
         
     }

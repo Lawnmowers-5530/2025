@@ -92,8 +92,9 @@ public class RobotContainer {
 			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake());
 
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
-				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY());
+				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());
 			}, this.subsystems.hang));
+			
 
 			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator());
 
