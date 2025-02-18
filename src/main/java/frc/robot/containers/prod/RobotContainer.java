@@ -71,31 +71,31 @@ public class RobotContainer {
 
 			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
 
-			Controller.L1.onTrue(this.bindings.elevator.goToL1);
-			Controller.L2.onTrue(this.bindings.elevator.goToL2);
-			Controller.L3.onTrue(this.bindings.elevator.goToL3);
-			Controller.L4.onTrue(this.bindings.elevator.goToL4);
+			Controller.L1.onTrue(this.bindings.elevator.goToL1());
+			Controller.L2.onTrue(this.bindings.elevator.goToL2());
+			Controller.L3.onTrue(this.bindings.elevator.goToL3());
+			Controller.L4.onTrue(this.bindings.elevator.goToL4());
 
-			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro);
+			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro());
 
 
-			Controller.intake.onTrue(this.bindings.coral.runIntake);
+			Controller.intake.onTrue(this.bindings.coral.runIntake());
 
-			this.controller.secondaryController.x().onTrue(this.bindings.coral.manualElevator);
-			this.controller.driverController.b().onTrue(this.bindings.coral.outtake);
+			this.controller.secondaryController.x().onTrue(this.bindings.coral.manualElevator());
+			this.controller.driverController.b().onTrue(this.bindings.coral.outtake());
 			this.controller.driverController.a().whileTrue(
 				new RunCommand(
 					() -> {
 						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
 					}, this.subsystems.coralIntake)
 			);
-			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake);
+			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake());
 
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY());
 			}, this.subsystems.hang));
 
-			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator);
+			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator());
 
 		}
 	}
