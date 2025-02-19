@@ -3,6 +3,7 @@ package frc.robot.containers.prod;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.CoralIntake.Targets;
+import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
 
 public class Bindings {
@@ -164,7 +165,7 @@ public class Bindings {
             return new RunCommand(
                     () -> {
                         Bindings.this.subsystems.elevator
-                                .manualSetSpeed(subsystems.controller.elevatorPower());
+                                .manualSetSpeed(Controller.manualElevatorPower.get());
                     }, Bindings.this.subsystems.elevator);
         }
 
