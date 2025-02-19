@@ -22,7 +22,7 @@ public class PoseCameraManager implements Loggable {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
 
     public PoseCameraManager() {
-        camList.add(new PoseCamera("photonvision", new Transform3d()));
+        camList.add(new PoseCamera("photonvision", new Transform3d())); //change?
         //camList.add(new PoseCamera("cam2", new Transform3d()));
     }
 
@@ -63,5 +63,13 @@ public class PoseCameraManager implements Loggable {
             }
         }
         return Optional.empty();
+    }
+
+    public int getPrimaryIdLeft() {
+        return camList.get(0).getPrimaryTagId();
+    }
+
+    public int getPrimaryIdRight() {
+        return camList.get(1).getPrimaryTagId();
     }
 }
