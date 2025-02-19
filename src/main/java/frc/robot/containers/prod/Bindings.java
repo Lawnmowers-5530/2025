@@ -3,6 +3,7 @@ package frc.robot.containers.prod;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.CoralIntake.Targets;
+import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
 
 public class Bindings {
@@ -144,17 +145,17 @@ public class Bindings {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
 		}
 
-		/**
-		 * Manually manipulate {@link frc.robot.subsystems.Elevator Elevator} with
-		 * {@link frc.robot.subsystems.Controller Controller} Elevatorpower value
-		 */
-		Command manualElevator() {
-			return new RunCommand(
-					() -> {
-						Bindings.this.subsystems.elevator
-								.manualSetSpeed(subsystems.controller.elevatorPower());
-					}, Bindings.this.subsystems.elevator);
-		}
+        /**
+         * Manually manipulate {@link frc.robot.subsystems.Elevator Elevator} with
+         * {@link frc.robot.subsystems.Controller Controller} Elevatorpower value
+         */
+        Command manualElevator() {
+            return new RunCommand(
+                    () -> {
+                        Bindings.this.subsystems.elevator
+                                .manualSetSpeed(Controller.manualElevatorPower.get());
+                    }, Bindings.this.subsystems.elevator);
+        }
 
 	}
 

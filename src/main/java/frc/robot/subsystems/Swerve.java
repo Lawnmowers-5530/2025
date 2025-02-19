@@ -10,6 +10,8 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import io.github.oblarg.oblog.Loggable;
+
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,6 +23,10 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -283,6 +289,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	public void periodic() {
 		updateOdometry();
 		currentPose = getPose();
+		SmartDashboard.putString("current pose:", this.currentPose.toString());
 	}
 
 	/**
@@ -438,28 +445,44 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 	public class AlignToTag extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(1.3, 0, 0);
-		int tagId;
+		PIDController yawPID = new PIDController(0.03, 0.01, 0);
+		PIDController drivePID = new PIDController(0.15, 0.0, 0);
 
-		public AlignToTag(int tagId) {
-			this.tagId = tagId;
-			yawPID.setSetpoint(0);
+		public AlignToTag() {
+			yawPID.setSetpoint(180);
+			yawPID.setIZone(2);
+			yawPID.enableContinuousInput(-180, 180);
+			drivePID.setSetpoint(0);
+			drivePID.setTolerance(0.02);
+			yawPID.setTolerance(1);
 		}
 
 		@Override
 		public void execute() {
-			var tags = cameraManager.getTagsById(tagId);
+			var tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
 			// sort tags by the tag's pose ambiguity
 			var tracked_tag = tags
 				.stream()
 				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
 				.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
 
-			tracked_tag.ifPresent(
+				tracked_tag.ifPresent(
 					tag -> {
-						double output = yawPID.calculate(tag.getYaw());
-						Swerve.this.drive(VecBuilder.fill(0, 0), 0, false, 1);
-						System.out.println(output);
+						Transform3d camTrans = tag.getBestCameraToTarget();
+						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
+						Transform3d cameraToRobot = new Transform3d(0.0762, 0.07, 0, new Rotation3d(0, 0, -0.18));
+						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
+						Rotation2d rot = estimate.getRotation().toRotation2d();
+						double y = estimate.getTranslation().getY();
+						double x = estimate.getTranslation().getX();
+						SmartDashboard.putString("pose", estimate.toString());
+						SmartDashboard.putNumber("y", camTrans.getY());
+						SmartDashboard.putNumber("x", camTrans.getX());
+						SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
+						//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(0,0,-yawPID.calculate(rot.getDegrees())));
+						Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),-yawPID.calculate(rot.getDegrees())));
+						//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
+						SmartDashboard.putString("camTrans", camTrans.toString());
 					});
 		}
 
