@@ -7,9 +7,10 @@ public class Elevator {
     public static final double level1 = 15; //unsure of actual value
     public static final double intake = 3.5;
 
-    public static final double kP = 0.0088;
-    public static final double kI = 0.0;
+    public static final double kP = 0.033;
+    public static final double kI = 0.000;
     public static final double kD = 0.0;
+    public static final double integralZone = 2;
 
     public static final double maxAcceleration = 15;
     public static final double maxDeacceleration = 15;

@@ -90,6 +90,7 @@ public class RobotContainer {
 					}, this.subsystems.coralIntake)
 			);
 			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake());
+			this.controller.driverController.povUp().onTrue(this.bindings.coral.compoundL2());
 
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());

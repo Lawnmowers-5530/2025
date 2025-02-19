@@ -48,6 +48,7 @@ public class CoralIntake extends SubsystemBase {
         intake.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         pivot = new SparkMax(PivotConstants.pivotId, MotorType.kBrushless);
         pivot.configure(pivotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
         pivotController.setTolerance(PivotConstants.tolerance);
@@ -74,7 +75,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean atTarget() {
-        return this.pivotController.atSetpoint();
+        return Math.abs(this.target-this.pivotEncoder.getPosition())<PivotConstants.tolerance;
     }
 
     public void manualPivot(double speed) {

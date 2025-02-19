@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -18,9 +19,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public final class Elevator extends SubsystemBase {
-    //import frc.robot.constants.Elevator as ElevatorConstants
-    static final class ElevatorConstants extends frc.robot.constants.Elevator {};
-
+    // import frc.robot.constants.Elevator as ElevatorConstants
+    static final class ElevatorConstants extends frc.robot.constants.Elevator {
+    };
 
     private SparkMax motor1;
     private SparkMax motor2;
@@ -42,21 +43,28 @@ public final class Elevator extends SubsystemBase {
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
 
-        //SparkMaxConfig pidConfig = new SparkMaxConfig();
-        //pidConfig.closedLoop
-        //.p(ElevatorConstants.kP)
-        //.i(ElevatorConstants.kI)
-        //.d(ElevatorConstants.kD)
-        //.outputRange(-0.5, 0.5);
+        SparkMaxConfig pidConfig = new SparkMaxConfig();
 
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(false);
         motor1Config.idleMode(IdleMode.kBrake);
+        motor1Config.closedLoop
+                .p(ElevatorConstants.kP)
+                .i(ElevatorConstants.kI)
+                .d(ElevatorConstants.kD)
+                .iZone(ElevatorConstants.integralZone)
+                .outputRange(-0.5, 0.85);
+
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         motor2Config = new SparkMaxConfig();
         motor2Config.inverted(true);
         motor2Config.idleMode(IdleMode.kBrake);
+        motor2Config.closedLoop
+                .p(ElevatorConstants.kP)
+                .i(ElevatorConstants.kI)
+                .d(ElevatorConstants.kD)
+                .outputRange(-0.5, 0.5);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
@@ -77,6 +85,8 @@ public final class Elevator extends SubsystemBase {
 
     public void setTarget(double sp) {
         this.sp = sp;
+        this.motor1.getClosedLoopController().setReference(sp, ControlType.kPosition);
+        this.motor2.getClosedLoopController().setReference(sp, ControlType.kPosition);
     }
 
     public TrapezoidProfile.State getCurrentState() {
@@ -87,6 +97,7 @@ public final class Elevator extends SubsystemBase {
     }
 
     public boolean atTarget() {
+        SmartDashboard.putNumber("elevator error: ", sp - getCurrentState().position);
         return Math.abs(sp - getCurrentState().position) < ElevatorConstants.tolerance;
     }
 
@@ -97,15 +108,16 @@ public final class Elevator extends SubsystemBase {
         goal.position = sp;
         goal.velocity = 0;
 
-        //double pud = elevatorController.calculate(getCurrentState().position, setpoint.position); //TODO switch to trap profile
-        //double ff = feedforward.calculate(setpoint.velocity);
+        // double pud = elevatorController.calculate(getCurrentState().position,
+        // setpoint.position); //TODO switch to trap profile
+        // double ff = feedforward.calculate(setpoint.velocity);
 
         double pud = elevatorController.calculate(getCurrentState().position, sp);
-        double ff = 0.018; //temp
+        double ff = 0.018; // temp
 
-        motor1.set(pud + ff);
-        motor2.set(pud + ff);
-        SmartDashboard.putNumber("elevatorout", pud+ff);
+        // motor1.set(pud + ff);
+        // motor2.set(pud + ff);
+        SmartDashboard.putNumber("elevatorout", pud + ff);
     }
 
     @Deprecated
@@ -208,22 +220,22 @@ public final class Elevator extends SubsystemBase {
                 }, this);
     }
 
-    ///**
+    /// **
     // * Returns a command that will execute a quasistatic test in the given
     // * direction.
     // *
     // * @param direction The direction (forward or reverse) to run the test in
     // */
-    //public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //    return routine.quasistatic(direction);
-    //}
-//
-    ///**
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    // return routine.quasistatic(direction);
+    // }
+    //
+    /// **
     // * Returns a command that will execute a dynamic test in the given direction.
     // *
     // * @param direction The direction (forward or reverse) to run the test in
     // */
-    //public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //    return routine.dynamic(direction);
-    //}
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    // return routine.dynamic(direction);
+    // }
 }

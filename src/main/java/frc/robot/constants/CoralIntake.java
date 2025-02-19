@@ -10,9 +10,9 @@ public class CoralIntake {
         public static final double intakePower = 0.6;
 
         public static final double Kp = 1.65;
-        public static final double tolerance = 0.02;
+        public static final double tolerance = 0.09;
 
-        //Targets (Degrees)
+        //Targets (Degrees)w
         public static final double intakePos = 0.712;
         public static final double middlePos = 0.762;
         public static final double topPos = 0.641;
