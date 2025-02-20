@@ -7,6 +7,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot.Container;
@@ -34,15 +35,19 @@ public class Controller extends SubsystemBase {
 	public static Trigger enableManualElevator;
 	public static Trigger outtake;
 	public static Trigger intake;
+	public static Trigger funnel;
 
 	public static Trigger slowMode;
 
 	public CommandXboxController driverController;
 	public CommandXboxController secondaryController;
+	public CommandGenericHID switches;
 
 	public Controller() {
 		this.driverController = new CommandXboxController(0);
 		this.secondaryController = new CommandXboxController(1);
+		this.switches = new CommandGenericHID(2);
+		funnel = switches.button(2);
 
 		// driver controller
 		{

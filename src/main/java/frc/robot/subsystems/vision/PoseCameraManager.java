@@ -33,7 +33,7 @@ public class PoseCameraManager implements Loggable {
     public PoseCameraManager() {
         camList.add(new PoseCamera("Front", new Transform3d()));
         camList.add(new PoseCamera("Front2", new Transform3d()));
-        Shuffleboard.getTab("Vision").add("Field", field);
+        SmartDashboard.putData("Fields", field);
         // change?
         // camList.add(new PoseCamera("cam2", new Transform3d()));
     }
