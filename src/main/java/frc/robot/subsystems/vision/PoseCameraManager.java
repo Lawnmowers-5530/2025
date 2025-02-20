@@ -12,6 +12,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import io.github.oblarg.oblog.Loggable;
 
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
