@@ -74,7 +74,10 @@ public class PoseCameraManager implements Loggable {
         return Optional.empty();
     }
 
-    public int getPrimaryIdRight() {
-        return camList.get(1).getPrimaryTagId();
+    public Optional<Integer> getPrimaryIdRight() {
+        if (camList.get(1).hasTargets() == true) {
+            return Optional.of(camList.get(1).getPrimaryTagId());
+        }
+        return Optional.empty();
     }
 }

@@ -1,6 +1,7 @@
 package frc.robot.containers.prod;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CoralIntake.Targets;
@@ -16,6 +17,14 @@ public class Bindings {
 		intake = this.new Intake();
 		elevator = this.new Elevator();
 		coral = this.new Coral();
+
+	}
+
+	final Command printSomething(String something) {
+		return new InstantCommand(
+				() -> {
+					System.out.println(something);
+				});
 
 	}
 
@@ -78,10 +87,10 @@ public class Bindings {
 		 * Then angles to L4
 		 */
 		Command goToL4() {
-			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
-					.alongWith((Bindings.this.subsystems.elevator.goToTarget(4)))
+			return ((Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
+					.alongWith(Bindings.this.subsystems.elevator.goToTarget(4)))
 					.until(Bindings.this.subsystems.elevator::atTarget)
-					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4));
+					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4))).unless(Bindings.this.subsystems.elevator::tooHigh);
 		}
 	}
 

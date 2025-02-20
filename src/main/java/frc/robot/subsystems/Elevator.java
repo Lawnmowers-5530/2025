@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -82,6 +84,10 @@ public final class Elevator extends SubsystemBase {
     public void manualSetSpeed(double speed) {
         motor1.set(speed);
         motor2.set(speed);
+    }
+
+    public boolean tooHigh() {
+        return this.getCurrentState().position > 50;
     }
 
     public void setTarget(double sp) {

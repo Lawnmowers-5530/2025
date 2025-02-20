@@ -290,6 +290,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		updateOdometry();
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
+		SmartDashboard.putString("robot rel speed", this.robotRelativeSpeedString());
 	}
 
 	/**
@@ -448,7 +449,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		PIDController yawPID = new PIDController(0.03, 0.01, 0);
 		PIDController drivePID = new PIDController(0.15, 0.0, 0);
 
-		public AlignToTag() {
+		public AlignToTag(boolean left) {
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
@@ -459,7 +460,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		@Override
 		public void execute() {
-			var tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+			var tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
 			// sort tags by the tag's pose ambiguity
 			if (tags.isEmpty()) {
 				this.cancel();

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -74,15 +76,16 @@ public class CoralIntake extends SubsystemBase {
 
     }
 
-    public boolean atTarget() {
-        return Math.abs(this.target-this.pivotEncoder.getPosition())<PivotConstants.tolerance;
-    }
+    public BooleanSupplier atTarget = () -> {
+        return Math.abs(this.target-this.pivot.getAbsoluteEncoder().getPosition())<PivotConstants.tolerance;
+
+    };
 
     public void manualPivot(double speed) {
         this.target += speed/30;
     }
 
-    private void setTarget(Targets target) {
+    public void setTarget(Targets target) {
         switch (target) {
             case INTAKE:
             this.target = PivotConstants.intakePos;
