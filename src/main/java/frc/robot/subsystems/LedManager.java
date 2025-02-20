@@ -3,12 +3,15 @@ package frc.robot.subsystems;
 import java.lang.ref.Reference;
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot.Container;
+import frc.robot.containers.prod.RobotContainer;
 
 public class LedManager extends SubsystemBase {
 
     private record Layer(PatternType patternType, int priority) {
+
         public interface PatternType {
             public double getValue();
         }
@@ -172,20 +175,38 @@ public class LedManager extends SubsystemBase {
     Container.Subsystems subsystems;
     ArrayList<Layer> layers = new ArrayList<Layer>();
 
-    public LedManager(Container.Subsystems subsystems) {
+    Spark pwm;
+
+    public LedManager(Container.Subsystems subsystems, int PWMPort) {
         this.subsystems = subsystems;
+        pwm = new Spark(PWMPort);
     }
 
     @Override
     public void periodic() {
         //actual layer management
+        if (subsystems.coralIntake.coralDetected1() || subsystems.coralIntake.coralDetected2()) {
+            layers.add(new Layer(Layer.FixedPalletePatternType.ColorWavesRainbow, 1));
+        }
+
 
         //end layer management
 
         //collect and display layers
+        if (layers.isEmpty()) {
+            return;
+        }
 
+        int highestPriority = Integer.MIN_VALUE;
+        int highestPriorityIndex = 0;
+        for (int i = 0; i < layers.size(); i++) {
+            if (layers.get(i).priority > highestPriority) {
+                highestPriority = layers.get(i).priority;
+                highestPriorityIndex = i;
+            }
+        }
 
-
-
+        pwm.set(layers.get(highestPriorityIndex).patternType.getValue());
+        layers.clear();
     }
 }
