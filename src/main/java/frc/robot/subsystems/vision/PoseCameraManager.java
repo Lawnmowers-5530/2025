@@ -3,6 +3,13 @@ package frc.robot.subsystems.vision;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Swerve;
 import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.math.Matrix;
@@ -17,14 +24,17 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * Manages all pose cameras. Designed to declutter
- * {@link frc.robot.subsystems.Swerve Swerve}.
+ * {@link Swerve Swerve}.
  */
 public class PoseCameraManager implements Loggable {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
+    Field2d field = new Field2d();
 
     public PoseCameraManager() {
         camList.add(new PoseCamera("Front", new Transform3d()));
-        camList.add(new PoseCamera("Front2", new Transform3d())); // change?
+        camList.add(new PoseCamera("Front2", new Transform3d()));
+        Shuffleboard.getTab("Vision").add("Field", field);
+        // change?
         // camList.add(new PoseCamera("cam2", new Transform3d()));
     }
 
@@ -77,5 +87,26 @@ public class PoseCameraManager implements Loggable {
 
     public int getPrimaryIdRight() {
         return camList.get(1).getPrimaryTagId();
+    }
+
+    public void periodic() {
+        Pose3d pose = new Pose3d();
+
+        int added_estimates = 0;
+        for (PoseCamera camera : camList) {
+            if (camera.hasTargets()) {
+                var estimate = camera.getPoseEstimate();
+                if (estimate.isEmpty()) {
+                    continue;
+                }
+                var est = estimate.get().estimatedPose;
+
+                pose.plus(new Transform3d(est.getX(), est.getY(), est.getZ(), est.getRotation()));
+                added_estimates++;
+            }
+        }
+
+        pose.div(added_estimates);
+        field.setRobotPose(pose.toPose2d());
     }
 }
