@@ -44,6 +44,7 @@ public class SwerveModule extends SubsystemBase {
 	private SparkMax rotate;
 	private CANcoder canCoder;
 	private double angleOffset;
+	private boolean slowMode;
 
 	public SwerveModule(int driveMotorID, int turnMotorID, int canCoderID, double angleOffset, boolean inverted) { // initialize
 																													// module
@@ -89,8 +90,9 @@ public class SwerveModule extends SubsystemBase {
 												// so it
 												// always chooses the shortest angle to
 												// rotate to
+		double clamped_out = Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond));
 
-		drive.set(Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond)));
+		drive.set(slowMode ? clamped_out * SwerveModuleConstants.slowModeScaleFactor : clamped_out); // set speed of drive motor
 		// System.out.println(state.speedMetersPerSecond);
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
 		rotate.set(pidOut);
@@ -149,6 +151,10 @@ public class SwerveModule extends SubsystemBase {
 	 */
 	public SwerveModuleState getState() {
 		return new SwerveModuleState(getVelocity(), getTurningPosition());
+	}
+
+	public void setSlowMode(boolean slowMode) {
+		this.slowMode = slowMode;
 	}
 
 	/**

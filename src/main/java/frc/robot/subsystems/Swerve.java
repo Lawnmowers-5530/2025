@@ -488,6 +488,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putString("camTrans", camTrans.toString());
 					});
 		}
+	}
 
+	public void setSlowMode(boolean slowMode) {
+		frontLeftModule.setSlowMode(slowMode);
+		frontRightModule.setSlowMode(slowMode);
+		rearRightModule.setSlowMode(slowMode);
+		rearLeftModule.setSlowMode(slowMode);
 	}
 }

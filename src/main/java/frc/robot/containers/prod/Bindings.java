@@ -88,9 +88,19 @@ public class Bindings {
 	Swerve swerve;
 
 	final class Swerve {
-		Command zeroGyro() {
-			return Pgyro.zeroGyroCommand();
+		Command zeroGyro() { return new RunCommand(Pgyro::zeroGyro); }
+
+		final class SlowModeCommand extends Command {
+			@Override
+			public void initialize() {
+				subsystems.swerve.setSlowMode(true);
+			}
+			@Override
+			public void end(boolean _interrupted) {
+				subsystems.swerve.setSlowMode(false);
+			}
 		}
+		Command slowMode() {return new SlowModeCommand();} //use whileTrue on trigger only, command will not end properly when using onTrue on trigger
 	}
 
 	Coral coral;
