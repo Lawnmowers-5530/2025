@@ -95,7 +95,8 @@ public class RobotContainer {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());
 			}, this.subsystems.hang));
 
-			this.controller.driverController.povLeft().whileTrue(this.subsystems.swerve.new AlignToTag());
+			this.controller.driverController.povLeft().whileTrue(this.subsystems.swerve.new AlignToTag(true));
+			this.controller.driverController.povRight().whileTrue(this.subsystems.swerve.new AlignToTag(false));
 
 			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
 			

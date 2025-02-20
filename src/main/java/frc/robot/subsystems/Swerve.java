@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -48,10 +49,13 @@ import io.github.oblarg.oblog.annotations.Log;
  */
 public class Swerve extends SubsystemBase implements Loggable {
 
-	//impart frc.robot.constants.Swerve as SwerveConstants
-	static final class SwerveConstants extends frc.robot.constants.Swerve {};
-	//import frc.robot.constants.VisionTargeter as VisionTargeterConstants
-	static final class VisionTargeterConstants extends frc.robot.constants.VisionTargeter {};
+	// impart frc.robot.constants.Swerve as SwerveConstants
+	static final class SwerveConstants extends frc.robot.constants.Swerve {
+	};
+
+	// import frc.robot.constants.VisionTargeter as VisionTargeterConstants
+	static final class VisionTargeterConstants extends frc.robot.constants.VisionTargeter {
+	};
 
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
@@ -80,7 +84,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				SwerveConstants.FrontLeftModule.canCoder,
 				SwerveConstants.FrontLeftModule.angleOffset,
 				SwerveConstants.FrontLeftModule.inverted);
-				
+
 		this.frontRightModule = new SwerveModule(
 				SwerveConstants.FrontRightModule.driveMotor,
 				SwerveConstants.FrontRightModule.turnMotor,
@@ -104,9 +108,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 				SwerveConstants.Rotation.kI,
 				SwerveConstants.Rotation.kD);
 		rotationPID.setTolerance(SwerveConstants.Rotation.controllerTolerance); // useful to tell commands when
-																							// the
-																							// target angle has been
-																							// reached
+																				// the
+																				// target angle has been
+																				// reached
 		SwerveModulePosition[] modPos = getModulePositions();
 
 		this.cameraManager = new PoseCameraManager();
@@ -132,28 +136,27 @@ public class Swerve extends SubsystemBase implements Loggable {
 			e.printStackTrace();
 		}
 
-		 AutoBuilder.configure(
-		 this::getPose,
-		 this::resetPose,
-		 this::getRobotRelativeSpeeds,
-		 (speeds, feedforwards) -> autoDriveRobotRelative(speeds),
-		 new PPHolonomicDriveController(
-			SwerveConstants.PathPlanner.translationConstants,
-			SwerveConstants.PathPlanner.rotationConstants
-		 ),
-		 config,
-		 () -> {
-		 // BooleanSupplier that controls when the path will be mirrored for the red
-		 // alliance
-		 // This will flip the path being followed to the red side of the field.
-		 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-		 Optional<Alliance> alliance = DriverStation.getAlliance();
-		 if (alliance.isPresent()) {
-		 return alliance.get() == DriverStation.Alliance.Red;
-		 }
-		 return false;
-		 },
-		 this);
+		AutoBuilder.configure(
+				this::getPose,
+				this::resetPose,
+				this::getRobotRelativeSpeeds,
+				(speeds, feedforwards) -> autoDriveRobotRelative(speeds),
+				new PPHolonomicDriveController(
+						SwerveConstants.PathPlanner.translationConstants,
+						SwerveConstants.PathPlanner.rotationConstants),
+				config,
+				() -> {
+					// BooleanSupplier that controls when the path will be mirrored for the red
+					// alliance
+					// This will flip the path being followed to the red side of the field.
+					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+					Optional<Alliance> alliance = DriverStation.getAlliance();
+					if (alliance.isPresent()) {
+						return alliance.get() == DriverStation.Alliance.Red;
+					}
+					return false;
+				},
+				this);
 	}
 
 	/**
@@ -182,7 +185,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 	public Command drive() {
 		return new RunCommand(
 				() -> {
-					this.drive(Controller.driveVector.get(), Controller.driveRotation.get(), true, Controller.slowMode.get() ? 0.5 : 1);
+					this.drive(Controller.driveVector.get(), Controller.driveRotation.get(), true,
+							Controller.slowMode.getAsBoolean() ? 0.5 : 1);
 				}, this);
 	};
 
@@ -316,13 +320,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 * enabled
 	 */
 	public void disabledPeriodic() {
-		//if (!isCoasting) {
-		//	isCoasting = true;
-		//	frontLeftModule.setIdleMode(IdleMode.kCoast);
-		//	frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
-		//	rearRightModule.setIdleMode(IdleMode.kCoast);
-		//	rearLeftModule.setIdleMode(IdleMode.kCoast);
-		//}
+		// if (!isCoasting) {
+		// isCoasting = true;
+		// frontLeftModule.setIdleMode(IdleMode.kCoast);
+		// frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
+		// rearRightModule.setIdleMode(IdleMode.kCoast);
+		// rearLeftModule.setIdleMode(IdleMode.kCoast);
+		// }
 	}
 
 	/**
@@ -448,8 +452,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 		static final double tagAmbiguityThreshold = 0.2;
 		PIDController yawPID = new PIDController(0.03, 0.01, 0);
 		PIDController drivePID = new PIDController(0.15, 0.0, 0);
+		boolean left;
 
 		public AlignToTag(boolean left) {
+			this.left = left;
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
@@ -460,22 +466,28 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		@Override
 		public void execute() {
-			var tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
+			ArrayList<PhotonTrackedTarget> tags;
+			if (this.left) {
+				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+			} else {
+				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+			}
 			// sort tags by the tag's pose ambiguity
 			if (tags.isEmpty()) {
 				this.cancel();
 			}
 			var tracked_tag = tags
-				.stream()
-				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
-				.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+					.stream()
+					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
+					.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
 
-				tracked_tag.ifPresent(
+			tracked_tag.ifPresent(
 					tag -> {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
 						Transform3d cameraToRobot = new Transform3d(-0.064, 0, 0, new Rotation3d(0, 0, 0));
-						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
+						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
+								new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
 						Rotation2d rot = estimate.getRotation().toRotation2d();
 						double y = estimate.getTranslation().getY();
 						double x = estimate.getTranslation().getX();
@@ -483,12 +495,21 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("y", camTrans.getY());
 						SmartDashboard.putNumber("x", camTrans.getX());
 						SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
-						//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(0,0,-yawPID.calculate(rot.getDegrees())));
-						Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
-						//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
+						// Swerve.this.autoDriveRobotRelative(new
+						// ChassisSpeeds(0,0,-yawPID.calculate(rot.getDegrees())));
+						Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),
+								-drivePID.calculate(y), yawPID.calculate(rot.getDegrees())));
+						// Swerve.this.pathFind(new Pose2d(2, 0,
+						// Rotation2d.fromDegrees(180))).execute();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 					});
 		}
+	}
 
+	public void setSlowMode(boolean slowMode) {
+		frontLeftModule.setSlowMode(slowMode);
+		frontRightModule.setSlowMode(slowMode);
+		rearRightModule.setSlowMode(slowMode);
+		rearLeftModule.setSlowMode(slowMode);
 	}
 }
