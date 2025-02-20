@@ -15,9 +15,9 @@ public class CoralIntake {
         //Targets (Degrees)w
         public static final double intakePos = 0.712;
         public static final double middlePos = 0.762;
-        public static final double topPos = 0.641;
+        public static final double topPos = 0.657;
         public static final double bottomPos = 0.858;
-        public static final double L4 = 0.7;
+        public static final double L4 = 0.72;
 
 
         //Feedforward Calculations

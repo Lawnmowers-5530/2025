@@ -22,8 +22,9 @@ public class PoseCameraManager implements Loggable {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
 
     public PoseCameraManager() {
-        camList.add(new PoseCamera("photonvision", new Transform3d())); //change?
-        //camList.add(new PoseCamera("cam2", new Transform3d()));
+        camList.add(new PoseCamera("Front", new Transform3d()));
+        camList.add(new PoseCamera("Front2", new Transform3d())); // change?
+        // camList.add(new PoseCamera("cam2", new Transform3d()));
     }
 
     /**
@@ -38,12 +39,13 @@ public class PoseCameraManager implements Loggable {
         Optional<EstimatedRobotPose> estimate;
         for (PoseCamera camera : camList) {
             estimate = camera.getPoseEstimate();
-            estimate.ifPresent(estimatedRobotPose -> poseList.add(Pair.of(estimatedRobotPose, camera.getEstimationStdDevs(estimatedRobotPose.estimatedPose.toPose2d()))));
+            estimate.ifPresent(estimatedRobotPose -> poseList.add(Pair.of(estimatedRobotPose,
+                    camera.getEstimationStdDevs(estimatedRobotPose.estimatedPose.toPose2d()))));
         }
         return poseList;
     }
 
-    public ArrayList<PhotonTrackedTarget> getTagsById(int fiducialTagId) {
+    public ArrayList<PhotonTrackedTarget> getTagsById(Optional<Integer> fiducialTagId) {
         ArrayList<PhotonTrackedTarget> targets = new ArrayList<>();
         for (PoseCamera camera : camList) {
             camera.getTagById(fiducialTagId).ifPresent(targets::add);
@@ -58,15 +60,18 @@ public class PoseCameraManager implements Loggable {
      */
     public Optional<Double> getFiducialIdYaw(int fiducialTagId) {
         for (PoseCamera camera : camList) {
-            if(camera.getPrimaryTagId() == fiducialTagId) {
+            if (camera.getPrimaryTagId() == fiducialTagId) {
                 return Optional.of(camera.getPrimaryTagYaw());
             }
         }
         return Optional.empty();
     }
 
-    public int getPrimaryIdLeft() {
-        return camList.get(0).getPrimaryTagId();
+    public Optional<Integer> getPrimaryIdLeft() {
+        if (camList.get(0).hasTargets() == true) {
+            return Optional.of(camList.get(0).getPrimaryTagId());
+        }
+        return Optional.empty();
     }
 
     public int getPrimaryIdRight() {

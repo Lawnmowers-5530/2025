@@ -2,6 +2,7 @@ package frc.robot.containers.prod;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.Pgyro;
@@ -78,7 +79,7 @@ public class Bindings {
 		 */
 		Command goToL4() {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
-					.alongWith(Bindings.this.subsystems.elevator.goToTarget(4))
+					.alongWith((Bindings.this.subsystems.elevator.goToTarget(4)))
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4));
 		}
@@ -119,6 +120,7 @@ public class Bindings {
 		 */
 		Command compoundL2() {
 			return Bindings.this.elevator.goToL2()
+					.andThen(new WaitCommand(0.5))
 					.andThen(Bindings.this.coral.outtake());
 		}
 
@@ -145,17 +147,17 @@ public class Bindings {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP);
 		}
 
-        /**
-         * Manually manipulate {@link frc.robot.subsystems.Elevator Elevator} with
-         * {@link frc.robot.subsystems.Controller Controller} Elevatorpower value
-         */
-        Command manualElevator() {
-            return new RunCommand(
-                    () -> {
-                        Bindings.this.subsystems.elevator
-                                .manualSetSpeed(Controller.manualElevatorPower.get());
-                    }, Bindings.this.subsystems.elevator);
-        }
+		/**
+		 * Manually manipulate {@link frc.robot.subsystems.Elevator Elevator} with
+		 * {@link frc.robot.subsystems.Controller Controller} Elevatorpower value
+		 */
+		Command manualElevator() {
+			return new RunCommand(
+					() -> {
+						Bindings.this.subsystems.elevator
+								.manualSetSpeed(Controller.manualElevatorPower.get());
+					}, Bindings.this.subsystems.elevator);
+		}
 
 	}
 

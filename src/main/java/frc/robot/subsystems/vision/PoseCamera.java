@@ -104,15 +104,20 @@ public class PoseCamera extends SubsystemBase {
         return camera.getLatestResult().getBestTarget().getYaw();
     }
 
-    public Optional<PhotonTrackedTarget> getTagById(int tagId) {
+    public Optional<PhotonTrackedTarget> getTagById(Optional<Integer> tagId) {
+        if (tagId.isEmpty()) {
+            return Optional.empty();
+        }
         return camera
-                .getLatestResult()
-                .targets
+                .getLatestResult().targets
                 .stream()
-                .filter(target -> target.getFiducialId() == tagId)
+                .filter(target -> target.getFiducialId() == tagId.get())
                 .findFirst();
     }
 
+    public boolean hasTargets() {
+        return this.camera.getLatestResult().hasTargets();
+    }
 
     /**
      * Calculates and stores the appropiate std devs for the newest pose estimation

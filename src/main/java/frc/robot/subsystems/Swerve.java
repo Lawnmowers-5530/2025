@@ -461,6 +461,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 		public void execute() {
 			var tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
 			// sort tags by the tag's pose ambiguity
+			if (tags.isEmpty()) {
+				this.cancel();
+			}
 			var tracked_tag = tags
 				.stream()
 				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
@@ -470,7 +473,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 					tag -> {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
-						Transform3d cameraToRobot = new Transform3d(0.0762, 0.07, 0, new Rotation3d(0, 0, -0.18));
+						Transform3d cameraToRobot = new Transform3d(-0.064, 0, 0, new Rotation3d(0, 0, 0));
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans, new Pose3d(0, 0, 0.3, new Rotation3d()), cameraToRobot);
 						Rotation2d rot = estimate.getRotation().toRotation2d();
 						double y = estimate.getTranslation().getY();
@@ -480,7 +483,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("x", camTrans.getX());
 						SmartDashboard.putString("rot", camTrans.getRotation().toRotation2d().toString());
 						//Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(0,0,-yawPID.calculate(rot.getDegrees())));
-						Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),-yawPID.calculate(rot.getDegrees())));
+						Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),-drivePID.calculate(y),yawPID.calculate(rot.getDegrees())));
 						//Swerve.this.pathFind(new Pose2d(2, 0, Rotation2d.fromDegrees(180))).execute();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 					});

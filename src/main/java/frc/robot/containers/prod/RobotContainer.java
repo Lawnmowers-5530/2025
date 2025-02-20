@@ -95,6 +95,10 @@ public class RobotContainer {
 			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());
 			}, this.subsystems.hang));
+
+			this.controller.driverController.povLeft().whileTrue(this.subsystems.swerve.new AlignToTag());
+
+			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
 			
 
 			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator());
