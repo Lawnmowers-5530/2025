@@ -80,25 +80,6 @@ public class RobotContainer {
 
 
 			Controller.intake.onTrue(this.bindings.coral.runIntake());
-
-			this.controller.secondaryController.x().onTrue(this.bindings.coral.manualElevator());
-			this.controller.driverController.b().onTrue(this.bindings.coral.outtake());
-			this.controller.driverController.a().whileTrue(
-				new RunCommand(
-					() -> {
-						this.subsystems.coralIntake.manualPivot(this.controller.driverController.getLeftX());
-					}, this.subsystems.coralIntake)
-			);
-			this.controller.driverController.povDown().onTrue(this.bindings.coral.outtake());
-			this.controller.driverController.povUp().onTrue(this.bindings.coral.compoundL2());
-
-			this.subsystems.hang.setDefaultCommand(new RunCommand(()-> {
-				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());
-			}, this.subsystems.hang));
-
-			this.controller.driverController.povLeft().whileTrue(this.subsystems.swerve.new AlignToTag());
-
-			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
 			
 
 			//this.subsystems.elevator.setDefaultCommand(this.bindings.elevator.manualElevator());

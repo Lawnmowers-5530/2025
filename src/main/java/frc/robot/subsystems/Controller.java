@@ -24,7 +24,6 @@ public class Controller extends SubsystemBase {
 
 	public static Supplier<Vector<N2>> driveVector;
 	public static Supplier<Double> driveRotation;
-	public static Supplier<Boolean> slowMode;
 	public static Supplier<Double> manualElevatorPower;
 	public static Trigger zeroGyro;
 	public static Trigger L1;
@@ -34,8 +33,9 @@ public class Controller extends SubsystemBase {
 	public static Trigger angleL4;
 	public static Trigger enableManualElevator;
 	public static Trigger outtake;
-
 	public static Trigger intake;
+
+	public static Trigger slowMode;
 
 	public CommandXboxController driverController;
 	public CommandXboxController secondaryController;
@@ -64,11 +64,7 @@ public class Controller extends SubsystemBase {
 						ControllerConstants.driveControllerJoystickDeadband,
 						1);
 			};
-
-			slowMode = () -> {
-				return driverController.b().getAsBoolean();
-			};
-
+			slowMode = driverController.b();
 			zeroGyro = driverController.x();
 			intake = driverController.y();
 			outtake = driverController.a();
