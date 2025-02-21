@@ -41,13 +41,13 @@ public class Controller extends SubsystemBase {
 
 	public CommandXboxController driverController;
 	public CommandXboxController secondaryController;
-	public CommandGenericHID switches;
+	public CommandXboxController switches;
 
 	public Controller() {
 		this.driverController = new CommandXboxController(0);
 		this.secondaryController = new CommandXboxController(1);
-		this.switches = new CommandGenericHID(2);
-		funnel = switches.button(2);
+		this.switches = new CommandXboxController(2);
+		this.funnel = switches.x();
 
 		// driver controller
 		{
