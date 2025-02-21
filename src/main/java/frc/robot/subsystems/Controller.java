@@ -26,13 +26,14 @@ public class Controller extends SubsystemBase {
 	public static Supplier<Vector<N2>> driveVector;
 	public static Supplier<Double> driveRotation;
 	public static Supplier<Double> manualElevatorPower;
+	public static Supplier<Double> manualPivotPower;
 	public static Trigger zeroGyro;
 	public static Trigger L1;
 	public static Trigger L2;
 	public static Trigger L3;
 	public static Trigger L4;
 	public static Trigger angleL4;
-	public static Trigger enableManualElevator;
+	public static Trigger enableManualControl;
 	public static Trigger outtake;
 	public static Trigger intake;
 	public static Trigger funnel;
@@ -47,7 +48,6 @@ public class Controller extends SubsystemBase {
 		this.driverController = new CommandXboxController(0);
 		this.secondaryController = new CommandXboxController(1);
 		this.switches = new CommandXboxController(2);
-		this.funnel = switches.x();
 
 		// driver controller
 		{
@@ -77,14 +77,24 @@ public class Controller extends SubsystemBase {
 
 		// secondary controller
 		{
+			funnel = switches.x(); // TODO
+
 			L1 = secondaryController.povDown();
 			L2 = secondaryController.povLeft();
 			L3 = secondaryController.povUp();
 			L4 = secondaryController.povRight();
-			enableManualElevator = driverController.a();
+
+			enableManualControl = new Trigger(() -> {
+				return Math.abs(secondaryController.getLeftY()) > 0.02
+						|| Math.abs(secondaryController.getRightY()) > 0.02;
+			});
 
 			manualElevatorPower = () -> {
-				return this.secondaryController.getLeftY();
+				return -this.secondaryController.getLeftY();
+			};
+
+			manualPivotPower = () -> {
+				return -this.secondaryController.getRightY();
 			};
 		}
 	}

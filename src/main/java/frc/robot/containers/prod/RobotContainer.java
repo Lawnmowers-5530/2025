@@ -81,14 +81,8 @@ public class RobotContainer {
 
 			Controller.intake.onTrue(this.bindings.coral.runIntake());
 			Controller.outtake.onTrue(this.bindings.coral.outtake());
-			
-			this.controller.secondaryController.x().whileTrue(this.bindings.coral.manualElevator());
-			this.controller.secondaryController.x().whileTrue(
-				new RunCommand(
-					() -> {
-						this.subsystems.coralIntake.manualPivot(this.controller.secondaryController.getLeftX());
-					}, this.subsystems.coralIntake)
-			);
+
+			Controller.enableManualControl.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
 
 			this.controller.secondaryController.a().whileFalse(new RunCommand(()-> {
 				this.subsystems.hang.manualInput(this.controller.secondaryController.getLeftY(), this.controller.secondaryController.getRightY());

@@ -178,6 +178,14 @@ public class Bindings {
 					}, Bindings.this.subsystems.elevator);
 		}
 
+		Command manualPivot() {
+			return new RunCommand(
+					() -> {
+						Bindings.this.subsystems.coralIntake
+								.manualPivot(Controller.manualPivotPower.get());
+					}, Bindings.this.subsystems.coralIntake);
+		}
+
 	}
 
 	final class Hang {

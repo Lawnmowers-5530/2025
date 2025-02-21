@@ -53,8 +53,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 	static final class SwerveConstants extends frc.robot.constants.Swerve {
 	};
 
-	// import frc.robot.constants.VisionTargeter as VisionTargeterConstants
-	static final class VisionTargeterConstants extends frc.robot.constants.VisionTargeter {
+	// import frc.robot.constants.AlignToTag as AlignConstants
+	static final class AlignConstants extends frc.robot.constants.AlignToTag {
 	};
 
 	private PoseCameraManager cameraManager;
@@ -120,7 +120,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Pgyro.getRot(),
 				modPos,
 				getPose(),
-				VecBuilder.fill(0.5, 0.5, 0.1), // set state std devs to 0.5,0.5,0.1 - these are //TODO
+				VecBuilder.fill(0.1, 0.1, 0.1), // set state std devs to 0.1,0.1,0.1 - these are //TODO
 												// relative to
 												// the vision devs and only determine the
 												// magnitude of the vision devs
@@ -387,81 +387,23 @@ public class Swerve extends SubsystemBase implements Loggable {
 				rearLeftModule.getState());
 	}
 
-	/**
-	 * Returns a new PointTargeter {@link Command} to target an apriltag
-	 * 
-	 * @param fiducialTagId Apriltag id to target
-	 * @param yawOffset     Offset in yaw from the center of the apriltag
-	 * @return New {@link PointTargeter}
-	 */
-	public Command getPointTargeterCommand(int fiducialTagId, double yawOffset) {
-		return new PointTargeter(fiducialTagId, yawOffset);
-	}
-
-	/**
-	 * Command for targeting a specific point relative to an apriltag angle
-	 */
-	public class PointTargeter extends Command {
-		private PIDController rotationController;
-		private int fiducialTagId;
-		private double yawOffset;
-
-		public PointTargeter(int fiducialTagId, double yawOffset) {
-			this.fiducialTagId = fiducialTagId;
-			this.yawOffset = yawOffset;
-
-			rotationController = new PIDController(VisionTargeterConstants.kP, VisionTargeterConstants.kI,
-					VisionTargeterConstants.kD);
-		}
-
-		/**
-		 * Sets the offset between the yaw from apriltag and the target yaw.
-		 * 
-		 * @param yawOffset
-		 */
-		public void setYawOffset(double yawOffset) {
-			this.yawOffset = yawOffset;
-		}
-
-		/**
-		 * Returns a Supplier of the {@link PIDController} output as a radians / second
-		 * rotational velcity
-		 * 
-		 * @return {@link DoubleSupplier} rad/sec
-		 */
-		public DoubleSupplier getNextOmega() {
-			return () -> {
-				return rotationController.calculate(Pgyro.getHdgRad());
-			};
-		}
-
-		/**
-		 * Checks each registered {@link frc.robot.subsystems.vision.PoseCamera
-		 * PoseCamera} and updates the yaw target in the {@link PIDController} if a
-		 * PoseCamera's best target matches the specified target fiducial id
-		 */
-		@Override
-		public void execute() {
-			if (cameraManager.getFiducialIdYaw(fiducialTagId).isPresent()) {
-				rotationController.setSetpoint(cameraManager.getFiducialIdYaw(fiducialTagId).get() - yawOffset);
-			}
-		}
-	}
-
 	public class AlignToTag extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(0.03, 0.01, 0);
-		PIDController drivePID = new PIDController(0.15, 0.0, 0);
+		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
+				AlignConstants.kDrot);
+		PIDController drivePID = new PIDController(AlignConstants.kPtrans, AlignConstants.kItrans,
+				AlignConstants.kDtrans);
 		boolean left;
 		double y;
 		double x;
 		Rotation2d rot;
+		Transform3d cameraToRobot;
 
 		public AlignToTag(boolean left) {
 			this.y = 0;
 			this.x = 0;
 			this.rot = new Rotation2d();
-			
+
 			this.left = left;
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
@@ -476,8 +418,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 			ArrayList<PhotonTrackedTarget> tags;
 			if (this.left) {
 				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+				cameraToRobot = AlignConstants.leftCameraToRobot;
 			} else {
-				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
+				cameraToRobot = AlignConstants.rightCameraToRobot;
 			}
 			// sort tags by the tag's pose ambiguity
 			if (tags.isEmpty()) {
@@ -492,7 +436,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 					tag -> {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
-						Transform3d cameraToRobot = new Transform3d(-0.064, 0, 0, new Rotation3d(0, 0, 0));
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
 						rot = estimate.getRotation().toRotation2d();
