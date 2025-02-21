@@ -136,6 +136,9 @@ public class CoralIntake extends SubsystemBase {
     public boolean notCoralDetected1() {
         return !coralDetected1();
     }
+    public boolean notCoralDetected() {
+        return laserCanSwitch? !coralDetected1() : !coralDetected2();
+    }
     private boolean coralDetected2() {
         var measurement = fakeBeamBreak2.getMeasurement();
         return measurement.distance_mm < 20;
@@ -164,5 +167,6 @@ public class CoralIntake extends SubsystemBase {
             stopIntake();
         }, this);
     }
+    
 
 }

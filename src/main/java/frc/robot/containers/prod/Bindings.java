@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.Controller;
+import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.Pgyro;
 
 public class Bindings {
@@ -124,13 +124,13 @@ public class Bindings {
 
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-					.until(Bindings.this.subsystems.coralIntake::coralDetected1)
+					.until(Bindings.this.subsystems.coralIntake::coralDetected)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
-					.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 

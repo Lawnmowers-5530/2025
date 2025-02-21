@@ -87,6 +87,9 @@ public class RobotContainer {
 			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTag(true));
 			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTag(false));
 
+			Controller.toggleLaserCan.onChange(new RunCommand(()-> {
+				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
+			}, this.subsystems.coralIntake));
 			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
 
 		}

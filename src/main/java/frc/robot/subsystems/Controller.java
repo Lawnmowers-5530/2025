@@ -39,6 +39,7 @@ public class Controller extends SubsystemBase {
 	public static Trigger funnel;
 	public static Trigger alignLeft;
 	public static Trigger alignRight;
+	public static Trigger toggleLaserCan;
 
 
 	public static Trigger slowMode;
@@ -101,6 +102,8 @@ public class Controller extends SubsystemBase {
 			manualPivotPower = () -> {
 				return -this.secondaryController.getRightY();
 			};
+
+			toggleLaserCan = this.switches.y();
 		}
 	}
 }
