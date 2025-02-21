@@ -37,6 +37,9 @@ public class Controller extends SubsystemBase {
 	public static Trigger outtake;
 	public static Trigger intake;
 	public static Trigger funnel;
+	public static Trigger alignLeft;
+	public static Trigger alignRight;
+
 
 	public static Trigger slowMode;
 
@@ -73,6 +76,8 @@ public class Controller extends SubsystemBase {
 			zeroGyro = driverController.x();
 			intake = driverController.y();
 			outtake = driverController.a();
+			alignLeft = driverController.povLeft();
+			alignRight = driverController.povRight();
 		}
 
 		// secondary controller

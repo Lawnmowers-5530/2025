@@ -61,7 +61,7 @@ public class Hang extends  SubsystemBase {
     public boolean isUnhinged() {
         return (leftHang.getEncoder().getPosition() < HangConstants.toHangPos);
     }
-    public void manualInput(double input, double input2) {
+    public void manualInput(double input) {
         if (input < -0.01){
             
             leftHang.set(input+0.01);
