@@ -409,10 +409,14 @@ public class Swerve extends SubsystemBase implements Loggable {
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
 			drivePID.setSetpoint(0);
-			drivePID.setTolerance(0.02);
-			yawPID.setTolerance(1);
+			drivePID.setTolerance(AlignConstants.driveTolerance);
+			yawPID.setTolerance(AlignConstants.rotatationTolerance);
 			
 			addRequirements(Swerve.this);
+		}
+
+		public boolean isFinished() {
+			return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
 		}
 
 		@Override
