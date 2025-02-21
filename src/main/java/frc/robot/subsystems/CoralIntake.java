@@ -70,6 +70,7 @@ public class CoralIntake extends SubsystemBase {
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
+        System.out.println(pivot.getAbsoluteEncoder().getPosition());
 
         
 
@@ -83,6 +84,8 @@ public class CoralIntake extends SubsystemBase {
 
     public void manualPivot(double speed) {
         this.target += speed/30;
+        this.target = Math.max(this.target, 0.67);
+        this.target = Math.min(this.target, 0.9);
     }
 
     public void setTarget(Targets target) {
