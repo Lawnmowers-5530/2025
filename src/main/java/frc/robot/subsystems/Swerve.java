@@ -411,6 +411,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 			drivePID.setSetpoint(0);
 			drivePID.setTolerance(0.02);
 			yawPID.setTolerance(1);
+			
+			addRequirements(Swerve.this);
 		}
 
 		@Override
