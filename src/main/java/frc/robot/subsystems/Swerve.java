@@ -430,9 +430,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 				cameraToRobot = AlignConstants.rightCameraToRobot;
 			}
 			// sort tags by the tag's pose ambiguity
-			if (tags.isEmpty()) {
-				this.cancel();
-			}
 			var tracked_tag = tags
 					.stream()
 					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)

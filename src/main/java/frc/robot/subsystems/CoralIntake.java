@@ -70,11 +70,8 @@ public class CoralIntake extends SubsystemBase {
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
-        System.out.println(pivot.getAbsoluteEncoder().getPosition());
-
-        
-
-
+        SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);
+        SmartDashboard.putNumber("intake speed", intake.get());
     }
 
     public BooleanSupplier atTarget = () -> {
@@ -118,6 +115,7 @@ public class CoralIntake extends SubsystemBase {
         INTAKE, BOTTOM, MIDDLE, TOP, L4
     }
     public void intake() {
+        System.out.println("intaking");
         intake.set(PivotConstants.intakePower);
     }
     public void outtake() {

@@ -121,7 +121,6 @@ public class Bindings {
 		 */
 		Command runIntake() {
 			return Bindings.this.elevator.goToL0()
-
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
 					.until(Bindings.this.subsystems.coralIntake::coralDetected)
