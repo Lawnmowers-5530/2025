@@ -415,9 +415,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 			addRequirements(Swerve.this);
 		}
 
-		//public boolean isFinished() {
-		//	return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
-		//}
+		public boolean isFinished() {
+			return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
+		}
 
 		@Override
 		public void execute() {
