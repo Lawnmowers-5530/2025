@@ -9,7 +9,7 @@ public class AlignToTag {
     public static final double kDtrans = 0;
 
     public static final double kProt = 0.03;
-    public static final double kIrot = 0.01;
+    public static final double kIrot = 0.005;
     public static final double kDrot = 0;
 
     public static final Transform3d leftCameraToRobot = new Transform3d(-0.064, 0, 0, new Rotation3d(0, 0, 0)); //TODO prossibly swapped

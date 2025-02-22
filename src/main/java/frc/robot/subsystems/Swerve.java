@@ -406,7 +406,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			this.left = left;
 			yawPID.setSetpoint(180);
-			yawPID.setIZone(2);
+			yawPID.setIZone(3);
 			yawPID.enableContinuousInput(-180, 180);
 			drivePID.setSetpoint(0);
 			drivePID.setTolerance(AlignConstants.driveTolerance);
@@ -415,9 +415,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 			addRequirements(Swerve.this);
 		}
 
-		public boolean isFinished() {
-			return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
-		}
+		//public boolean isFinished() {
+		//	return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
+		//}
 
 		@Override
 		public void execute() {
