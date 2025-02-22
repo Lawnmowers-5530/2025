@@ -443,7 +443,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			tracked_tag.ifPresent(
 					tag -> {
-						yawTarget = getTagAngle(tag.getFiducialId());
+						
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
@@ -451,6 +451,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
+						if (AlignConstants.useGyro) yawTarget = getTagAngle(tag.getFiducialId());
+						else {
+							yawTarget = 180;
+							yaw = rot.getDegrees();
+						
+						}
 						
 					});
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),

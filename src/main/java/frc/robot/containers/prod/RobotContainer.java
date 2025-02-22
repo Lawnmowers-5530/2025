@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Robot;
+import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
@@ -36,6 +37,15 @@ public class RobotContainer {
 		public CoralIntake coralIntake;
 		public Elevator elevator;
 		public Hang hang;
+
+
+	
+		
+
+
+		//Watch for this
+		public AlgaeIntake algaeIntake;
+	
 	}
 
 	public class State {}
@@ -61,8 +71,17 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();
+			
+
 
 			this.subsystems.swerve = new Swerve();
+
+
+			if (this.subsystems.algaeIntake == null) {
+				throw new IllegalStateException("This Code is Not Commented. Algae Intake is going to be Initialized");
+			}
+			this.subsystems.algaeIntake = new AlgaeIntake();
+			
 
 			autoChooser = AutoBuilder.buildAutoChooser();
 			// the death zone??
@@ -106,6 +125,11 @@ public class RobotContainer {
 					}
 					, this.subsystems.hang)
 			);
+
+			this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject, this::getAngle));
+
+			
+
 		}
 
 		//Named commands
@@ -129,5 +153,19 @@ public class RobotContainer {
 
 	public void periodic() {
 		Logger.updateEntries();
+	}
+
+	public double getAngle() {
+		return this.controller.driverController.getLeftTriggerAxis() - this.controller.driverController.getRightTriggerAxis();
+	}
+	public double getEject() {
+		if (this.controller.driverController.leftBumper().getAsBoolean()) {
+			return -1;
+		}else if (this.controller.driverController.rightBumper().getAsBoolean()) {
+			return 1;
+		}else {
+			return 0;
+		}
+
 	}
 }

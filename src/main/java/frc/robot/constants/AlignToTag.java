@@ -17,4 +17,7 @@ public class AlignToTag {
 
     public static final double driveTolerance = 0.01;
     public static final double rotatationTolerance = 0.5;
+
+    public static final boolean  useGyro = true;
+
 }
