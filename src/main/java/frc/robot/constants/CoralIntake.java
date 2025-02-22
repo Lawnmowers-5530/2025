@@ -5,7 +5,7 @@ public class CoralIntake {
         public static final int pivotId = 22;
         public static final int intakeId = 23;
         public static final int laserCan1Id = 42;
-        public static final int laserCan2Id = 0;
+        public static final int laserCan2Id = 69;
 
         public static final double intakePower = 0.45;
 

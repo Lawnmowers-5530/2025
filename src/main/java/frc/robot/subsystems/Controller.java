@@ -77,8 +77,8 @@ public class Controller extends SubsystemBase {
 			zeroGyro = driverController.x();
 			intake = driverController.y();
 			outtake = driverController.a();
-			alignLeft = driverController.povLeft();
-			alignRight = driverController.povRight();
+			alignLeft = driverController.rightBumper();
+			alignRight = driverController.leftBumper();
 		}
 
 		// secondary controller

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.Pgyro;
@@ -42,6 +43,7 @@ public class Bindings {
 	}
 
 	final class Elevator {
+
 		/**
 		 * Intake angle, then move elevator to L0, ends when within tolerance of target
 		 */
@@ -115,6 +117,9 @@ public class Bindings {
 	Coral coral;
 
 	final class Coral {
+		public boolean pivotAndElevator() {
+			return Bindings.this.subsystems.coralIntake.atTarget.getAsBoolean() && Bindings.this.subsystems.elevator.atTarget();
+		}
 		/**
 		 * Move elevator to L0, angle to intake, run intake, and stop intake when coral
 		 * detected
@@ -123,13 +128,13 @@ public class Bindings {
 			return Bindings.this.elevator.goToL0()
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-					.until(Bindings.this.subsystems.coralIntake::coralDetected)
+					.until(Bindings.this.subsystems.coralIntake::coralDetected1)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
-					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
@@ -138,7 +143,7 @@ public class Bindings {
 		 */
 		Command compoundL2() {
 			return Bindings.this.elevator.goToL2()
-					.andThen(new WaitCommand(0.5))
+					.andThen(new WaitUntilCommand(this::pivotAndElevator))
 					.andThen(Bindings.this.coral.outtake());
 		}
 

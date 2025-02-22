@@ -92,6 +92,7 @@ public class RobotContainer {
 			}, this.subsystems.coralIntake));
 			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
 
+			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
 		}
 	}
 

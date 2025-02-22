@@ -29,11 +29,11 @@ public class Pgyro extends SubsystemBase {
 	}
 
 	public static Rotation2d getRot() {
-		return pigeon.getRotation2d().minus(Rotation2d.fromDegrees(offset));
+		return pigeon.getRotation2d();//.minus(Rotation2d.fromDegrees(offset));
 	}
 
 	public static double getDeg() {
-		return pigeon.getYaw().getValueAsDouble() - offset;
+		return pigeon.getYaw().getValueAsDouble();// - offset;
 	}
 
 	public static double getRad() {
@@ -41,7 +41,7 @@ public class Pgyro extends SubsystemBase {
 	}
 
 	public static void zeroGyro() {
-		offset = getDeg();
+		pigeon.setYaw(0);
 	}
 
 	public static double getHdgDeg() {
