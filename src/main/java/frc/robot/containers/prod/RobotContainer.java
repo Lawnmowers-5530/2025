@@ -77,10 +77,10 @@ public class RobotContainer {
 			this.subsystems.swerve = new Swerve();
 
 
-			if (this.subsystems.algaeIntake == null) {
-				throw new IllegalStateException("This Code is Not Commented. Algae Intake is going to be Initialized");
-			}
-			this.subsystems.algaeIntake = new AlgaeIntake();
+			//if (this.subsystems.algaeIntake == null) {
+				//throw new IllegalStateException("This Code is Not Commented. Algae Intake is going to be Initialized");
+			//}
+			//this.subsystems.algaeIntake = new AlgaeIntake();
 			
 
 			autoChooser = AutoBuilder.buildAutoChooser();
@@ -126,7 +126,7 @@ public class RobotContainer {
 					, this.subsystems.hang)
 			);
 
-			this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject, this::getAngle));
+			//this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject, this::getAngle));
 
 			
 
@@ -156,13 +156,13 @@ public class RobotContainer {
 	}
 
 	public double getAngle() {
-		return this.controller.driverController.getLeftTriggerAxis() - this.controller.driverController.getRightTriggerAxis();
+		return (this.controller.driverController.getLeftTriggerAxis() - this.controller.driverController.getRightTriggerAxis()) / 5.0;
 	}
 	public double getEject() {
 		if (this.controller.driverController.leftBumper().getAsBoolean()) {
-			return -1;
+			return -0.2;
 		}else if (this.controller.driverController.rightBumper().getAsBoolean()) {
-			return 1;
+			return 0.2;
 		}else {
 			return 0;
 		}
