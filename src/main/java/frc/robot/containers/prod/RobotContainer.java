@@ -160,9 +160,9 @@ public class RobotContainer {
 	}
 	public double getEject() {
 		if (this.controller.driverController.leftBumper().getAsBoolean()) {
-			return -0.2;
-		}else if (this.controller.driverController.rightBumper().getAsBoolean()) {
 			return 0.2;
+		}else if (this.controller.driverController.rightBumper().getAsBoolean()) {
+			return -0.2;
 		}else {
 			return 0;
 		}
