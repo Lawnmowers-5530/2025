@@ -451,7 +451,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
-						if (AlignConstants.useGyro) yawTarget = getTagAngle(tag.getFiducialId());
+						if (AlignConstants.useGyro) {
+							yawTarget = getTagAngle(tag.getFiducialId());
+							SmartDashboard.putNumber("Target Yaw Align", yawTarget); 
+						}
+
 						else {
 							yawTarget = 180;
 							yaw = rot.getDegrees();
@@ -472,12 +476,20 @@ public class Swerve extends SubsystemBase implements Loggable {
 	}
 	public int getTagAngle(int id) {
             return switch (id) {
-                case 6 -> 0;
-                case 7 -> 60;
-                case 8 -> 120;
-                case 9 -> 180;
-                case 10 -> -120;
-                case 11 -> -60;
+                case 6 -> -60;
+                case 7 -> 0;
+                case 8 -> 60;
+                case 9 -> 120;
+                case 10 -> 180;
+                case 11 -> -120;
+				case 18 -> 0;
+				case 19 -> -60;
+				case 20 -> -120;
+				case 21 -> 180;
+				case 22-> 120;
+				case 17 -> 60;
+
+
                 default -> 0;
             };
 	}
