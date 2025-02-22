@@ -406,7 +406,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			this.left = left;
 			yawPID.setSetpoint(180);
-			yawPID.setIZone(2);
+			yawPID.setIZone(3);
 			yawPID.enableContinuousInput(-180, 180);
 			drivePID.setSetpoint(0);
 			drivePID.setTolerance(AlignConstants.driveTolerance);
