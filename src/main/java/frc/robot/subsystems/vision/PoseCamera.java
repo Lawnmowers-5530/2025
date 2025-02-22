@@ -66,10 +66,10 @@ public class PoseCamera extends SubsystemBase {
      */
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) { // TODO: tune this - this function was pulled from photon
         if (this.latestResult.isEmpty()) {
-            return VecBuilder.fill(1, 1, 1);
+            return VecBuilder.fill(100, 100, 100);
         }
 
-        Matrix<N3, N1> estStdDevs = VecBuilder.fill(1, 1, 1);
+        Matrix<N3, N1> estStdDevs = VecBuilder.fill(1, 1, 10000);
         List<PhotonTrackedTarget> targets = this.latestResult.get().getTargets();
         int numTags = 0;
         double avgDist = 0;
@@ -85,7 +85,7 @@ public class PoseCamera extends SubsystemBase {
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
         if (numTags > 1)
-            estStdDevs = VecBuilder.fill(0.3, 0.3, 0.3);
+            estStdDevs = VecBuilder.fill(0.3, 0.3, 10000);
 
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)

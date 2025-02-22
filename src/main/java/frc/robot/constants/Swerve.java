@@ -75,7 +75,7 @@ public class Swerve {
                 .inchesToMeters(Math.sqrt(trackWidth * trackWidth + wheelBase * wheelBase));
 
         public static final PIDConstants translationConstants = new PIDConstants(5, 0.5, 0);
-        public static final PIDConstants rotationConstants = new PIDConstants(3, 0, 0);
+        public static final PIDConstants rotationConstants = new PIDConstants(2, 0, 0);
 
         public static final PathConstraints constraints = new PathConstraints(1, 1, 1, 1);
     }

@@ -80,7 +80,7 @@ public class CoralIntake extends SubsystemBase {
     };
 
     public void manualPivot(double speed) {
-        this.target += speed/30;
+        this.target += speed/100;
         this.target = Math.max(this.target, 0.67);
         this.target = Math.min(this.target, 0.9);
     }

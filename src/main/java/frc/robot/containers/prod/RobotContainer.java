@@ -4,6 +4,9 @@
 
 package frc.robot.containers.prod;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -60,6 +63,8 @@ public class RobotContainer {
 			this.subsystems.elevator = new Elevator();
 
 			this.subsystems.swerve = new Swerve();
+
+			autoChooser = AutoBuilder.buildAutoChooser();
 			// the death zone??
 		}
 
@@ -90,9 +95,26 @@ public class RobotContainer {
 			Controller.toggleLaserCan.onChange(new RunCommand(()-> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
-			this.controller.secondaryController.leftBumper().onTrue(this.subsystems.hang.toggleFunnel());
-
+			this.controller.switches.x().onChange(this.subsystems.hang.toggleFunnel());
+		
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
+
+			this.subsystems.hang.setDefaultCommand(
+				new RunCommand(
+					() -> {
+						this.subsystems.hang.manualInput(this.controller.secondaryController.getRightTriggerAxis()-this.controller.secondaryController.getLeftTriggerAxis());
+					}
+					, this.subsystems.hang)
+			);
+		}
+
+		//Named commands
+		{
+			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTag(true));
+			NamedCommands.registerCommand("intake", this.bindings.coral.runIntake());
+			NamedCommands.registerCommand("L0", this.bindings.elevator.goToL0());
+			NamedCommands.registerCommand("compoundL2", this.bindings.coral.compoundL2());
+			NamedCommands.registerCommand("compoundL4", this.bindings.coral.compoundL4());
 		}
 	}
 
@@ -102,7 +124,7 @@ public class RobotContainer {
 	 * @return The selected autonomous Command
 	 */
 	public Command getAutonomousCommand() {
-		return autoChooser.getSelected();
+		return AutoBuilder.buildAuto("autotest");
 	}
 
 	public void periodic() {
