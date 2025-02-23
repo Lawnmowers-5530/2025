@@ -108,14 +108,15 @@ public class RobotContainer {
 
 			Controller.enableManualControl.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
 
-			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTag(true));
-			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTag(false));
+			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTagLeft());
+			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTagRight());
 
 			Controller.toggleLaserCan.onChange(new RunCommand(()-> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
 			this.controller.switches.x().onChange(this.subsystems.hang.toggleFunnel());
-			this.controller.driverController.start().onTrue(this.subsystems.hang.toggleFunnel());
+
+			this.controller.driverController.povDown().onTrue(this.subsystems.hang.toggleFunnel());
 		
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
 
@@ -135,7 +136,7 @@ public class RobotContainer {
 
 		//Named commands
 		{
-			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTag(true));
+			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagRight());
 			NamedCommands.registerCommand("intake", this.bindings.coral.runIntake());
 			NamedCommands.registerCommand("L0", this.bindings.elevator.goToL0());
 			NamedCommands.registerCommand("compoundL2", this.bindings.coral.compoundL2());

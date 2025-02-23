@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -49,6 +50,8 @@ public class Controller extends SubsystemBase {
 		this.driverController = new CommandXboxController(0);
 		this.secondaryController = new CommandXboxController(1);
 		this.switches = new CommandXboxController(2);
+
+		this.driverController.setRumble(RumbleType.kBothRumble, 0);
 
 		// driver controller
 		{

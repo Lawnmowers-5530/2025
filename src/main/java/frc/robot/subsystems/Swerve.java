@@ -386,7 +386,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				rearLeftModule.getState());
 	}
 
-	public class AlignToTag extends Command {
+	public class AlignToTagRight extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
 		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
 				AlignConstants.kDrot);
@@ -394,7 +394,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 				AlignConstants.xkDtrans);
 		PIDController ydrivePID = new PIDController(AlignConstants.ykPtrans, AlignConstants.ykItrans,
 				AlignConstants.ykDtrans);
-		boolean left;
 		double y;
 		double x;
 		double yaw;
@@ -402,14 +401,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 		Rotation2d rot;
 		Transform3d cameraToRobot;
 
-		public AlignToTag(boolean left) {
+		public AlignToTagRight() {
 			yawTarget = 0;
 
 			this.y = 0;
 			this.x = 0;
 			this.rot = new Rotation2d();
-
-			this.left = left;
+			;
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
@@ -432,13 +430,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 		public void execute() {
 			yaw = Pgyro.getDeg();
 			ArrayList<PhotonTrackedTarget> tags;
-			if (this.left) {
-				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
-				cameraToRobot = AlignConstants.leftCameraToRobot;
-			} else {
-				tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
-				cameraToRobot = AlignConstants.rightCameraToRobot;
-			}
+			tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
+			cameraToRobot = AlignConstants.leftCameraToRobot;
 			// sort tags by the tag's pose ambiguity
 			var tracked_tag = tags
 					.stream()
@@ -449,16 +442,99 @@ public class Swerve extends SubsystemBase implements Loggable {
 					tag -> {
 
 						Transform3d camTrans = tag.getBestCameraToTarget();
+						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
 
 						xdrivePID.setP(AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
 						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
-
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
-						
+
+						SmartDashboard.putNumber("xVal", x);
+						SmartDashboard.putNumber("yVal", y);
+						if (AlignConstants.useGyro) {
+							yawTarget = getTagAngle(tag.getFiducialId());
+							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
+						} else {
+							yawTarget = 180;
+							yaw = rot.getDegrees();
+
+						}
+
+					});
+			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)));
+		}
+	}
+
+	public class AlignToTagLeft extends Command {
+		static final double tagAmbiguityThreshold = 0.2;
+		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
+				AlignConstants.kDrot);
+		PIDController xdrivePID = new PIDController(AlignConstants.xkPtrans, AlignConstants.xkItrans,
+				AlignConstants.xkDtrans);
+		PIDController ydrivePID = new PIDController(AlignConstants.ykPtrans, AlignConstants.ykItrans,
+				AlignConstants.ykDtrans);
+		double y;
+		double x;
+		double yaw;
+		double yawTarget;
+		Rotation2d rot;
+		Transform3d cameraToRobot;
+
+		public AlignToTagLeft() {
+			yawTarget = 0;
+
+			this.y = 0;
+			this.x = 0;
+			this.rot = new Rotation2d();
+			;
+			yawPID.setSetpoint(180);
+			yawPID.setIZone(2);
+			yawPID.enableContinuousInput(-180, 180);
+			yawPID.setTolerance(AlignConstants.rotatationTolerance);
+
+			xdrivePID.setSetpoint(0);
+			ydrivePID.setSetpoint(0);
+
+			xdrivePID.setTolerance(AlignConstants.driveTolerance);
+			ydrivePID.setTolerance(AlignConstants.driveTolerance);
+
+			addRequirements(Swerve.this);
+		}
+
+		public boolean isFinished() {
+			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
+		}
+
+		@Override
+		public void execute() {
+			yaw = Pgyro.getDeg();
+			ArrayList<PhotonTrackedTarget> tags;
+			tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+			cameraToRobot = AlignConstants.leftCameraToRobot;
+			// sort tags by the tag's pose ambiguity
+			var tracked_tag = tags
+					.stream()
+					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
+					.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+
+			tracked_tag.ifPresent(
+					tag -> {
+
+						Transform3d camTrans = tag.getBestCameraToTarget();
+						SmartDashboard.putString("camTrans", camTrans.toString());
+						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
+								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
+
+						xdrivePID.setP(AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
+						rot = estimate.getRotation().toRotation2d();
+						y = estimate.getTranslation().getY();
+						x = estimate.getTranslation().getX();
+
 						SmartDashboard.putNumber("xVal", x);
 						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
