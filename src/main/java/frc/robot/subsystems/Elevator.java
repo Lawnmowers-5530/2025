@@ -9,7 +9,6 @@ import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Voltage;
@@ -80,8 +79,10 @@ public final class Elevator extends SubsystemBase {
     }
 
     public void manualSetSpeed(double speed) {
-        sp += speed;
-        sp = MathUtil.clamp(sp, 0.0, ElevatorConstants.level3);
+        motor1.set(speed);
+        motor2.set(speed);
+        //sp += speed;
+        //sp = MathUtil.clamp(sp, 0.0, ElevatorConstants.level3);
        
    
         

@@ -39,8 +39,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Robot.Container;
-import frc.robot.constants.Gyro;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -451,15 +449,18 @@ public class Swerve extends SubsystemBase implements Loggable {
 					tag -> {
 
 						Transform3d camTrans = tag.getBestCameraToTarget();
-						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
-						
-						xdrivePID.setP(AlignConstants.xkPtrans - 0.15 * ydrivePID.getError());
+
+						xdrivePID.setP(AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
 
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
+						
+						SmartDashboard.putNumber("xVal", x);
+						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);

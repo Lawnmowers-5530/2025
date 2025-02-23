@@ -115,6 +115,7 @@ public class RobotContainer {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
 			this.controller.switches.x().onChange(this.subsystems.hang.toggleFunnel());
+			this.controller.driverController.start().onTrue(this.subsystems.hang.toggleFunnel());
 		
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
 

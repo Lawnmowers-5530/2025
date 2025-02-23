@@ -3,7 +3,6 @@ package frc.robot.containers.prod;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake.Targets;
@@ -101,7 +100,7 @@ public class Bindings {
 
 	final class Swerve {
 		Command zeroGyro() {
-			return new RunCommand(Pgyro::zeroGyro);
+			return Pgyro.zeroGyroCommand();
 		}
 
 		final class SlowModeCommand extends Command {

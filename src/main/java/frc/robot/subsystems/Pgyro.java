@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class Pgyro extends SubsystemBase {
 	static final class GyroConstants extends frc.robot.constants.Gyro {};
-	static double offset = 0;
+	static Rotation2d offset = new Rotation2d();
 
 	/** Creates a new Gyro. */
 	public Pgyro() {
@@ -29,20 +29,21 @@ public class Pgyro extends SubsystemBase {
 	}
 
 	public static Rotation2d getRot() {
-		return pigeon.getRotation2d();//.minus(Rotation2d.fromDegrees(offset));
+		return pigeon.getRotation2d().minus(offset);//.minus(Rotation2d.fromDegrees(offset));
 	}
 
 	public static double getDeg() {
-		return pigeon.getYaw().getValueAsDouble();// - offset;
+		//return pigeon.getYaw().getValueAsDouble();// - offset;
+		return getRot().getDegrees();
 	}
 
 	public static double getRad() {
 		return getDeg() * Math.PI / 180;
 	}
 
-	public static void zeroGyro() {
-		pigeon.setYaw(0);
-	}
+	//public static void zeroGyro() {
+	//	offset = getRot();
+	//}
 
 	public static double getHdgDeg() {
 		double a;
@@ -71,7 +72,7 @@ public class Pgyro extends SubsystemBase {
 
 	public static Command zeroGyroCommand() {
 		return new InstantCommand(() -> {
-			pigeon.setYaw((0));
+			offset = pigeon.getRotation2d();
 		});
 	}
 }
