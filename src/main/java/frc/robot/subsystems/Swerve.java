@@ -112,7 +112,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 																				// the
 																				// target angle has been
 																				// reached
-		rotationPID.
 		SwerveModulePosition[] modPos = getModulePositions();
 
 		this.cameraManager = new PoseCameraManager();
@@ -393,8 +392,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 		static final double tagAmbiguityThreshold = 0.2;
 		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
 				AlignConstants.kDrot);
-		PIDController drivePID = new PIDController(AlignConstants.kPtrans, AlignConstants.kItrans,
-				AlignConstants.kDtrans);
+		PIDController xdrivePID = new PIDController(AlignConstants.xkPtrans, AlignConstants.xkItrans,
+				AlignConstants.xkDtrans);
+		PIDController ydrivePID = new PIDController(AlignConstants.ykPtrans, AlignConstants.ykItrans,
+				AlignConstants.ykDtrans);
 		boolean left;
 		double y;
 		double x;
@@ -404,24 +405,29 @@ public class Swerve extends SubsystemBase implements Loggable {
 		Transform3d cameraToRobot;
 
 		public AlignToTag(boolean left) {
+			yawTarget = 0;
+
 			this.y = 0;
 			this.x = 0;
-	
 			this.rot = new Rotation2d();
 
 			this.left = left;
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
-			drivePID.setSetpoint(0);
-			drivePID.setTolerance(AlignConstants.driveTolerance);
 			yawPID.setTolerance(AlignConstants.rotatationTolerance);
-			
+
+			xdrivePID.setSetpoint(0);
+			ydrivePID.setSetpoint(0);
+
+			xdrivePID.setTolerance(AlignConstants.driveTolerance);
+			ydrivePID.setTolerance(AlignConstants.driveTolerance);
+
 			addRequirements(Swerve.this);
 		}
 
 		public boolean isFinished() {
-			return yawPID.atSetpoint() && drivePID.atSetpoint() && rotationPID.atSetpoint();
+			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
 		}
 
 		@Override
@@ -443,28 +449,29 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			tracked_tag.ifPresent(
 					tag -> {
-						
+
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						System.out.println(camTrans.getRotation().toRotation2d().getDegrees());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
+						
+						xdrivePID.setP(AlignConstants.xkPtrans - 0.15 * ydrivePID.getError());
+
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
-							SmartDashboard.putNumber("Target Yaw Align", yawTarget); 
-						}
-
-						else {
+							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
+						} else {
 							yawTarget = 180;
 							yaw = rot.getDegrees();
-						
+
 						}
-						
+
 					});
-			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-drivePID.calculate(x),
-					-drivePID.calculate(y), yawPID.calculate(yaw, yawTarget)));
+			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)));
 		}
 	}
 
@@ -474,23 +481,23 @@ public class Swerve extends SubsystemBase implements Loggable {
 		rearRightModule.setSlowMode(slowMode);
 		rearLeftModule.setSlowMode(slowMode);
 	}
+
 	public int getTagAngle(int id) {
-            return switch (id) {
-                case 6 -> -60;
-                case 7 -> 0;
-                case 8 -> 60;
-                case 9 -> 120;
-                case 10 -> 180;
-                case 11 -> -120;
-				case 18 -> 0;
-				case 19 -> -60;
-				case 20 -> -120;
-				case 21 -> 180;
-				case 22-> 120;
-				case 17 -> 60;
+		return switch (id) {
+			case 6 -> -60;
+			case 7 -> 0;
+			case 8 -> 60;
+			case 9 -> 120;
+			case 10 -> 180;
+			case 11 -> -120;
+			case 18 -> 0;
+			case 19 -> -60;
+			case 20 -> -120;
+			case 21 -> 180;
+			case 22 -> 120;
+			case 17 -> 60;
 
-
-                default -> 0;
-            };
+			default -> 0;
+		};
 	}
 }

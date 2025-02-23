@@ -61,7 +61,7 @@ public class Bindings {
 			return (Bindings.this.subsystems.coralIntake.anglePivot(Targets.TOP)
 					.alongWith(Bindings.this.subsystems.elevator.goToTarget(1)))
 					.until(Bindings.this.subsystems.elevator::atTarget)
-					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.MIDDLE));
+					.andThen(Bindings.this.subsystems.coralIntake.anglePivot(Targets.BOTTOM));
 		}
 
 		/**
