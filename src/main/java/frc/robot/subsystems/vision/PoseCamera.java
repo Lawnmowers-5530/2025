@@ -113,7 +113,12 @@ public class PoseCamera extends SubsystemBase {
     public Optional<PhotonTrackedTarget> getPrimaryTrackedTarget() {
         if (latestResult.isEmpty()) {
             return Optional.empty();
-        } else {
+        } 
+        if (!hasTargets())
+        {
+            return Optional.empty();
+        }
+        else {
             return Optional.of(latestResult.get().getBestTarget());
         }
     }

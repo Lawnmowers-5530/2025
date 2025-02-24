@@ -432,8 +432,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetRight();
 			cameraToRobot = AlignConstants.rightCameraToRobot;
+			if (tags.isEmpty()) {
+				return;
+			}
 			// sort tags by the tag's pose ambiguity
-			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1 && tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1
+					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
 
 			tracked_tag.ifPresent(
 					tag -> {
@@ -513,7 +517,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
 			// sort tags by the tag's pose ambiguity
-			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1 && tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+			if (tags.isEmpty()) {
+				return;
+			}
+			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1
+					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
 
 			tracked_tag.ifPresent(
 					tag -> {
