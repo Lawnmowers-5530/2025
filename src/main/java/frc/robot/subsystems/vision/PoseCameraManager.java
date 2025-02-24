@@ -74,18 +74,12 @@ public class PoseCameraManager implements Loggable {
         return Optional.empty();
     }
 
-    public Optional<Integer> getPrimaryIdLeft() {
-        if (camList.get(0).hasTargets() == true) {
-            return Optional.of(camList.get(0).getPrimaryTagId());
-        }
-        return Optional.empty();
+    public Optional<PhotonTrackedTarget> getPrimaryTargetLeft() {
+            return camList.get(0).getPrimaryTrackedTarget();
     }
 
-    public Optional<Integer> getPrimaryIdRight() {
-        if (camList.get(1).hasTargets() == true) {
-            return Optional.of(camList.get(1).getPrimaryTagId());
-        }
-        return Optional.empty();
+    public Optional<PhotonTrackedTarget> getPrimaryTargetRight() {
+        return camList.get(1).getPrimaryTrackedTarget();
     }
 
     public void periodic() {

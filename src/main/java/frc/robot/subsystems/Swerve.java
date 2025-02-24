@@ -429,14 +429,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 		@Override
 		public void execute() {
 			yaw = Pgyro.getDeg();
-			ArrayList<PhotonTrackedTarget> tags;
-			tags = cameraManager.getTagsById(cameraManager.getPrimaryIdRight());
-			cameraToRobot = AlignConstants.leftCameraToRobot;
+			Optional<PhotonTrackedTarget> tags;
+			tags = cameraManager.getPrimaryTargetRight();
+			cameraToRobot = AlignConstants.rightCameraToRobot;
 			// sort tags by the tag's pose ambiguity
-			var tracked_tag = tags
-					.stream()
-					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
-					.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1 && tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
 
 			tracked_tag.ifPresent(
 					tag -> {
@@ -512,14 +509,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 		@Override
 		public void execute() {
 			yaw = Pgyro.getDeg();
-			ArrayList<PhotonTrackedTarget> tags;
-			tags = cameraManager.getTagsById(cameraManager.getPrimaryIdLeft());
+			Optional<PhotonTrackedTarget> tags;
+			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
 			// sort tags by the tag's pose ambiguity
-			var tracked_tag = tags
-					.stream()
-					.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
-					.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1 && tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
 
 			tracked_tag.ifPresent(
 					tag -> {
