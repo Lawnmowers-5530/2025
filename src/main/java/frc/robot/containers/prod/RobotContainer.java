@@ -136,7 +136,8 @@ public class RobotContainer {
 
 		//Named commands
 		{
-			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagRight());
+			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagLeft());
+			NamedCommands.registerCommand("align left", this.subsystems.swerve.new AlignToTagRight());
 			NamedCommands.registerCommand("intake", this.bindings.coral.runIntake());
 			NamedCommands.registerCommand("L0", this.bindings.elevator.goToL0());
 			NamedCommands.registerCommand("compoundL2", this.bindings.coral.compoundL2());
