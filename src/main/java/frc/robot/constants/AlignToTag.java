@@ -4,15 +4,15 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class AlignToTag {
-    public static final double xkPtrans = 0.17;
+    public static final double xkPtrans = 0.25;
     public static final double xkItrans = 0;
     public static final double xkDtrans = 0;
 
-    public static final double ykPtrans = 0.21;
+    public static final double ykPtrans = 0.29;
     public static final double ykItrans = 0;
     public static final double ykDtrans = 0;
 
-    public static final double kProt = 0.03;
+    public static final double kProt = 0.027;
     public static final double kIrot = 0.0;
     public static final double kDrot = 0;
 
