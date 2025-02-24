@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
@@ -38,17 +39,13 @@ public class RobotContainer {
 		public Elevator elevator;
 		public Hang hang;
 
-
-	
-		
-
-
-		//Watch for this
+		// Watch for this
 		public AlgaeIntake algaeIntake;
-	
+
 	}
 
-	public class State {}
+	public class State {
+	}
 
 	Controller controller = new Controller();
 
@@ -71,17 +68,14 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();
-			
-
 
 			this.subsystems.swerve = new Swerve();
 
-
-			//if (this.subsystems.algaeIntake == null) {
-				//throw new IllegalStateException("This Code is Not Commented. Algae Intake is going to be Initialized");
-			//}
-			//this.subsystems.algaeIntake = new AlgaeIntake();
-			
+			// if (this.subsystems.algaeIntake == null) {
+			// throw new IllegalStateException("This Code is Not Commented. Algae Intake is
+			// going to be Initialized");
+			// }
+			// this.subsystems.algaeIntake = new AlgaeIntake();
 
 			autoChooser = AutoBuilder.buildAutoChooser();
 			// the death zone??
@@ -102,39 +96,46 @@ public class RobotContainer {
 
 			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro());
 
-
 			Controller.intake.onTrue(this.bindings.coral.runIntake());
 			Controller.outtake.onTrue(this.bindings.coral.outtake());
 
-			Controller.enableManualControl.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
+			Controller.enableManualControl
+					.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
 
 			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTagLeft());
+			Controller.alignLeft.onFalse(new InstantCommand(
+					() -> {
+						Controller.rumbleLeft = false;
+					}));
 			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTagRight());
+			Controller.alignRight.onFalse(new InstantCommand(
+					() -> {
+						Controller.rumbleRight = false;
+					}));
 
-			Controller.toggleLaserCan.onChange(new RunCommand(()-> {
+			Controller.toggleLaserCan.onChange(new RunCommand(() -> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
 			this.controller.switches.x().onChange(this.subsystems.hang.toggleFunnel());
 
 			this.controller.driverController.povDown().onTrue(this.subsystems.hang.toggleFunnel());
-		
+
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
 
 			this.subsystems.hang.setDefaultCommand(
-				new RunCommand(
-					() -> {
-						this.subsystems.hang.manualInput(this.controller.secondaryController.getRightTriggerAxis()-this.controller.secondaryController.getLeftTriggerAxis());
-					}
-					, this.subsystems.hang)
-			);
+					new RunCommand(
+							() -> {
+								this.subsystems.hang
+										.manualInput(this.controller.secondaryController.getRightTriggerAxis()
+												- this.controller.secondaryController.getLeftTriggerAxis());
+							}, this.subsystems.hang));
 
-			//this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject, this::getAngle));
-
-			
+			// this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject,
+			// this::getAngle));
 
 		}
 
-		//Named commands
+		// Named commands
 		{
 			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagLeft());
 			NamedCommands.registerCommand("align left", this.subsystems.swerve.new AlignToTagRight());
@@ -159,14 +160,16 @@ public class RobotContainer {
 	}
 
 	public double getAngle() {
-		return (this.controller.driverController.getLeftTriggerAxis() - this.controller.driverController.getRightTriggerAxis()) / 5.0;
+		return (this.controller.driverController.getLeftTriggerAxis()
+				- this.controller.driverController.getRightTriggerAxis()) / 5.0;
 	}
+
 	public double getEject() {
 		if (this.controller.driverController.leftBumper().getAsBoolean()) {
 			return 0.2;
-		}else if (this.controller.driverController.rightBumper().getAsBoolean()) {
+		} else if (this.controller.driverController.rightBumper().getAsBoolean()) {
 			return -0.2;
-		}else {
+		} else {
 			return 0;
 		}
 

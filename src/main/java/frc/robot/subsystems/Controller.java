@@ -7,6 +7,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,6 +41,8 @@ public class Controller extends SubsystemBase {
 	public static Trigger alignRight;
 	public static Trigger toggleLaserCan;
 
+	public static boolean rumbleLeft;
+	public static boolean rumbleRight;
 
 	public static Trigger slowMode;
 
@@ -51,7 +55,8 @@ public class Controller extends SubsystemBase {
 		this.secondaryController = new CommandXboxController(1);
 		this.switches = new CommandXboxController(2);
 
-		this.driverController.setRumble(RumbleType.kBothRumble, 0);
+		rumbleLeft = false;
+		rumbleRight = false;
 
 		// driver controller
 		{
@@ -104,6 +109,17 @@ public class Controller extends SubsystemBase {
 			};
 
 			toggleLaserCan = this.switches.y();
+		}
+	}
+
+	public void periodic() {
+		if (rumbleLeft) {
+			driverController.setRumble(RumbleType.kLeftRumble, 1);
+		} else if (rumbleRight) {
+			driverController.setRumble(RumbleType.kRightRumble, 1);
+		} else {
+			driverController.setRumble(RumbleType.kLeftRumble, 0);
+			driverController.setRumble(RumbleType.kRightRumble, 0);
 		}
 	}
 }

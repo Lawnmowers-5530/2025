@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -416,8 +417,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 			xdrivePID.setSetpoint(0);
 			ydrivePID.setSetpoint(0);
 
-			xdrivePID.setTolerance(AlignConstants.driveTolerance);
-			ydrivePID.setTolerance(AlignConstants.driveTolerance);
+			xdrivePID.setTolerance(AlignConstants.xDriveTolerance);
+			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
 
 			addRequirements(Swerve.this);
 		}
@@ -428,6 +429,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		@Override
 		public void execute() {
+			if (isFinished()) {
+				Controller.rumbleLeft = true;
+			}
 			yaw = Pgyro.getDeg();
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetRight();
@@ -500,8 +504,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 			xdrivePID.setSetpoint(0);
 			ydrivePID.setSetpoint(0);
 
-			xdrivePID.setTolerance(AlignConstants.driveTolerance);
-			ydrivePID.setTolerance(AlignConstants.driveTolerance);
+			xdrivePID.setTolerance(AlignConstants.xDriveTolerance);
+			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
 
 			addRequirements(Swerve.this);
 		}
@@ -512,6 +516,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		@Override
 		public void execute() {
+			if (isFinished()) {
+				Controller.rumbleRight = true;
+			}
 			yaw = Pgyro.getDeg();
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetLeft();
