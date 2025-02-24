@@ -4,7 +4,7 @@ public class Elevator {
     public static final double level4 = 93;
     public static final double level3 = 55; //unsure of actual value
     public static final double level2 = 33; //unsure of actual value
-    public static final double level1 = 24; //unsure of actual value was 28
+    public static final double level1 = 14; //unsure of actual value was 28
     public static final double intake = 3.5;
 
     public static final double kP = 0.033;
@@ -25,5 +25,5 @@ public class Elevator {
     public static final double calibrationSpeed = 0.2;
     public static final int elevatorRangeTicks = 0;
 
-    public static final double tolerance = 2;
+    public static final double tolerance = 3;
 }
