@@ -161,7 +161,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public Command stopIntakeCommand() {
-        return new RunCommand(() -> {
+        return new InstantCommand(() -> {
             stopIntake();
         }, this);
     }
