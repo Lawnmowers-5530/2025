@@ -7,8 +7,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -80,7 +78,7 @@ public class Controller extends SubsystemBase {
 			};
 			slowMode = driverController.b();
 			zeroGyro = driverController.x();
-			intake = driverController.y();
+			intake = driverController.y().or(secondaryController.y());
 			outtake = driverController.a();
 			alignLeft = driverController.rightBumper();
 			alignRight = driverController.leftBumper();
