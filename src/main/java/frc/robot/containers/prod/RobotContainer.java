@@ -17,6 +17,7 @@ import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Hang;
+import frc.robot.subsystems.LedManager;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
@@ -38,6 +39,7 @@ public class RobotContainer {
 		public CoralIntake coralIntake;
 		public Elevator elevator;
 		public Hang hang;
+		public LedManager ledManager;
 
 		// Watch for this
 		public AlgaeIntake algaeIntake;
@@ -62,7 +64,7 @@ public class RobotContainer {
 		{
 
 			this.subsystems = new Subsystems();
-
+			this.subsystems.ledManager = new LedManager(this.subsystems, 2);
 			this.subsystems.hang = new Hang();
 			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();

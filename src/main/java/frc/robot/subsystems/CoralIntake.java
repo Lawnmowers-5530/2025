@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.CoralIntake.States;
 
 public class CoralIntake extends SubsystemBase {
     //import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -31,6 +32,9 @@ public class CoralIntake extends SubsystemBase {
     private LaserCan fakeBeamBreak;
     private LaserCan fakeBeamBreak2;
     private AbsoluteEncoder pivotEncoder;
+    public States state = States.HAS_CORAL;
+
+
     public double target = PivotConstants.bottomPos;
 
     boolean laserCanSwitch = false;
@@ -54,6 +58,7 @@ public class CoralIntake extends SubsystemBase {
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
         pivotController.setTolerance(PivotConstants.tolerance);
+        
 
     }
     @Deprecated
@@ -107,6 +112,7 @@ public class CoralIntake extends SubsystemBase {
 
     public Command anglePivot(Targets target) {
         return new InstantCommand(() -> {
+            state = States.NOT_HAS_AND_NOT_WANTS;
             setTarget(target);
         }, this);
     }
@@ -117,6 +123,7 @@ public class CoralIntake extends SubsystemBase {
     public void intake() {
         System.out.println("intaking");
         intake.set(PivotConstants.intakePower);
+        state = States.WANTS_CORAL;
     }
     public void outtake() {
         intake.set(PivotConstants.intakePower);
@@ -127,6 +134,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean coralDetected1() {
+        state = States.HAS_CORAL;
         double measurement = fakeBeamBreak.getMeasurement().distance_mm;
         SmartDashboard.putNumber("measurement", measurement);
         return measurement < 35;
@@ -166,5 +174,9 @@ public class CoralIntake extends SubsystemBase {
         }, this);
     }
     
+
+    public enum States {
+        HAS_CORAL, WANTS_CORAL, NOT_HAS_AND_NOT_WANTS
+    }
 
 }
