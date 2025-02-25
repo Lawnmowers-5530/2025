@@ -1,5 +1,7 @@
 package frc.robot.constants;
 
+import java.util.HashMap;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
@@ -24,5 +26,10 @@ public class AlignToTag {
     public static final double rotatationTolerance = 0.5;
 
     public static final boolean  useGyro = true;
+    public static HashMap<Integer, Transform3d> tagOffsets = new HashMap<>();
+    public void initializeTagOffsets() {
+        //Tag Offset Code Goes Here
+    }
+
 
 }

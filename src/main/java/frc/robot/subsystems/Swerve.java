@@ -522,6 +522,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
+		
 			// sort tags by the tag's pose ambiguity
 			if (tags.isEmpty()) {
 				return;
@@ -531,6 +532,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			tracked_tag.ifPresent(
 					tag -> {
+						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId()) ? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId())) : cameraToRobot;
 
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
