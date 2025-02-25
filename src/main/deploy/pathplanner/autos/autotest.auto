@@ -25,6 +25,12 @@
                 "data": {
                   "name": "align right"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "L4"
+                }
               }
             ]
           }
@@ -32,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "compoundL4"
+            "name": "outtake"
           }
         },
         {

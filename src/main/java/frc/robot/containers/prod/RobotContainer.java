@@ -143,6 +143,8 @@ public class RobotContainer {
 			NamedCommands.registerCommand("L0", this.bindings.elevator.goToL0());
 			NamedCommands.registerCommand("compoundL2", this.bindings.coral.compoundL2());
 			NamedCommands.registerCommand("compoundL4", this.bindings.coral.compoundL4());
+			NamedCommands.registerCommand("L4", this.bindings.elevator.goToL4());
+			NamedCommands.registerCommand("outtake", this.bindings.coral.outtake());
 		}
 	}
 

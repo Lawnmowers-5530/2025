@@ -294,7 +294,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 		updateOdometry();
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
-		SmartDashboard.putString("robot rel speed", this.robotRelativeSpeedString());
 	}
 
 	/**
@@ -308,11 +307,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		for (var visionEstimate : visionEstimates) {
-			var estimate = visionEstimate.getFirst();
-			var deviations = visionEstimate.getSecond();
-			odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, deviations);
-		}
+		//for (var visionEstimate : visionEstimates) {
+		//	var estimate = visionEstimate.getFirst();
+		//	var deviations = visionEstimate.getSecond();
+		//	odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, deviations);
+		//}
 	}
 
 	/**

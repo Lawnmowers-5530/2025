@@ -4,11 +4,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class AlignToTag {
-    public static final double xkPtrans = 0.34;
+    public static final double xkPtrans = 0.28;
     public static final double xkItrans = 0;
     public static final double xkDtrans = 0;
 
-    public static final double ykPtrans = 0.4;
+    public static final double ykPtrans = 0.33;
     public static final double ykItrans = 0;
     public static final double ykDtrans = 0;
 
@@ -16,8 +16,8 @@ public class AlignToTag {
     public static final double kIrot = 0.0;
     public static final double kDrot = 0;
 
-    public static final Transform3d leftCameraToRobot = new Transform3d(-0, -0, 0, new Rotation3d(0, 0, 0));
-    public static final Transform3d rightCameraToRobot = new Transform3d(-0, 0.0208, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d leftCameraToRobot = new Transform3d(-0, 0+0.02, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d rightCameraToRobot = new Transform3d(-0, 0.0208+0.02, 0, new Rotation3d(0, 0, 0));
 
     public static final double yDriveTolerance = 0.01;
     public static final double xDriveTolerance = 0.025;

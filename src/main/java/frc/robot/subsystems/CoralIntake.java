@@ -129,7 +129,7 @@ public class CoralIntake extends SubsystemBase {
     public boolean coralDetected1() {
         double measurement = fakeBeamBreak.getMeasurement().distance_mm;
         SmartDashboard.putNumber("measurement", measurement);
-        return measurement < 20;
+        return measurement < 35;
     }
     public boolean notCoralDetected1() {
         return !coralDetected1();
@@ -139,7 +139,7 @@ public class CoralIntake extends SubsystemBase {
     }
     private boolean coralDetected2() {
         var measurement = fakeBeamBreak2.getMeasurement();
-        return measurement.distance_mm < 20;
+        return measurement.distance_mm < 35;
     }
     public boolean coralDetected() {
         return laserCanSwitch ? coralDetected1() : coralDetected2();
