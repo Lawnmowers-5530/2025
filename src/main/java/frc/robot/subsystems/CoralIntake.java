@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.CoralIntake.States;
 
 public class CoralIntake extends SubsystemBase {
     //import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -72,6 +71,14 @@ public class CoralIntake extends SubsystemBase {
     public void periodic() {
         double out = pivotController.calculate(pivotEncoder.getPosition(), Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
         pivot.set(out);
+
+        if (intake.get() != 0) {
+            state = States.WANTS_CORAL;
+        } else if (coralDetected()) {
+            state = States.HAS_CORAL;
+        } else {
+            state = States.IDLE;
+        }
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
@@ -112,7 +119,6 @@ public class CoralIntake extends SubsystemBase {
 
     public Command anglePivot(Targets target) {
         return new InstantCommand(() -> {
-            state = States.NOT_HAS_AND_NOT_WANTS;
             setTarget(target);
         }, this);
     }
@@ -123,7 +129,6 @@ public class CoralIntake extends SubsystemBase {
     public void intake() {
         System.out.println("intaking");
         intake.set(PivotConstants.intakePower);
-        state = States.WANTS_CORAL;
     }
     public void outtake() {
         intake.set(PivotConstants.intakePower);
@@ -134,7 +139,6 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean coralDetected1() {
-        state = States.HAS_CORAL;
         double measurement = fakeBeamBreak.getMeasurement().distance_mm;
         SmartDashboard.putNumber("measurement", measurement);
         return measurement < 35;
@@ -173,10 +177,9 @@ public class CoralIntake extends SubsystemBase {
             stopIntake();
         }, this);
     }
-    
 
     public enum States {
-        HAS_CORAL, WANTS_CORAL, NOT_HAS_AND_NOT_WANTS
+        HAS_CORAL, WANTS_CORAL, IDLE
     }
 
 }

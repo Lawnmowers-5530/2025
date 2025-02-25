@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot.Container;
-import frc.robot.containers.prod.RobotContainer;
 
 public class LedManager extends SubsystemBase {
 
@@ -189,14 +187,14 @@ public class LedManager extends SubsystemBase {
         //#region actual layer management
         {   
             //Low Priority
-            if (subsystems.coralIntake.state == CoralIntake.States.NOT_HAS_AND_NOT_WANTS) {
-                layers.add(new Layer(Layer.SolidColorType.RedOrange, 1));
+            if (subsystems.coralIntake.state == CoralIntake.States.IDLE) {
+                layers.add(new Layer(Layer.SolidColorType.DarkRed, -69));
             }
             if (subsystems.coralIntake.state == CoralIntake.States.WANTS_CORAL) {
                 layers.add(new Layer(Layer.FixedPalletePatternType.StrobeBlue, 2));
             }
             if (subsystems.coralIntake.state == CoralIntake.States.HAS_CORAL) {
-                layers.add(new Layer(Layer.SolidColorType.LawnGreen, 3));
+                layers.add(new Layer(Layer.SolidColorType.DarkGreen, 3));
             }
 
 
