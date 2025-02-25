@@ -137,13 +137,13 @@ public class Bindings {
 			return Bindings.this.elevator.goToL0()
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-					.until(Bindings.this.subsystems.coralIntake::coralDetected1)
+					.until(Bindings.this.subsystems.coralIntake::coralDetected)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
-					.until(Bindings.this.subsystems.coralIntake::notCoralDetected1)
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
@@ -172,7 +172,7 @@ public class Bindings {
 			return Bindings.this.elevator.goToL4()
 					.andThen(new WaitUntilCommand(this::pivotAndElevator))
 					.andThen(Bindings.this.coral.outtake())
-					.until(Bindings.this.subsystems.coralIntake::notCoralDetected1);
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected);
 		}
 
 		/**
