@@ -31,6 +31,9 @@ public class CoralIntake extends SubsystemBase {
     private LaserCan fakeBeamBreak;
     private LaserCan fakeBeamBreak2;
     private AbsoluteEncoder pivotEncoder;
+    public States state = States.HAS_CORAL;
+
+
     public double target = PivotConstants.bottomPos;
 
     boolean laserCanSwitch = false;
@@ -54,6 +57,7 @@ public class CoralIntake extends SubsystemBase {
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
         pivotController.setTolerance(PivotConstants.tolerance);
+        
 
     }
     @Deprecated
@@ -67,6 +71,14 @@ public class CoralIntake extends SubsystemBase {
     public void periodic() {
         double out = pivotController.calculate(pivotEncoder.getPosition(), Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
         pivot.set(out);
+
+        if (intake.get() != 0) {
+            state = States.WANTS_CORAL;
+        } else if (coralDetected()) {
+            state = States.HAS_CORAL;
+        } else {
+            state = States.IDLE;
+        }
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
@@ -165,6 +177,9 @@ public class CoralIntake extends SubsystemBase {
             stopIntake();
         }, this);
     }
-    
+
+    public enum States {
+        HAS_CORAL, WANTS_CORAL, IDLE
+    }
 
 }

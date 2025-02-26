@@ -307,11 +307,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		//for (var visionEstimate : visionEstimates) {
-		//	var estimate = visionEstimate.getFirst();
-		//	var deviations = visionEstimate.getSecond();
-		//	odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, deviations);
-		//}
+		// for (var visionEstimate : visionEstimates) {
+		// var estimate = visionEstimate.getFirst();
+		// var deviations = visionEstimate.getSecond();
+		// odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(),
+		// estimate.timestampSeconds, deviations);
+		// }
 	}
 
 	/**
@@ -444,14 +445,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			tracked_tag.ifPresent(
 					tag -> {
-
+						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()))
+								: cameraToRobot;
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
 
-						xdrivePID.setP(AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError()));
-						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
+						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
@@ -522,6 +525,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
+
 			// sort tags by the tag's pose ambiguity
 			if (tags.isEmpty()) {
 				return;
@@ -531,6 +535,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			tracked_tag.ifPresent(
 					tag -> {
+						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()))
+								: cameraToRobot;
 
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
