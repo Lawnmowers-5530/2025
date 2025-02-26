@@ -5,7 +5,7 @@ public class Elevator {
     public static final double level3 = 55; //unsure of actual value
     public static final double level2 = 33; //unsure of actual value
     public static final double level1 = 14; //unsure of actual value was 28
-    public static final double intake = 3.5;
+    public static final double intake = 0.2;
 
     public static final double kP = 0.033;
     public static final double kI = 0.000;
