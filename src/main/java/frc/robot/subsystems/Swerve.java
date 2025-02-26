@@ -537,8 +537,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
 
-						xdrivePID.setP(AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError()));
-						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.1 * ydrivePID.getError());
+						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
 						rot = estimate.getRotation().toRotation2d();
 						y = estimate.getTranslation().getY();
 						x = estimate.getTranslation().getX();
