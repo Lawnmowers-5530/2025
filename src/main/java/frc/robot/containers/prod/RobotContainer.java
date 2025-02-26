@@ -158,7 +158,7 @@ public class RobotContainer {
 	 * @return The selected autonomous Command
 	 */
 	public Command getAutonomousCommand() {
-		return AutoBuilder.buildAuto("autotest");
+		return AutoBuilder.buildAuto("Score4L42L4Left");
 	}
 
 	public void periodic() {
