@@ -75,4 +75,10 @@ public class Pgyro extends SubsystemBase {
 			offset = pigeon.getRotation2d();
 		});
 	}
+
+	public static Command backwardGyroCommand() {
+		return new InstantCommand(() -> {
+			offset = pigeon.getRotation2d().plus(Rotation2d.fromDegrees(180));
+		});
+	}
 }

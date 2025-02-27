@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 1.75
                 }
               },
               {
@@ -38,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "outtake"
+            "name": "outtakeL4"
           }
         },
         {
@@ -58,7 +58,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.3
+                        "waitTime": 1.0
                       }
                     },
                     {
@@ -86,7 +86,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 1.75
                 }
               },
               {
@@ -107,7 +107,7 @@
         {
           "type": "named",
           "data": {
-            "name": "outtake"
+            "name": "outtakeL4"
           }
         }
       ]

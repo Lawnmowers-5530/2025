@@ -8,9 +8,11 @@ import edu.wpi.first.cameraserver.CameraServer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.Controller;
@@ -18,6 +20,7 @@ import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Hang;
 import frc.robot.subsystems.LedManager;
+import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
@@ -80,8 +83,6 @@ public class RobotContainer {
 			// going to be Initialized");
 			// }
 			// this.subsystems.algaeIntake = new AlgaeIntake();
-
-			autoChooser = AutoBuilder.buildAutoChooser();
 			// the death zone??
 		}
 
@@ -149,7 +150,15 @@ public class RobotContainer {
 			NamedCommands.registerCommand("compoundL4", this.bindings.coral.compoundL4());
 			NamedCommands.registerCommand("L4", this.bindings.elevator.goToL4());
 			NamedCommands.registerCommand("outtake", this.bindings.coral.outtake());
+			NamedCommands.registerCommand("outtakeL4", this.bindings.coral.angleAndOuttakeL4());
+			NamedCommands.registerCommand("print", new RunCommand(
+				() -> {
+					System.out.println("named command print");
+				}, new Subsystem[]{}));
 		}
+
+		//autoChooser = AutoBuilder.buildAutoChooser();
+		//SmartDashboard.putData(autoChooser);
 	}
 
 	/**
@@ -159,6 +168,8 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand() {
 		return AutoBuilder.buildAuto("Score4L42L4Left");
+		//return autoChooser.getSelected();
+		//return Pgyro.backwardGyroCommand().andThen(autoChooser.getSelected());
 	}
 
 	public void periodic() {

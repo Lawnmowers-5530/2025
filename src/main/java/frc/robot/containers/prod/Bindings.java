@@ -147,6 +147,12 @@ public class Bindings {
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
+		Command angleAndOuttakeL4() {
+			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4)
+					.andThen(new WaitUntilCommand(this::pivotAndElevator))
+					.andThen(Bindings.this.coral.outtake());
+		}
+
 		/**
 		 * Move elevator and angle and outtake coral at L2, built for auton use
 		 */

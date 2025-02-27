@@ -34,11 +34,17 @@
           "data": {
             "name": "outtake"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "setMiddlePos"
+          }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

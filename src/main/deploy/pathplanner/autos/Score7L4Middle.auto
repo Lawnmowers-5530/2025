@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "setMiddlePos"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [

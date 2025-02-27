@@ -446,7 +446,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 			tracked_tag.ifPresent(
 					tag -> {
 						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
-								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()))
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()).inverse()) //TODO check functionality
 								: cameraToRobot;
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
