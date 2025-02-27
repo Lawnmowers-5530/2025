@@ -7,12 +7,10 @@ package frc.robot.containers.prod;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.Controller;
@@ -24,6 +22,8 @@ import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
+
+import java.util.Objects;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -156,9 +156,10 @@ public class RobotContainer {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
 		}
-
-		//autoChooser = AutoBuilder.buildAutoChooser();
-		//SmartDashboard.putData(autoChooser);
+		{
+			autoChooser = AutoBuilder.buildAutoChooser();
+			Shuffleboard.getTab("Autonomous").add("Auto Chooser", autoChooser);
+		}
 	}
 
 	/**
@@ -167,9 +168,14 @@ public class RobotContainer {
 	 * @return The selected autonomous Command
 	 */
 	public Command getAutonomousCommand() {
-		return AutoBuilder.buildAuto("Score4L42L4Left");
-		//return autoChooser.getSelected();
-		//return Pgyro.backwardGyroCommand().andThen(autoChooser.getSelected());
+		Command selectedAuto = autoChooser.getSelected();
+		if (Objects.equals(selectedAuto, Commands.none())) {
+			System.out.println("No Auto Selected");
+			return Commands.none();
+		} else {
+			System.out.println("Auto Selected: " + selectedAuto);
+			return selectedAuto;
+		}
 	}
 
 	public void periodic() {
