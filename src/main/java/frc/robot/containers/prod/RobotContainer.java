@@ -129,8 +129,6 @@ public class RobotContainer {
 				// can't "un-release" funnel
 			}));
 
-			this.controller.driverController.povDown().onTrue(this.subsystems.hang.toggleFunnel());
-
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
 
 			this.subsystems.hang.setDefaultCommand(
