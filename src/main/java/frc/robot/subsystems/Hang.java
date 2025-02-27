@@ -4,10 +4,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.time.Instant;
 
 public class Hang extends  SubsystemBase {
     public static final class HangConstants  {
@@ -27,15 +30,14 @@ public class Hang extends  SubsystemBase {
     //#region
     SparkMax hangMotor;
     Servo funnelRelease;
-    
     Servo ratchetRelease;
-  
+
+    boolean funnelState = true; //true is engaged false is released
     //#endregion
     public Hang() {
 
         hangMotor = new SparkMax(HangConstants.leftMotorChannel, MotorType.kBrushless);
         funnelRelease = new Servo(HangConstants.funnelRelease);
-        funnelRelease.set(0);
         ratchetRelease = new Servo(HangConstants.servoLeftPWMId);
     }
     public Command autoHang() {
@@ -74,6 +76,7 @@ public class Hang extends  SubsystemBase {
 
     public void setFunnelRelease() {
         funnelRelease.set(1);
+        funnelState = false;
     }
 
     public void setRatchetRelease() {
@@ -94,6 +97,11 @@ public class Hang extends  SubsystemBase {
     @Override 
     public void periodic() {
         SmartDashboard.putNumber("Hang Pos", hangMotor.getEncoder().getPosition());
+        if (!funnelState) {
+            funnelRelease.set(1);
+        } else {
+            funnelRelease.set(0);
+        }
     }
 }
 

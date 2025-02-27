@@ -121,12 +121,9 @@ public class RobotContainer {
 			Controller.toggleLaserCan.onChange(new RunCommand(() -> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
-			this.controller.switches.x().onChange(new RunCommand(() -> {
-				boolean state = this.controller.switches.x().getAsBoolean();
-				if (state) {
-					this.subsystems.hang.setFunnelRelease();
-				};
-				// can't "un-release" funnel
+
+			this.controller.switches.x().onTrue(new RunCommand(() -> {
+				this.subsystems.hang.setFunnelRelease();
 			}));
 
 			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
