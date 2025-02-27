@@ -6,7 +6,6 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,67 +25,75 @@ public class Hang extends  SubsystemBase {
     }
 
     //#region
-    SparkMax leftHang;
+    SparkMax hangMotor;
     Servo funnelRelease;
     
-    Servo releaseLeft;
-    
-    private boolean release = false;
+    Servo ratchetRelease;
   
     //#endregion
     public Hang() {
 
-        leftHang = new SparkMax(HangConstants.leftMotorChannel, MotorType.kBrushless);
+        hangMotor = new SparkMax(HangConstants.leftMotorChannel, MotorType.kBrushless);
         funnelRelease = new Servo(HangConstants.funnelRelease);
-        releaseLeft = new Servo(HangConstants.servoLeftPWMId);
+        funnelRelease.set(0);
+        ratchetRelease = new Servo(HangConstants.servoLeftPWMId);
     }
     public Command autoHang() {
         return new RunCommand(()-> {
-            leftHang.set(HangConstants.hangPower);
+            hangMotor.set(HangConstants.hangPower);
         }, this).until(this::isHanged).andThen(new RunCommand(()->stop(), this));
     }
     public Command autoOut() {
         return new RunCommand(()-> {
-            leftHang.set(-HangConstants.hangPower);
+            hangMotor.set(-HangConstants.hangPower);
         }, this).until(this::isUnhinged).andThen(new RunCommand(()->stop(), this));
     }
     public void stop() {
-        leftHang.set(0);
+        hangMotor.set(0);
     }
     public boolean isHanged() {
-        return (leftHang.getEncoder().getPosition() > HangConstants.doneHangPos);
+        return (hangMotor.getEncoder().getPosition() > HangConstants.doneHangPos);
 
     }
     public boolean isUnhinged() {
-        return (leftHang.getEncoder().getPosition() < HangConstants.toHangPos);
+        return (hangMotor.getEncoder().getPosition() < HangConstants.toHangPos);
     }
 
     public void manualInput(double input) {
         if (input < -0.01){
             
-            leftHang.set(input+0.01);
-            release();
+            hangMotor.set(input+0.01);
+            setRatchetRelease();
         }else {
-            hold();
-            leftHang.set(input);
+            setRatchetHold();
+            hangMotor.set(input);
            
         }
 
     }
 
-    public void release() {
-        release = true;
-        releaseLeft.set(0.017);
+    public void setFunnelRelease() {
+        funnelRelease.set(1);
     }
 
-    public void hold() {
-        releaseLeft.set(0.15);
-        release = false;
+    public void setRatchetRelease() {
+        ratchetRelease.set(0.017);
     }
 
+    public void setRatchetHold() {
+        ratchetRelease.set(0.15);
+    }
+
+    public boolean getServoState() {
+        if (ratchetRelease.get() == 0.017) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     @Override 
     public void periodic() {
-        SmartDashboard.putNumber("Hang Pos", leftHang.getEncoder().getPosition());
+        SmartDashboard.putNumber("Hang Pos", hangMotor.getEncoder().getPosition());
     }
 }
 
