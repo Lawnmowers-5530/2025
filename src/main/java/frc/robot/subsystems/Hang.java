@@ -32,7 +32,6 @@ public class Hang extends  SubsystemBase {
     Servo releaseLeft;
     
     private boolean release = false;
-    private boolean releaseFunnel = false;
   
     //#endregion
     public Hang() {
@@ -61,6 +60,7 @@ public class Hang extends  SubsystemBase {
     public boolean isUnhinged() {
         return (leftHang.getEncoder().getPosition() < HangConstants.toHangPos);
     }
+
     public void manualInput(double input) {
         if (input < -0.01){
             
@@ -73,46 +73,21 @@ public class Hang extends  SubsystemBase {
         }
 
     }
-    
-    public Command toggleRelease() {
-        return new RunCommand(()-> {
-            toggleServos();
-        }, this);
 
-    }
-    public Command toggleFunnel() {
-        return new InstantCommand(()-> {
-            releaseFunnel = !releaseFunnel;
-        }, this);
-    }
-    public void toggleServos() {
-        if (release) {
-            releaseLeft.set(0.017);
-            release = false;
-            
-        }else{
-            releaseLeft.set(0.15);
-            release = true;
-        }
-    }
     public void release() {
         release = true;
         releaseLeft.set(0.017);
     }
+
     public void hold() {
         releaseLeft.set(0.15);
         release = false;
     }
+
     @Override 
     public void periodic() {
         SmartDashboard.putNumber("Hang Pos", leftHang.getEncoder().getPosition());
-        funnelRelease.set(releaseFunnel ? 1: 0);
-     
-        
     }
-   
-
-  
 }
 
 
