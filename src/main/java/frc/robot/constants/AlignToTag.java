@@ -29,18 +29,18 @@ public class AlignToTag {
     public static HashMap<Integer, Transform3d> tagOffsets = new HashMap<>();
     public void initializeTagOffsets() {
         tagOffsets = new HashMap<>();
-        tagOffsets.put(6, new Transform3d());
-        tagOffsets.put(7, new Transform3d());
-        tagOffsets.put(8, new Transform3d());
-        tagOffsets.put(9, new Transform3d());
-        tagOffsets.put(10, new Transform3d());
-        tagOffsets.put(11, new Transform3d(0, 0.03, 0, new Rotation3d()));
-        tagOffsets.put(18, new Transform3d());
-        tagOffsets.put(19, new Transform3d()); 
-        tagOffsets.put(20, new Transform3d());
-        tagOffsets.put(21, new Transform3d());
-        tagOffsets.put(22, new Transform3d());
-        tagOffsets.put(17, new Transform3d());
+        tagOffsets.put(6, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(7, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(8, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(9, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(10, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(11, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(18, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(19, new Transform3d(0, 0, 0, new Rotation3d())); 
+        tagOffsets.put(20, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(21, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(22, new Transform3d(0, 0, 0, new Rotation3d()));
+        tagOffsets.put(17, new Transform3d(0, 0, 0, new Rotation3d()));
     }
 
 

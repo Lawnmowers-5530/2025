@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.212328767123288,
-        "y": 4.107641267123288
+        "x": 1.397388698630137,
+        "y": 0.9320000000000004
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.962328767123288,
-        "y": 4.107641267123288
+        "x": 1.6096345873830855,
+        "y": 1.0641048171243999
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "mintakepos"
     },
     {
       "anchor": {
-        "x": 7.1,
-        "y": 4.107641267123288
+        "x": 3.0351883561643835,
+        "y": 1.9589683219178085
       },
       "prevControl": {
-        "x": 6.85,
-        "y": 4.107641267123288
+        "x": 2.8231265567344987,
+        "y": 1.8265681964550307
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 55.583473622935784
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 179.44394545526447
+    "rotation": 55.045511854820525
   },
   "useDefaultConstraints": true
 }

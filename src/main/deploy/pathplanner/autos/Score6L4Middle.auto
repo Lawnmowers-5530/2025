@@ -34,12 +34,6 @@
           "data": {
             "name": "outtake"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "setMiddlePos"
-          }
         }
       ]
     }
