@@ -53,7 +53,7 @@ public final class Elevator extends SubsystemBase {
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
                 .iZone(ElevatorConstants.integralZone)
-                .outputRange(-0.5, 0.85);
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
 
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -64,7 +64,7 @@ public final class Elevator extends SubsystemBase {
                 .p(ElevatorConstants.kP)
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
-                .outputRange(-0.5, 0.5);
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
