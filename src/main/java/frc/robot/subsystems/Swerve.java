@@ -294,6 +294,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		updateOdometry();
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
+		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
 	}
 
 	/**

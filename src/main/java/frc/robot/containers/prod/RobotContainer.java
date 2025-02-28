@@ -152,6 +152,7 @@ public class RobotContainer {
 			NamedCommands.registerCommand("L4", this.bindings.elevator.goToL4());
 			NamedCommands.registerCommand("outtake", this.bindings.coral.outtake());
 			NamedCommands.registerCommand("outtakeL4", this.bindings.coral.angleAndOuttakeL4());
+			NamedCommands.registerCommand("180gyro", Pgyro.backwardGyroCommand());
 			NamedCommands.registerCommand("print", new RunCommand(
 				() -> {
 					System.out.println("named command print");
