@@ -284,6 +284,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Pgyro.getRot(),
 				getModulePositions(),
 				pose);
+		Pgyro.setAutoGyro();
+		
 	}
 
 	/**
