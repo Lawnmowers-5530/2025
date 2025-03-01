@@ -160,7 +160,8 @@ public class RobotContainer {
 		}
 		{
 			autoChooser = AutoBuilder.buildAutoChooser("Score4L410L4Right"); //TODO: MAKE SURE THIS IS NOT SET DURING COMPETITION
-			Shuffleboard.getTab("Autonomous").add("Auto Chooser", autoChooser);
+			SmartDashboard.putData(autoChooser);
+			//Shuffleboard.getTab("Autonomous").add("Auto Chooser", autoChooser);
 		}
 	}
 
