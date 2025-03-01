@@ -303,7 +303,7 @@ public class LedManager extends SubsystemBase {
             case StrobeBlue -> Optional.of(Map.of("colorWhenTrue", "Blue", "colorWhenFalse", "Black"));
             // to lazy to implement unused colors
             default -> Optional.empty();
-        }
+        };
     }
 
 }
