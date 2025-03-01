@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Pgyro extends SubsystemBase {
 	static final class GyroConstants extends frc.robot.constants.Gyro {};
 	static Rotation2d offset = new Rotation2d();
+	public static Rotation2d alignOffset = new Rotation2d();
 
 	/** Creates a new Gyro. */
 	public Pgyro() {
@@ -80,5 +81,13 @@ public class Pgyro extends SubsystemBase {
 		return new InstantCommand(() -> {
 			offset = pigeon.getRotation2d().plus(Rotation2d.fromDegrees(180));
 		});
+	}
+
+	public static Command setAutoGyro() {
+		return new InstantCommand(
+			() -> {
+				alignOffset = pigeon.getRotation2d();
+			}
+		);
 	}
 }

@@ -107,12 +107,12 @@ public class RobotContainer {
 			Controller.enableManualControl
 					.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
 
-			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTagLeft());
+			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTagLeft(false));
 			Controller.alignLeft.onFalse(new InstantCommand(
 					() -> {
 						Controller.rumbleLeft = false;
 					}));
-			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTagRight());
+			Controller.alignRight.whileTrue(this.subsystems.swerve.new AlignToTagRight(false));
 			Controller.alignRight.onFalse(new InstantCommand(
 					() -> {
 						Controller.rumbleRight = false;
@@ -143,8 +143,8 @@ public class RobotContainer {
 
 		// Named commands
 		{
-			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagLeft());
-			NamedCommands.registerCommand("align left", this.subsystems.swerve.new AlignToTagRight());
+			NamedCommands.registerCommand("align right", this.subsystems.swerve.new AlignToTagLeft(true));
+			NamedCommands.registerCommand("align left", this.subsystems.swerve.new AlignToTagRight(true));
 			NamedCommands.registerCommand("intake", this.bindings.coral.runIntake());
 			NamedCommands.registerCommand("L0", this.bindings.elevator.goToL0());
 			NamedCommands.registerCommand("compoundL2", this.bindings.coral.compoundL2());
@@ -152,14 +152,14 @@ public class RobotContainer {
 			NamedCommands.registerCommand("L4", this.bindings.elevator.goToL4());
 			NamedCommands.registerCommand("outtake", this.bindings.coral.outtake());
 			NamedCommands.registerCommand("outtakeL4", this.bindings.coral.angleAndOuttakeL4());
-			NamedCommands.registerCommand("180gyro", Pgyro.backwardGyroCommand());
+			NamedCommands.registerCommand("gyro", Pgyro.setAutoGyro());
 			NamedCommands.registerCommand("print", new RunCommand(
 				() -> {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
 		}
 		{
-			autoChooser = AutoBuilder.buildAutoChooser("Score4L42L4Left"); //TODO: MAKE SURE THIS IS NOT SET DURING COMPETITION
+			autoChooser = AutoBuilder.buildAutoChooser("Score4L410L4Right"); //TODO: MAKE SURE THIS IS NOT SET DURING COMPETITION
 			Shuffleboard.getTab("Autonomous").add("Auto Chooser", autoChooser);
 		}
 	}

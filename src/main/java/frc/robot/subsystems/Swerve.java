@@ -291,6 +291,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	@Override
 	public void periodic() {
+		SmartDashboard.putNumber("gyro deg:", Pgyro.getDeg());
 		updateOdometry();
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
@@ -402,8 +403,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 		double yawTarget;
 		Rotation2d rot;
 		Transform3d cameraToRobot;
+		boolean auton;
 
-		public AlignToTagRight() {
+		public AlignToTagRight(boolean auton) {
+			this.auton = auton;
 			yawTarget = 0;
 
 			this.y = 0;
@@ -447,7 +450,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 			tracked_tag.ifPresent(
 					tag -> {
 						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
-								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()).inverse()) //TODO check functionality
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()).inverse()) // TODO
+																													// check
+																													// functionality
 								: cameraToRobot;
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
@@ -464,6 +469,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
+							if (auton) {
+								yawTarget = getTagAngle(tag.getFiducialId()) - Pgyro.alignOffset.getDegrees(); // TODO
+							}
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {
 							yawTarget = 180;
@@ -491,14 +499,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 		double yawTarget;
 		Rotation2d rot;
 		Transform3d cameraToRobot;
+		boolean auton;
 
-		public AlignToTagLeft() {
+		public AlignToTagLeft(boolean auton) {
+			this.auton = auton;
 			yawTarget = 0;
 
 			this.y = 0;
 			this.x = 0;
 			this.rot = new Rotation2d();
-			;
+
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
@@ -555,6 +565,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
+							if (auton) {
+								yawTarget = getTagAngle(tag.getFiducialId()) - Pgyro.alignOffset.getDegrees(); // TODO
+							}
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {
 							yawTarget = 180;
