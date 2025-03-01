@@ -195,6 +195,7 @@ public class LedManager extends SubsystemBase {
     GenericEntry widgetEntry;
 
     double lastStrobeTimestamp = 0;
+    Layer.PatternType lastStrobePattern = Layer.FixedPalletePatternType.ColorWavesLava; // dummy value
 
     public LedManager(Container.Subsystems subsystems, int PWMPort) {
         this.subsystems = subsystems;
@@ -253,16 +254,17 @@ public class LedManager extends SubsystemBase {
         }
 
         if (currentLayer.patternType instanceof Layer.FixedPalletePatternType color) {
-            if (lastStrobeTimestamp == 0) {
+            if (lastStrobeTimestamp == 0 && lastStrobePattern != color) {
                     var res = mapDualColorNames(color);
                     res.ifPresent(map -> widget.withProperties(map));
-                }
+                    lastStrobePattern = color;
+            }
 
-                double timestamp = Timer.getFPGATimestamp();
-                if (timestamp - lastStrobeTimestamp > 0.5) {
-                    widgetEntry.setBoolean(!widgetEntry.getBoolean(false));
-                    lastStrobeTimestamp = timestamp;
-                }
+            double timestamp = Timer.getFPGATimestamp();
+            if (timestamp - lastStrobeTimestamp > 0.5) {
+                widgetEntry.setBoolean(!widgetEntry.getBoolean(false));
+                lastStrobeTimestamp = timestamp;
+            }
         }
 
         layers.clear();
