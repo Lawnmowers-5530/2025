@@ -1,8 +1,14 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot.Container;
 
@@ -69,10 +75,12 @@ public class LedManager extends SubsystemBase {
             FixedPalletePatternType(double value) {
                 this.value = value;
             }
+
             public double getValue() {
                 return value;
             }
         }
+
         public enum Color1PatternType implements PatternType {
             EndToEndBlendToBlack(-0.03),
             LarsonScanner(-0.01),
@@ -90,10 +98,12 @@ public class LedManager extends SubsystemBase {
             Color1PatternType(double value) {
                 this.value = value;
             }
+
             public double getValue() {
                 return value;
             }
         }
+
         public enum Color2PatternType implements PatternType {
             EndToEndBlendToBlack(0.17),
             LarsonScanner(0.19),
@@ -111,10 +121,12 @@ public class LedManager extends SubsystemBase {
             Color2PatternType(double value) {
                 this.value = value;
             }
+
             public double getValue() {
                 return value;
             }
         }
+
         public enum Color1And2PatternType implements PatternType {
             Sparkle1On2(0.37),
             Sparkle2On1(0.39),
@@ -132,10 +144,12 @@ public class LedManager extends SubsystemBase {
             Color1And2PatternType(double value) {
                 this.value = value;
             }
+
             public double getValue() {
                 return value;
             }
         }
+
         public enum SolidColorType implements PatternType {
             HotPink(0.57),
             DarkRed(0.59),
@@ -161,9 +175,11 @@ public class LedManager extends SubsystemBase {
             Black(0.99);
 
             private final double value;
+
             SolidColorType(double value) {
                 this.value = value;
             }
+
             public double getValue() {
                 return value;
             }
@@ -175,17 +191,23 @@ public class LedManager extends SubsystemBase {
 
     Spark pwm;
 
+    SimpleWidget widget;
+    GenericEntry widgetEntry;
+
+    double lastStrobeTimestamp = 0;
+
     public LedManager(Container.Subsystems subsystems, int PWMPort) {
         this.subsystems = subsystems;
         pwm = new Spark(PWMPort);
+        widget = Shuffleboard.getTab("SmartDashboard").add("LED status", false);
+        widgetEntry = widget.getEntry();
     }
-
 
 
     @Override
     public void periodic() {
         //#region actual layer management
-        {   
+        {
             //Low Priority
             if (subsystems.coralIntake.state == CoralIntake.States.IDLE) {
                 layers.add(new Layer(Layer.SolidColorType.DarkRed, -69));
@@ -198,16 +220,11 @@ public class LedManager extends SubsystemBase {
             }
 
 
-
-
             //Medium Priority
-
 
 
             //High Priority
         }
-
-
 
 
         //#endregion layer management
@@ -226,7 +243,66 @@ public class LedManager extends SubsystemBase {
             }
         }
 
-        pwm.set(layers.get(highestPriorityIndex).patternType.getValue());
+        Layer currentLayer = layers.get(highestPriorityIndex);
+        pwm.set(currentLayer.patternType.getValue());
+
+        if (currentLayer.patternType instanceof Layer.SolidColorType color) {
+            widget.withProperties(Map.of("colorWhenTrue", mapToColorName(color)));
+            widgetEntry.setBoolean(true);
+            lastStrobeTimestamp = 0;
+        }
+
+        if (currentLayer.patternType instanceof Layer.FixedPalletePatternType color) {
+            if (lastStrobeTimestamp == 0) {
+                    var res = mapDualColorNames(color);
+                    res.ifPresent(map -> widget.withProperties(map));
+                }
+
+                double timestamp = Timer.getFPGATimestamp();
+                if (timestamp - lastStrobeTimestamp > 0.5) {
+                    widgetEntry.setBoolean(!widgetEntry.getBoolean(false));
+                    lastStrobeTimestamp = timestamp;
+                }
+        }
+
         layers.clear();
     }
+
+    String mapToColorName(Layer.SolidColorType pattern) {
+        return switch (pattern) {
+            case HotPink -> "Hot Pink";
+            case DarkRed -> "Dark Red";
+            case Red -> "Red";
+            case RedOrange -> "Red Orange";
+            case Orange -> "Orange";
+            case Gold -> "Gold";
+            case Yellow -> "Yellow";
+            case LawnGreen -> "Lawn Green";
+            case Lime -> "Lime";
+            case DarkGreen -> "Dark Green";
+            case Green -> "Green";
+            case BlueGreen -> "Blue Green";
+            case Aqua -> "Aqua";
+            case SkyBlue -> "Sky Blue";
+            case DarkBlue -> "Dark Blue";
+            case Blue -> "Blue";
+            case BlueViolet -> "Blue Violet";
+            case Violet -> "Violet";
+            case White -> "White";
+            case Gray -> "Gray";
+            case DarkGray -> "Dark Gray";
+            case Black -> "Black";
+            default -> "Black";
+        };
+    }
+
+    Optional<Map<String, Object>> mapDualColorNames(Layer.FixedPalletePatternType pattern) {
+        return switch(pattern) {
+            case StrobeBlue -> Optional.of(Map.of("colorWhenTrue", "Blue", "colorWhenFalse", "Black"));
+            // to lazy to implement unused colors
+            default -> Optional.empty();
+        }
+    }
+
 }
+
