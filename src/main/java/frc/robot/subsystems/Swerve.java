@@ -285,7 +285,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				getModulePositions(),
 				pose);
 		Pgyro.setAutoGyro();
-		
+
 	}
 
 	/**
@@ -472,7 +472,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
 							if (auton) {
-								yawTarget = getTagAngle(tag.getFiducialId()) - Pgyro.alignOffset.getDegrees(); // TODO
+								yaw = odometry.getEstimatedPosition().getRotation().getDegrees();
 							}
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {
@@ -568,7 +568,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
 							if (auton) {
-								yawTarget = getTagAngle(tag.getFiducialId()) - Pgyro.alignOffset.getDegrees(); // TODO
+								yaw = odometry.getEstimatedPosition().getRotation().getDegrees();
 							}
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {

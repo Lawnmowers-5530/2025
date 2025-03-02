@@ -20,8 +20,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class CoralIntake extends SubsystemBase {
-    //import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
-    static final class PivotConstants extends frc.robot.constants.CoralIntake.Pivot {};
+    // import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
+    static final class PivotConstants extends frc.robot.constants.CoralIntake.Pivot {
+    };
 
     private SparkMax intake;
     private SparkMax pivot;
@@ -34,22 +35,20 @@ public class CoralIntake extends SubsystemBase {
     private AbsoluteEncoder pivotEncoder;
     public States state = States.HAS_CORAL;
 
-
     public double target = PivotConstants.bottomPos;
 
     boolean laserCanSwitch = false;
 
     public CoralIntake() {
         intakeConfig = new SparkMaxConfig();
-        intakeConfig.smartCurrentLimit(20,20);
-
+        intakeConfig.smartCurrentLimit(20, 20);
 
         pivotConfig = new SparkMaxConfig();
         pivotConfig.inverted(false);
-        //intakeConfig.softLimit.
+        // intakeConfig.softLimit.
         fakeBeamBreak = new LaserCan(PivotConstants.laserCan1Id);
         fakeBeamBreak2 = new LaserCan(PivotConstants.laserCan2Id);
-        
+
         intake = new SparkMax(PivotConstants.intakeId, MotorType.kBrushless);
         intake.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         pivot = new SparkMax(PivotConstants.pivotId, MotorType.kBrushless);
@@ -58,19 +57,22 @@ public class CoralIntake extends SubsystemBase {
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
         pivotController.setTolerance(PivotConstants.tolerance);
-        
 
     }
+
     @Deprecated
     public double uff(double theta) {
         double cosTheta = Math.cos(theta);
-        double numer = (PivotConstants.length * PivotConstants.restistance * PivotConstants.mass * PivotConstants.gravity);
+        double numer = (PivotConstants.length * PivotConstants.restistance * PivotConstants.mass
+                * PivotConstants.gravity);
         double denom = (PivotConstants.center * PivotConstants.gearRatio * PivotConstants.kt);
-        return numer * cosTheta  * denom;
+        return numer * cosTheta * denom;
     }
+
     @Override
     public void periodic() {
-        double out = pivotController.calculate(pivotEncoder.getPosition(), Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
+        double out = pivotController.calculate(pivotEncoder.getPosition(),
+                Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
         pivot.set(out);
 
         if (intake.get() != 0) {
@@ -88,12 +90,12 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public BooleanSupplier atTarget = () -> {
-        return Math.abs(this.target-this.pivot.getAbsoluteEncoder().getPosition())<PivotConstants.tolerance;
+        return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
 
     };
 
     public void manualPivot(double speed) {
-        this.target += speed/100;
+        this.target += speed / 100;
         this.target = Math.max(this.target, 0.67);
         this.target = Math.min(this.target, 0.9);
     }
@@ -101,19 +103,19 @@ public class CoralIntake extends SubsystemBase {
     public void setTarget(Targets target) {
         switch (target) {
             case INTAKE:
-            this.target = PivotConstants.intakePos;
-            break;
+                this.target = PivotConstants.intakePos;
+                break;
             case BOTTOM:
-            this.target = PivotConstants.bottomPos;
-            break;
+                this.target = PivotConstants.bottomPos;
+                break;
             case MIDDLE:
-            this.target = PivotConstants.middlePos;
-            break;
+                this.target = PivotConstants.middlePos;
+                break;
             case TOP:
-            this.target = PivotConstants.topPos;
-            break;
+                this.target = PivotConstants.topPos;
+                break;
             case L4:
-            this.target = PivotConstants.L4;
+                this.target = PivotConstants.L4;
 
         }
     }
@@ -127,12 +129,18 @@ public class CoralIntake extends SubsystemBase {
     public enum Targets {
         INTAKE, BOTTOM, MIDDLE, TOP, L4
     }
+
     public void intake() {
         System.out.println("intaking");
         intake.set(PivotConstants.intakePower);
     }
+
     public void outtake() {
         intake.set(PivotConstants.intakePower);
+    }
+
+    public void outtakeL1() {
+        intake.set(PivotConstants.outtakeL1);
     }
 
     public void stopIntake() {
@@ -144,27 +152,33 @@ public class CoralIntake extends SubsystemBase {
         SmartDashboard.putNumber("measurement", measurement);
         return measurement < 35;
     }
+
     public boolean notCoralDetected1() {
         return !coralDetected1();
     }
+
     public boolean notCoralDetected() {
-        return laserCanSwitch? !coralDetected1() : !coralDetected2();
+        return laserCanSwitch ? !coralDetected1() : !coralDetected2();
     }
+
     private boolean coralDetected2() {
         var measurement = fakeBeamBreak2.getMeasurement();
         return measurement.distance_mm < 35;
     }
+
     public boolean coralDetected() {
         return laserCanSwitch ? coralDetected1() : coralDetected2();
     }
+
     public void setLaserCanSwitch(boolean value) {
         laserCanSwitch = value;
     }
+
     public static class Helper {
-        public static  double ticksToDegree(double ticks) {
-            return ticks * 360;//domath
+        public static double ticksToDegree(double ticks) {
+            return ticks * 360;// domath
         }
-        
+
     }
 
     public Command intakeCommand() {
@@ -173,8 +187,16 @@ public class CoralIntake extends SubsystemBase {
         }, this);
     }
 
+    public Command outtakeL1Command() {
+        return new RunCommand(
+                () -> {
+                    outtakeL1();
+                },
+                this);
+    }
+
     public Command stopIntakeCommand() {
-        return new WaitCommand(laserCanSwitch ? 0: 0.2).andThen(new InstantCommand(() -> {
+        return new WaitCommand(laserCanSwitch ? 0 : 0.2).andThen(new InstantCommand(() -> {
             stopIntake();
         }, this));
     }

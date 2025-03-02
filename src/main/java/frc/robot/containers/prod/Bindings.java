@@ -147,10 +147,22 @@ public class Bindings {
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
+		Command outtakeL1() {
+			return Bindings.this.subsystems.coralIntake.outtakeL1Command()
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
+					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		}
+
 		Command angleAndOuttakeL4() {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.L4)
 					.andThen(new WaitUntilCommand(this::pivotAndElevator))
 					.andThen(Bindings.this.coral.outtake());
+		}
+
+		Command compoundL1() {
+			return Bindings.this.elevator.goToL2()
+					.andThen(new WaitUntilCommand(this::pivotAndElevator))
+					.andThen(Bindings.this.coral.outtakeL1());
 		}
 
 		/**

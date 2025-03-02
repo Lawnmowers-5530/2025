@@ -126,7 +126,7 @@ public class RobotContainer {
 				this.subsystems.hang.setFunnelRelease();
 			}));
 
-			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL2());
+			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL1());
 
 			this.subsystems.hang.setDefaultCommand(
 					new RunCommand(
