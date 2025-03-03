@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -38,6 +39,9 @@ public final class Elevator extends SubsystemBase {
 
     private DigitalInput limitSwitch;
 
+    private RelativeEncoder motor1Encoder;
+    private RelativeEncoder motor2Encoder;
+
     public Elevator() {
 
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
@@ -67,6 +71,9 @@ public final class Elevator extends SubsystemBase {
                 .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
+        motor1Encoder = motor1.getEncoder();
+        motor2Encoder = motor2.getEncoder();
+
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
 
         elevatorController = new PIDController(ElevatorConstants.kP, 0, 0);
@@ -81,11 +88,9 @@ public final class Elevator extends SubsystemBase {
     public void manualSetSpeed(double speed) {
         motor1.set(speed);
         motor2.set(speed);
-        //sp += speed;
-        //sp = MathUtil.clamp(sp, 0.0, ElevatorConstants.level3);
-       
-   
-        
+        // sp += speed;
+        // sp = MathUtil.clamp(sp, 0.0, ElevatorConstants.level3);
+
     }
 
     public boolean tooHigh() {
@@ -99,8 +104,8 @@ public final class Elevator extends SubsystemBase {
     }
 
     public TrapezoidProfile.State getCurrentState() {
-        double average = (motor1.getEncoder().getPosition() + motor2.getEncoder().getPosition()) / 2.0;
-        double averageVel = (motor1.getEncoder().getVelocity() + motor2.getEncoder().getVelocity()) / 2.0;
+        double average = (motor1Encoder.getPosition() + motor2Encoder.getPosition()) / 2.0;
+        double averageVel = (motor1Encoder.getVelocity() + motor2Encoder.getVelocity()) / 2.0;
         return new TrapezoidProfile.State(average, averageVel);
 
     }
@@ -190,6 +195,11 @@ public final class Elevator extends SubsystemBase {
         }, this);
     }
 
+    public void resetPosition() {
+        this.motor1Encoder.setPosition(0);
+        this.motor2Encoder.setPosition(0);
+    }
+
     public boolean calibrated = false;
 
     public Command calibrate() {
@@ -207,7 +217,7 @@ public final class Elevator extends SubsystemBase {
                     if (limitSwitch.get()) {
                         motor1.set(0);
                         motor2.set(0);
-                        motor1.getEncoder().setPosition(0);
+                        motor1Encoder.setPosition(0);
                         motor2.getEncoder().setPosition(0);
 
                         SoftLimitConfig limits = new SoftLimitConfig()

@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "gyro"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "mtestpath1"
