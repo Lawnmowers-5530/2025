@@ -160,7 +160,7 @@ public class Bindings {
 		}
 
 		Command compoundL1() {
-			return Bindings.this.elevator.goToL2()
+			return Bindings.this.elevator.goToL1()
 					.andThen(new WaitUntilCommand(this::pivotAndElevator))
 					.andThen(Bindings.this.coral.outtakeL1());
 		}
