@@ -42,7 +42,7 @@ public class Swerve {
     }
 
     public static class SwerveModule {
-        public static final double conversionFactor = (1 / 6.75) * Units.inchesToMeters(Math.PI * 4);
+        public static final double conversionFactor = (1 / 6.12) * Units.inchesToMeters(Math.PI * 4);
 
         /**
          * number to multiply
@@ -74,8 +74,8 @@ public class Swerve {
         public static final double driveBaseRadius = Units
                 .inchesToMeters(Math.sqrt(trackWidth * trackWidth + wheelBase * wheelBase));
 
-        public static final PIDConstants translationConstants = new PIDConstants(6, 0, 0);
-        public static final PIDConstants rotationConstants = new PIDConstants(2.25, 0, 0);
+        public static final PIDConstants translationConstants = new PIDConstants(4, 0, 0);
+        public static final PIDConstants rotationConstants = new PIDConstants(2, 0, 0);
 
         public static final PathConstraints constraints = new PathConstraints(1, 1, 1, 1);
     }

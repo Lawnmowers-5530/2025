@@ -33,6 +33,10 @@ public class Pgyro extends SubsystemBase {
 		return pigeon.getRotation2d().minus(offset);//.minus(Rotation2d.fromDegrees(offset));
 	}
 
+	public static Rotation2d getRawRot() {
+		return pigeon.getRotation2d();
+	}
+
 	public static double getDeg() {
 		//return pigeon.getYaw().getValueAsDouble();// - offset;
 		return getRot().getDegrees();

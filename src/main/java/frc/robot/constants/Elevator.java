@@ -10,7 +10,7 @@ public class Elevator {
     public static final double minSpeed = -0.8;
     public static final double maxSpeed = 1;
 
-    public static final double kP = 0.033;
+    public static final double kP = 0.07;
     public static final double kI = 0.000;
     public static final double kD = 0.0;
     public static final double integralZone = 2;

@@ -117,7 +117,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		odometry = new SwerveDrivePoseEstimator(
 				SwerveConstants.kinematics,
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				modPos,
 				getPose(),
 				VecBuilder.fill(0.1, 0.1, 0.1), // set state std devs to 0.1,0.1,0.1 - these are //TODO
@@ -281,7 +281,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	public void resetPose(Pose2d pose) {
 		odometry.resetPosition(
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				getModulePositions(),
 				pose);
 		//Pgyro.setAutoGyro();
@@ -306,7 +306,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	public void updateOdometry() {
 		odometry.update(
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				getModulePositions());
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
