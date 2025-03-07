@@ -284,7 +284,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Pgyro.getRawRot(),
 				getModulePositions(),
 				pose);
-		//Pgyro.setAutoGyro();
+		// Pgyro.setAutoGyro();
 
 	}
 
@@ -311,12 +311,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		// for (var visionEstimate : visionEstimates) {
-		// var estimate = visionEstimate.getFirst();
-		// var deviations = visionEstimate.getSecond();
-		// odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(),
-		// estimate.timestampSeconds, deviations);
-		// }
+		//for (var visionEstimate : visionEstimates) {
+		//	var estimate = visionEstimate.getFirst();
+		//	var deviations = visionEstimate.getSecond();
+		//	odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
+		//			estimate.timestampSeconds, deviations);
+		//}
 	}
 
 	/**

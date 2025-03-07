@@ -38,7 +38,6 @@ public class RobotContainer {
 	public class Subsystems {
 		public Swerve swerve;
 		public Controller controller;
-		public PoseCameraManager man;
 		public CoralIntake coralIntake;
 		public Elevator elevator;
 		public Hang hang;
@@ -71,7 +70,6 @@ public class RobotContainer {
 			this.subsystems = new Subsystems();
 			this.subsystems.ledManager = new LedManager(this.subsystems, 2);
 			this.subsystems.hang = new Hang();
-			this.subsystems.man = new PoseCameraManager();
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();

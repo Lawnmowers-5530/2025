@@ -6,6 +6,8 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Swerve;
@@ -31,7 +33,10 @@ public class PoseCameraManager implements Loggable {
     private ArrayList<PoseCamera> camList = new ArrayList<>();
     Field2d field = new Field2d();
 
+    private boolean red;
+
     public PoseCameraManager() {
+        red = DriverStation.getAlliance().get() == Alliance.Red;
         camList.add(new PoseCamera("Front", new Transform3d()));
         camList.add(new PoseCamera("Front2", new Transform3d()));
         SmartDashboard.putData("Fields", field);
@@ -39,7 +44,7 @@ public class PoseCameraManager implements Loggable {
         // camList.add(new PoseCamera("cam2", new Transform3d()));
     }
 
-    public Pose2d flipPose(Pose2d pose, boolean red) {
+    public Pose2d flipPose(Pose2d pose) {
         if (red) {
             return new Pose2d(SwerveConstants.fieldLength - pose.getX(), SwerveConstants.fieldWidth - pose.getY(),
                     pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
