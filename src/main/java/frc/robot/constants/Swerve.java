@@ -6,6 +6,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 public class Swerve {
+    public static final double fieldWidth = Units.feetToMeters(26) + Units.inchesToMeters(5);
+    public static final double fieldLength = Units.feetToMeters(57) + Units.inchesToMeters(6.875);
+
     public static final double trackWidth = Units.inchesToMeters(24);
     public static final double wheelBase = Units.inchesToMeters(24);
 

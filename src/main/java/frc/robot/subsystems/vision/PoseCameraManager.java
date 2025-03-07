@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Swerve;
@@ -24,6 +25,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  * {@link Swerve Swerve}.
  */
 public class PoseCameraManager implements Loggable {
+    static final class SwerveConstants extends frc.robot.constants.Swerve {
+    };
+
     private ArrayList<PoseCamera> camList = new ArrayList<>();
     Field2d field = new Field2d();
 
@@ -33,6 +37,14 @@ public class PoseCameraManager implements Loggable {
         SmartDashboard.putData("Fields", field);
         // change?
         // camList.add(new PoseCamera("cam2", new Transform3d()));
+    }
+
+    public Pose2d flipPose(Pose2d pose, boolean red) {
+        if (red) {
+            return new Pose2d(SwerveConstants.fieldLength - pose.getX(), SwerveConstants.fieldWidth - pose.getY(),
+                    pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+        }
+        return pose;
     }
 
     /**
@@ -76,7 +88,7 @@ public class PoseCameraManager implements Loggable {
     }
 
     public Optional<PhotonTrackedTarget> getPrimaryTargetLeft() {
-            return camList.get(0).getPrimaryTrackedTarget();
+        return camList.get(0).getPrimaryTrackedTarget();
     }
 
     public Optional<PhotonTrackedTarget> getPrimaryTargetRight() {
