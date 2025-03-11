@@ -58,6 +58,7 @@ public final class Elevator extends SubsystemBase {
                 .d(ElevatorConstants.kD)
                 .iZone(ElevatorConstants.integralZone)
                 .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
+        motor1Config.smartCurrentLimit(40, 40);
 
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -69,6 +70,8 @@ public final class Elevator extends SubsystemBase {
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
                 .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
+        motor1Config.smartCurrentLimit(40, 40);
+        
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         motor1Encoder = motor1.getEncoder();
@@ -122,6 +125,9 @@ public final class Elevator extends SubsystemBase {
         goal.position = sp;
         goal.velocity = 0;
 
+        SmartDashboard.putNumber("left curr", this.motor1.getOutputCurrent());
+        SmartDashboard.putNumber("right curr", this.motor2.getOutputCurrent());
+
         // double pud = elevatorController.calculate(getCurrentState().position,
         // setpoint.position); //TODO switch to trap profile
         // double ff = feedforward.calculate(setpoint.velocity);
@@ -131,7 +137,6 @@ public final class Elevator extends SubsystemBase {
 
         // motor1.set(pud + ff);
         // motor2.set(pud + ff);
-        SmartDashboard.putNumber("elevatorout", pud + ff);
     }
 
     @Deprecated

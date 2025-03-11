@@ -85,12 +85,13 @@ public class CoralIntake extends SubsystemBase {
         SmartDashboard.putNumber("Pivot out", out);
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
-        SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);
+        //SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);
         SmartDashboard.putNumber("intake speed", intake.get());
     }
 
     public BooleanSupplier atTarget = () -> {
-        return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
+        return true;
+        //return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
 
     };
 
@@ -148,9 +149,10 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean coralDetected1() {
-        double measurement = fakeBeamBreak.getMeasurement().distance_mm;
-        SmartDashboard.putNumber("measurement", measurement);
-        return measurement < 35;
+        //double measurement = fakeBeamBreak.getMeasurement().distance_mm;
+        //SmartDashboard.putNumber("measurement", measurement);
+        //return measurement < 35;
+        return false;
     }
 
     public boolean notCoralDetected1() {
@@ -162,8 +164,9 @@ public class CoralIntake extends SubsystemBase {
     }
 
     private boolean coralDetected2() {
-        var measurement = fakeBeamBreak2.getMeasurement();
-        return measurement.distance_mm < 35;
+        return false;
+        //var measurement = fakeBeamBreak2.getMeasurement();
+        //return measurement.distance_mm < 35;
     }
 
     public boolean coralDetected() {
