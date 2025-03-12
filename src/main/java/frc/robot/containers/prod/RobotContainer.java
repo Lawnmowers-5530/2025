@@ -160,6 +160,8 @@ public class RobotContainer {
 				() -> {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
+			NamedCommands.registerCommand("Coral In Funnel", this.subsystems.coralIntake.coralInFunnel());
+			NamedCommands.registerCommand("Coral Not In Funnel", this.subsystems.coralIntake.coralNotInFunnel());
 		}
 		{
 			autoChooser = AutoBuilder.buildAutoChooser("Score4L410L4Right"); //TODO: MAKE SURE THIS IS NOT SET DURING COMPETITION

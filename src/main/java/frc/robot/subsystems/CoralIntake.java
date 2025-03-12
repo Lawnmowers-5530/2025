@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.customcommands.BooleanCommand;
 
 public class CoralIntake extends SubsystemBase {
     // import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -32,6 +33,7 @@ public class CoralIntake extends SubsystemBase {
     private SparkMaxConfig pivotConfig;
     private LaserCan fakeBeamBreak;
     private LaserCan fakeBeamBreak2;
+    private LaserCan funnelBeamBreak;
     private AbsoluteEncoder pivotEncoder;
     public States state = States.HAS_CORAL;
 
@@ -48,6 +50,7 @@ public class CoralIntake extends SubsystemBase {
         // intakeConfig.softLimit.
         fakeBeamBreak = new LaserCan(PivotConstants.laserCan1Id);
         fakeBeamBreak2 = new LaserCan(PivotConstants.laserCan2Id);
+        funnelBeamBreak = new LaserCan(PivotConstants.laserCan3Id);
 
         intake = new SparkMax(PivotConstants.intakeId, MotorType.kBrushless);
         intake.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -94,6 +97,13 @@ public class CoralIntake extends SubsystemBase {
         //return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
 
     };
+    public boolean isCoralInFunnel() {
+        var measurement = funnelBeamBreak.getMeasurement();
+        return measurement.distance_mm < PivotConstants.maximumDetectDistanceForFunnel;
+    }
+    public boolean isCoralNotInFunnel() {
+        return !isCoralInFunnel();
+    }
 
     public void manualPivot(double speed) {
         this.target += speed / 100;
@@ -203,9 +213,15 @@ public class CoralIntake extends SubsystemBase {
             stopIntake();
         }, this));
     }
-
+    public BooleanCommand coralInFunnel() {
+        return new BooleanCommand(this::isCoralInFunnel);
+    }
+    public BooleanCommand coralNotInFunnel() {
+        return new BooleanCommand(this::isCoralNotInFunnel);
+    }
     public enum States {
         HAS_CORAL, WANTS_CORAL, IDLE
     }
+    
 
 }

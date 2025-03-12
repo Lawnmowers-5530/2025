@@ -6,6 +6,8 @@ public class CoralIntake {
         public static final int intakeId = 23;
         public static final int laserCan1Id = 42;
         public static final int laserCan2Id = 27;
+        public static final int laserCan3Id = 28;
+        public static final double maximumDetectDistanceForFunnel = 300;
 
         public static final double intakePower = 0.45;
         public static final double outtakeL1 = 0.85;
