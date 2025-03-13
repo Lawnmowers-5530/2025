@@ -7,7 +7,6 @@ package frc.robot.containers.prod;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -20,7 +19,6 @@ import frc.robot.subsystems.Hang;
 import frc.robot.subsystems.LedManager;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.Logger;
 
 import java.util.Objects;
