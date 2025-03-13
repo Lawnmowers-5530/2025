@@ -129,7 +129,8 @@ public class RobotContainer {
 				this.subsystems.elevator.resetPosition();
 			}));
 
-			this.controller.driverController.povLeft().onTrue(this.bindings.coral.compoundL1());
+			this.controller.driverController.leftTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
+			this.controller.driverController.rightTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
 
 			this.subsystems.hang.setDefaultCommand(
 					new RunCommand(

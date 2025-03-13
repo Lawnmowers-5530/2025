@@ -12,6 +12,9 @@ public class Swerve {
     public static final double trackWidth = Units.inchesToMeters(24);
     public static final double wheelBase = Units.inchesToMeters(24);
 
+    public static final double leftStationAngle = 0;
+    public static final double rightStationAngle = 0;
+
     public static final class FrontLeftModule { // FL
         public static final int driveMotor = 5;
         public static final int turnMotor = 6;

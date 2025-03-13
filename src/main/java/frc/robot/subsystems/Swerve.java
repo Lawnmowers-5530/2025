@@ -222,7 +222,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 		frontRightModule.setState(states[1]);
 		rearRightModule.setState(states[2]);
 		rearLeftModule.setState(states[3]);
-		SmartDashboard.putString("rr", states[2].toString());
 
 	}
 
@@ -245,9 +244,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 							yawSupplier.getAsDouble());
 					this.drive(vectorSupplier.get().times(scalar), rotationOutput, false, 1);
 				},
-				this).until(() -> {
-					return rotationPID.atSetpoint(); // lambda boolean supplier to detect if at rotation setpoint
-				});
+				this);
 	}
 
 	/**
