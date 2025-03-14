@@ -5,6 +5,8 @@
 package frc.robot.containers.prod;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -89,6 +91,13 @@ public class RobotContainer {
 			this.bindings = new Bindings(this.subsystems);
 
 			this.subsystems.swerve.setDefaultCommand(this.subsystems.swerve.drive());
+			
+			//this.subsystems.swerve.setDefaultCommand(
+			//	new RunCommand(
+			//		() -> {
+			//			this.subsystems.swerve.autoDriveRobotRelative(new ChassisSpeeds(Controller.driveVector.get().get(0), Controller.driveVector.get().get(1), -Controller.driveRotation.get()));
+			//		}, this.subsystems.swerve)
+			//);
 
 			Controller.L1.onTrue(this.bindings.elevator.goToL1());
 			Controller.L2.onTrue(this.bindings.elevator.goToL2());

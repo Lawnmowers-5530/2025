@@ -73,7 +73,7 @@ public class CoralIntake extends SubsystemBase {
     public void periodic() {
         double out = pivotController.calculate(pivotEncoder.getPosition(),
                 Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
-        pivot.set(out);
+        //pivot.set(out);
 
         if (intake.get() != 0) {
             state = States.WANTS_CORAL;
