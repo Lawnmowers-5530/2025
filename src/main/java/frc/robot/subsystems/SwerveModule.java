@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Swerve;
 
@@ -91,6 +92,7 @@ public class SwerveModule extends SubsystemBase {
 												// always chooses the shortest angle to
 												// rotate to
 		double clamped_out = Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond));
+		SmartDashboard.putNumber("smps", state.speedMetersPerSecond);
 
 		drive.set(slowMode ? clamped_out * SwerveModuleConstants.slowModeScaleFactor : clamped_out); // set speed of drive motor
 		// System.out.println(state.speedMetersPerSecond);

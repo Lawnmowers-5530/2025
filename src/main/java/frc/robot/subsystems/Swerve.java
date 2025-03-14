@@ -255,7 +255,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						speeds.vxMetersPerSecond,
 						speeds.vyMetersPerSecond),
 				speeds.omegaRadiansPerSecond,
-				false, 1);
+				false, 1/4.8);
 	}
 
 	/**
@@ -292,6 +292,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
 		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
+		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity()+this.frontRightModule.getVelocity()+this.rearLeftModule.getVelocity()+this.rearRightModule.getVelocity())/4);
 	}
 
 	/**
