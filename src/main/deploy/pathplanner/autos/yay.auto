@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "hello"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "align right"
+            "pathName": "lol"
           }
         }
       ]

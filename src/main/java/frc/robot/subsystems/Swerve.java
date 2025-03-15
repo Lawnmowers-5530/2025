@@ -137,7 +137,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				this::getPose,
 				this::resetPose,
 				this::getRobotRelativeSpeeds,
-				(speeds, feedforwards) -> autoDriveRobotRelative(speeds),
+				(speeds, feedforwards) -> autoDriveRobotRelative(speeds, 1 / 4.8),
 				new PPHolonomicDriveController(
 						SwerveConstants.PathPlanner.translationConstants,
 						SwerveConstants.PathPlanner.rotationConstants),
@@ -249,13 +249,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 * 
 	 * @param speeds ChassisSpeeds object
 	 */
-	public void autoDriveRobotRelative(ChassisSpeeds speeds) {
+	public void autoDriveRobotRelative(ChassisSpeeds speeds, double scalar) {
 		this.drive(
 				VecBuilder.fill(
 						speeds.vxMetersPerSecond,
 						speeds.vyMetersPerSecond),
 				speeds.omegaRadiansPerSecond,
-				false, 1/4.8);
+				false, scalar);
 	}
 
 	/**
@@ -292,7 +292,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
 		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
-		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity()+this.frontRightModule.getVelocity()+this.rearLeftModule.getVelocity()+this.rearRightModule.getVelocity())/4);
+		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity() + this.frontRightModule.getVelocity()
+				+ this.rearLeftModule.getVelocity() + this.rearRightModule.getVelocity()) / 4);
 	}
 
 	/**
@@ -306,12 +307,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		//for (var visionEstimate : visionEstimates) {
-		//	var estimate = visionEstimate.getFirst();
-		//	var deviations = visionEstimate.getSecond();
-		//	odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
-		//			estimate.timestampSeconds, deviations);
-		//}
+		// for (var visionEstimate : visionEstimates) {
+		// var estimate = visionEstimate.getFirst();
+		// var deviations = visionEstimate.getSecond();
+		// odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
+		// estimate.timestampSeconds, deviations);
+		// }
 	}
 
 	/**
@@ -478,7 +479,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 					});
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
-					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)));
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
 		}
 	}
 
@@ -574,7 +575,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 					});
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
-					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)));
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
 		}
 	}
 
