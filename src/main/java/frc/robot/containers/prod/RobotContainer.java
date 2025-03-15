@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
+import frc.robot.subsystems.Bonk;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
@@ -42,6 +43,7 @@ public class RobotContainer {
 		public Elevator elevator;
 		public Hang hang;
 		public LedManager ledManager;
+		public Bonk bonk;
 
 		// Watch for this
 		public AlgaeIntake algaeIntake;
@@ -73,7 +75,7 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();
-
+			this.subsystems.bonk = new Bonk(); 
 			this.subsystems.swerve = new Swerve();
 
 			// if (this.subsystems.algaeIntake == null) {
@@ -146,6 +148,7 @@ public class RobotContainer {
 										.manualInput(this.controller.secondaryController.getRightTriggerAxis()
 												- this.controller.secondaryController.getLeftTriggerAxis());
 							}, this.subsystems.hang));
+			this.controller.secondaryController.a().onTrue(this.subsystems.bonk.bonk());
 
 			// this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject,
 			// this::getAngle));
