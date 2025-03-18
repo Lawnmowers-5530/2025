@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Swerve;
 import org.photonvision.EstimatedRobotPose;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -29,7 +31,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PoseCameraManager implements Loggable {
     static final class SwerveConstants extends frc.robot.constants.Swerve {
     };
-
+    static AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
     private ArrayList<PoseCamera> camList = new ArrayList<>();
     Field2d field = new Field2d();
 
@@ -50,6 +52,9 @@ public class PoseCameraManager implements Loggable {
                     pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
         }
         return pose;
+    }
+    public static Pose3d getAprilTagPoseFromId(int id)  {
+        return layout.getTagPose(id).get();
     }
 
     /**

@@ -3,7 +3,6 @@ package frc.robot.subsystems.vision;
 import java.util.List;
 import java.util.Optional;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -11,6 +10,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -30,7 +30,7 @@ public class PoseCamera extends SubsystemBase {
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
     private Optional<PhotonPipelineResult> latestResult = Optional.empty();
-
+    
     public PoseCamera(String cameraName, Transform3d cameraPosition) {
         camera = new PhotonCamera(cameraName);
         poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
@@ -40,6 +40,7 @@ public class PoseCamera extends SubsystemBase {
                                                                                   // strategy when only one tag is
                                                                                   // visible
     }
+    
 
     /**
      * Returns an {@link EstimatedRobotPose} if camera pipeline has a new result

@@ -17,15 +17,19 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -498,6 +502,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 		Rotation2d rot;
 		Transform3d cameraToRobot;
 		boolean auton;
+		/*
+		 * Best practice is to just work completely in field coordinates
+		 */
+		
 
 		public AlignToTagLeft(boolean auton) {
 			this.auton = auton;
@@ -519,12 +527,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
 
 			addRequirements(Swerve.this);
+			target = Pose2d.kZero;
 		}
 
 		public boolean isFinished() {
 			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
 		}
-
+		Pose2d target;
+		@Override public void initialize() {
+			target=Pose2d.kZero;
+		}
 		@Override
 		public void execute() {
 			if (isFinished()) {
@@ -534,16 +546,22 @@ public class Swerve extends SubsystemBase implements Loggable {
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
+			
 
 			// sort tags by the tag's pose ambiguity
-			if (tags.isEmpty()) {
+			//DELETE THIS???
+			/*if (tags.isEmpty()) {
 				return;
-			}
+			}*/
 			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1
 					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+			y = odometry.getEstimatedPosition().getX();
+			x = odometry.getEstimatedPosition().getY();
+
 
 			tracked_tag.ifPresent(
 					tag -> {
+					
 						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
 								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()))
 								: cameraToRobot;
@@ -551,7 +569,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
-								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
+								PoseCameraManager.getAprilTagPoseFromId(tag.fiducialId), cameraToRobot);
+						
+						odometry.resetPose(estimate.toPose2d());
+						//Make sure things are fine here (such that y is the correct thing in the plus)
+						target = PoseCameraManager.getAprilTagPoseFromId(tag.fiducialId).toPose2d().plus(new Transform2d(new Translation2d(0,0.2), Rotation2d.kZero));
 
 						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
 						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
@@ -572,10 +594,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 							yaw = rot.getDegrees();
 
 						}
+						
 
 					});
-			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
-					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
+			
+			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x, target.getX()),
+					-ydrivePID.calculate(y, target.getY()), yawPID.calculate(yaw, yawTarget)));
 		}
 	}
 
