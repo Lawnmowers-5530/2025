@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import au.grapplerobotics.LaserCan;
@@ -44,7 +46,12 @@ public class CoralIntake extends SubsystemBase {
         intakeConfig.smartCurrentLimit(20, 20);
 
         pivotConfig = new SparkMaxConfig();
-        pivotConfig.inverted(false);
+
+        pivotConfig.closedLoop.pidf(PivotConstants.Kp, 0, 0, PivotConstants.ff);
+        pivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        pivotConfig.closedLoop.positionWrappingEnabled(true).positionWrappingInputRange(0, 1);
+        pivotConfig.inverted(true);
+        pivotConfig.absoluteEncoder.inverted(true);
         // intakeConfig.softLimit.
         fakeBeamBreak = new LaserCan(PivotConstants.laserCan1Id);
         fakeBeamBreak2 = new LaserCan(PivotConstants.laserCan2Id);
@@ -71,9 +78,8 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double out = pivotController.calculate(pivotEncoder.getPosition(),
-                Math.min(PivotConstants.bottomPos, Math.max(PivotConstants.topPos, target)));
-        //pivot.set(out);
+        
+        pivot.getClosedLoopController().setReference(target, ControlType.kPosition);
 
         if (intake.get() != 0) {
             state = States.WANTS_CORAL;
@@ -82,7 +88,7 @@ public class CoralIntake extends SubsystemBase {
         } else {
             state = States.IDLE;
         }
-        SmartDashboard.putNumber("Pivot out", out);
+       
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
         //SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);

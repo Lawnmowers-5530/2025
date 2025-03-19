@@ -1,9 +1,9 @@
 package frc.robot.constants;
 
 public class Elevator {
-    public static final double level4 = 91.5;
-    public static final double level3 = 55; //unsure of actual value
-    public static final double level2 = 33; //unsure of actual value
+    public static final double level4 = 86;//91.5;
+    public static final double level3 = 53;//55; //unsure of actual value
+    public static final double level2 = 30;//33; //unsure of actual value
     public static final double level1 = 14; //unsure of actual value was 28
     public static final double intake = 0.1;
 
