@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class CoralIntake extends SubsystemBase {
     // import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -78,7 +77,7 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        SmartDashboard.putNumber("intake power", intake.get());
         pivot.getClosedLoopController().setReference(target, ControlType.kPosition);
 
         if (intake.get() != 0) {
@@ -88,6 +87,7 @@ public class CoralIntake extends SubsystemBase {
         } else {
             state = States.IDLE;
         }
+        //SmartDashboard.putBoolean("is coral in effector", notCoralDetected());
        
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
@@ -96,15 +96,22 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public BooleanSupplier atTarget = () -> {
-        return true;
-        //return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
+       
+        return Math.abs(this.target - this.pivot.getAbsoluteEncoder().getPosition()) < PivotConstants.tolerance;
 
     };
 
     public void manualPivot(double speed) {
-        this.target += speed / 100;
-        this.target = Math.max(this.target, 0.67);
-        this.target = Math.min(this.target, 0.9);
+        //this.target += speed / 100;
+        //this.target = Math.max(this.target, 0.67);
+        //if (this.target > 0.9) {
+          //  this.target = Math.max(this.target, 0.9);
+        //}else {
+          //  this.target = Math.min(this.target, 0.3);
+
+
+        //}
+        
     }
 
     public void setTarget(Targets target) {
@@ -155,10 +162,13 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean coralDetected1() {
-        //double measurement = fakeBeamBreak.getMeasurement().distance_mm;
-        //SmartDashboard.putNumber("measurement", measurement);
-        //return measurement < 35;
-        return false;
+        var measurement = fakeBeamBreak.getMeasurement();
+        if (measurement == null) {
+            System.out.println("Sensor 1 failure");
+            return false;
+        }
+        return measurement.distance_mm < 35;
+    
     }
 
     public boolean notCoralDetected1() {
@@ -166,17 +176,21 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public boolean notCoralDetected() {
-        return laserCanSwitch ? !coralDetected1() : !coralDetected2();
+        return laserCanSwitch ? !coralDetected2() : !coralDetected1();
     }
 
     private boolean coralDetected2() {
-        return false;
-        //var measurement = fakeBeamBreak2.getMeasurement();
-        //return measurement.distance_mm < 35;
+
+        var measurement = fakeBeamBreak2.getMeasurement();
+        if (measurement == null) {
+            System.out.println("Sensor 2 failure");
+            return false;
+        }
+        return measurement.distance_mm < 35;
     }
 
     public boolean coralDetected() {
-        return laserCanSwitch ? coralDetected1() : coralDetected2();
+        return laserCanSwitch ? coralDetected2() : coralDetected1();
     }
 
     public void setLaserCanSwitch(boolean value) {
@@ -205,9 +219,9 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public Command stopIntakeCommand() {
-        return new WaitCommand(laserCanSwitch ? 0 : 0.2).andThen(new InstantCommand(() -> {
+        return new InstantCommand(() -> {
             stopIntake();
-        }, this));
+        }, this);
     }
 
     public enum States {

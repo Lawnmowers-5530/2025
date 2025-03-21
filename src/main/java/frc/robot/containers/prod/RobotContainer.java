@@ -75,7 +75,7 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();
-			this.subsystems.bonk = new Bonk(); 
+			//this.subsystems.bonk = new Bonk(); 
 			this.subsystems.swerve = new Swerve();
 
 			// if (this.subsystems.algaeIntake == null) {
@@ -148,7 +148,7 @@ public class RobotContainer {
 										.manualInput(this.controller.secondaryController.getRightTriggerAxis()
 												- this.controller.secondaryController.getLeftTriggerAxis());
 							}, this.subsystems.hang));
-			this.controller.secondaryController.a().onTrue(this.subsystems.bonk.bonk());
+			//this.controller.secondaryController.a().onTrue(this.subsystems.bonk.bonk());
 
 			// this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject,
 			// this::getAngle));

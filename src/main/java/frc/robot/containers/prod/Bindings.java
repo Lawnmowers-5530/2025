@@ -3,6 +3,7 @@ package frc.robot.containers.prod;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake.Targets;
@@ -97,6 +98,7 @@ public class Bindings {
 	}
 
 	Swerve swerve;
+	
 
 	final class Swerve {
 		Command zeroGyro() {
@@ -138,6 +140,7 @@ public class Bindings {
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
 					.until(Bindings.this.subsystems.coralIntake::coralDetected)
+					.andThen(new WaitCommand(0.15))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 

@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -58,9 +58,9 @@ public final class Elevator extends SubsystemBase {
                 .d(ElevatorConstants.kD)
                 .iZone(ElevatorConstants.integralZone)
                 .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
-        motor1Config.smartCurrentLimit(40, 40);
+        motor1Config.smartCurrentLimit(20, 20);
 
-        motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         motor2Config = new SparkMaxConfig();
         motor2Config.inverted(true);
@@ -70,9 +70,9 @@ public final class Elevator extends SubsystemBase {
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
                 .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
-        motor1Config.smartCurrentLimit(40, 40);
+        motor1Config.smartCurrentLimit(20, 20);
         
-        motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         motor1Encoder = motor1.getEncoder();
         motor2Encoder = motor2.getEncoder();

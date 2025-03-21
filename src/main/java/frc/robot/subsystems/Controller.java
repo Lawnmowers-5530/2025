@@ -93,13 +93,10 @@ public class Controller extends SubsystemBase {
 			L3 = secondaryController.povUp();
 			L4 = secondaryController.povRight();
 
-			enableManualControl = new Trigger(() -> {
-				return Math.abs(secondaryController.getLeftY()) > 0.02
-						|| Math.abs(secondaryController.getRightY()) > 0.02;
-			});
+			enableManualControl = this.secondaryController.x();
 
 			manualElevatorPower = () -> {
-				return -this.secondaryController.getLeftY();
+				return -this.secondaryController.getLeftY()/4.0 + 0.055;
 			};
 
 			manualPivotPower = () -> {

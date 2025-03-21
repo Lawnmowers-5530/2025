@@ -406,6 +406,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 		Rotation2d rot;
 		Transform3d cameraToRobot;
 		boolean auton;
+		boolean isPoseSet = false;
+		SwerveDrivePoseEstimator pose_est;
+
+		@Override
+		public void initialize() {
+			isPoseSet = false;
+		}
 
 		public AlignToTagRight(boolean auton) {
 			this.auton = auton;
@@ -425,7 +432,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			xdrivePID.setTolerance(AlignConstants.xDriveTolerance);
 			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
-
+			pose_est = new SwerveDrivePoseEstimator(SwerveConstants.kinematics, Pgyro.getRot(), getModulePositions(), Pose2d.kZero);
 			addRequirements(Swerve.this);
 		}
 
@@ -438,17 +445,22 @@ public class Swerve extends SubsystemBase implements Loggable {
 			if (isFinished()) {
 				Controller.rumbleLeft = true;
 			}
+			pose_est.update(Pgyro.getRot(), getModulePositions());
 			yaw = Pgyro.getDeg();
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetRight();
 			cameraToRobot = AlignConstants.rightCameraToRobot;
+			Optional<PhotonTrackedTarget> tracked_tag;
 			if (tags.isEmpty()) {
-				return;
-			}
-			// sort tags by the tag's pose ambiguity
-			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1
+				tracked_tag= Optional.empty();
+			}else {
+				tracked_tag = tags.get().getPoseAmbiguity() != -1
 					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
 
+			}
+			// sort tags by the tag's pose ambiguity
+			x = pose_est.getEstimatedPosition().getX();
+			y = pose_est.getEstimatedPosition().getY();
 			tracked_tag.ifPresent(
 					tag -> {
 						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
@@ -460,7 +472,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
 								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
-
+						if (!isPoseSet) {
+							isPoseSet = true;
+							pose_est.resetPose(estimate.toPose2d());
+						}
 						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
 						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
 						rot = estimate.getRotation().toRotation2d();
@@ -482,6 +497,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 						}
 
 					});
+			if (tracked_tag.isEmpty() && !isPoseSet) {
+				return;
+			}
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
 					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
 		}
@@ -543,6 +561,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 		}
 		@Override
 		public void execute() {
+			SmartDashboard.putString("pose est", pose_est.getEstimatedPosition().toString());
+
 			if (isFinished()) {
 				Controller.rumbleRight = true;
 			}
@@ -552,17 +572,20 @@ public class Swerve extends SubsystemBase implements Loggable {
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
 			
-
+			Optional<PhotonTrackedTarget> tracked_tag;
 			// sort tags by the tag's pose ambiguity
 			//DELETE THIS???
-			/*if (tags.isEmpty()) {
-				return;
-			}*/
-			Optional<PhotonTrackedTarget> tracked_tag = tags.get().getPoseAmbiguity() != -1
+			if (tags.isEmpty()) {
+				tracked_tag = Optional.empty();
+			}else {
+				tracked_tag = tags.get().getPoseAmbiguity() != -1
 					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+			}
+			
+			
 			y = pose_est.getEstimatedPosition().getX();
 			x = pose_est.getEstimatedPosition().getY();
-
+			
 
 			tracked_tag.ifPresent(
 					tag -> {
@@ -606,7 +629,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 						
 
 					});
-			
+			if (tags.isEmpty() && !setInitPose) {
+				return;
+			}
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
 					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
 		}
