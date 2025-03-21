@@ -79,7 +79,7 @@ public class CoralIntake extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("intake power", intake.get());
         pivot.getClosedLoopController().setReference(target, ControlType.kPosition);
-
+    
         if (intake.get() != 0) {
             state = States.WANTS_CORAL;
         } else if (coralDetected()) {

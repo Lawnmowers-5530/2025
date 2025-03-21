@@ -72,6 +72,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	Pose2d currentPose;
 
 	RobotConfig config;
+	
 
 	/**
 	 * Initialize all swerve elements
@@ -471,7 +472,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
-								new Pose3d(0, 0, 0.2, new Rotation3d()), cameraToRobot);
+								new Pose3d(0, 0, 0.25, new Rotation3d()), cameraToRobot);
 						if (!isPoseSet) {
 							isPoseSet = true;
 							pose_est.resetPose(estimate.toPose2d());
@@ -583,8 +584,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 			}
 			
 			
-			y = pose_est.getEstimatedPosition().getX();
-			x = pose_est.getEstimatedPosition().getY();
+			x = pose_est.getEstimatedPosition().getX();
+			y = pose_est.getEstimatedPosition().getY();
 			
 
 			tracked_tag.ifPresent(
@@ -597,7 +598,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						Transform3d camTrans = tag.getBestCameraToTarget();
 						SmartDashboard.putString("camTrans", camTrans.toString());
 						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
-						new Pose3d(0, 0, -0.2, new Rotation3d()), cameraToRobot);
+						new Pose3d(0, 0, -0.25, new Rotation3d()), cameraToRobot);
 						if (!setInitPose) {
 							setInitPose = true;
 							pose_est.resetPose(estimate.toPose2d());

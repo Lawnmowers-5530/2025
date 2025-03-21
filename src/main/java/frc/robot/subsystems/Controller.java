@@ -96,7 +96,7 @@ public class Controller extends SubsystemBase {
 			enableManualControl = this.secondaryController.x();
 
 			manualElevatorPower = () -> {
-				return -this.secondaryController.getLeftY()/4.0 + 0.055;
+				return -this.secondaryController.getLeftY()/4.0 + 0.05;
 			};
 
 			manualPivotPower = () -> {

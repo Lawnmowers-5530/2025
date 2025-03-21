@@ -140,7 +140,7 @@ public class RobotContainer {
 
 			this.controller.driverController.leftTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
 			this.controller.driverController.rightTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
-
+			this.controller.driverController.povUp().onTrue(this.bindings.coral.compoundL4());
 			this.subsystems.hang.setDefaultCommand(
 					new RunCommand(
 							() -> {
