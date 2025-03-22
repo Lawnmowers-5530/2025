@@ -27,15 +27,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "L4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "align right"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L4"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "align right"
+                      }
+                    }
+                  ]
                 }
               }
             ]

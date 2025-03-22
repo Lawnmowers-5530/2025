@@ -99,14 +99,14 @@ public class PoseCameraManager implements Loggable {
 
     public Optional<PhotonTrackedTarget> getPrimaryTargetLeft() {
         return camList.get(0).getTargets().stream().min((a, b) -> {
-            return a.area <  b.area ? -1 : 1;
+            return a.area <  b.area ? 1 : -1;
         });
         //return camList.get(0).getPrimaryTrackedTarget();
     }
 
     public Optional<PhotonTrackedTarget> getPrimaryTargetRight() {
         return camList.get(1).getTargets().stream().min((a, b) -> {
-            return a.area <  b.area ? -1 : 1;
+            return a.area <  b.area ? 1 : -1;
         });
     }
 

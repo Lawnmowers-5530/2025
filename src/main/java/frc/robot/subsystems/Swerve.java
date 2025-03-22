@@ -453,7 +453,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Controller.rumbleLeft = true;
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
-			yaw = Pgyro.getDeg();
+			yaw = Pgyro.getRawRot().getDegrees();
 			if (auton) {
 				yaw = yaw - Pgyro.alignOffset.getDegrees();
 			}
@@ -575,7 +575,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Controller.rumbleRight = true;
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
-			yaw = Pgyro.getDeg();
+			yaw = Pgyro.getRawRot().getDegrees();
 			if (auton) {
 				yaw -= Pgyro.alignOffset.getDegrees();
 			}
@@ -646,7 +646,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				
 			}
 			SmartDashboard.putNumber("Auto Align Yaw Post", yaw);
-			SmartDashboard.putNumber("What the fuck it should be", Pgyro.getDeg() - Pgyro.alignOffset.getDegrees());
+			SmartDashboard.putNumber("What the fuck it should be", Pgyro.getRawRot().getDegrees() - Pgyro.alignOffset.getDegrees());
 			SmartDashboard.putNumber("Yaw Pid Out", yawPID.calculate(yaw, yawTarget));
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
 					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
