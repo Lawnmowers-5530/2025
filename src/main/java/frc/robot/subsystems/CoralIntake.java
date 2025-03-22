@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 public class CoralIntake extends SubsystemBase {
     // import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -33,6 +34,7 @@ public class CoralIntake extends SubsystemBase {
     private LaserCan fakeBeamBreak2;
     private AbsoluteEncoder pivotEncoder;
     public States state = States.HAS_CORAL;
+    
 
     public double target = PivotConstants.bottomPos;
 
@@ -212,6 +214,9 @@ public class CoralIntake extends SubsystemBase {
         return new InstantCommand(() -> {
             stopIntake();
         }, this);
+    }
+    public Command waitUntilCoralInFunnel() {
+        return new WaitUntilCommand(()->{return true;});
     }
 
     public enum States {
