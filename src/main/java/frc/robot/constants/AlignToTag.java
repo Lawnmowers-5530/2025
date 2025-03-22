@@ -23,7 +23,7 @@ public class AlignToTag {
 
     public static final double yDriveTolerance = 0.01;
     public static final double xDriveTolerance = 0.025;
-    public static final double rotatationTolerance = 0.5;
+    public static final double rotatationTolerance = 0.25;
 
     public static final boolean  useGyro = true;
     public static HashMap<Integer, Transform3d> tagOffsets = new HashMap<>();

@@ -13,7 +13,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,7 +27,6 @@ public class CoralIntake extends SubsystemBase {
     private SparkMax intake;
     private SparkMax pivot;
     private PIDController pivotController;
-    private SimpleMotorFeedforward pivotFeedforward;
     private SparkMaxConfig intakeConfig;
     private SparkMaxConfig pivotConfig;
     private LaserCan fakeBeamBreak;
@@ -66,14 +64,6 @@ public class CoralIntake extends SubsystemBase {
 
     }
 
-    @Deprecated
-    public double uff(double theta) {
-        double cosTheta = Math.cos(theta);
-        double numer = (PivotConstants.length * PivotConstants.restistance * PivotConstants.mass
-                * PivotConstants.gravity);
-        double denom = (PivotConstants.center * PivotConstants.gearRatio * PivotConstants.kt);
-        return numer * cosTheta * denom;
-    }
 
     @Override
     public void periodic() {

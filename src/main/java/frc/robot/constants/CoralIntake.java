@@ -19,7 +19,7 @@ public class CoralIntake {
         public static final double middlePos = 0.095;
         public static final double topPos = 0.2;//redone
         public static final double bottomPos = 0;
-        public static final double L4 = 0.95;
+        public static final double L4 = 0.095;
 
 
         //Feedforward Calculations

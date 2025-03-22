@@ -79,7 +79,7 @@ public class Controller extends SubsystemBase {
 			slowMode = driverController.b();
 			zeroGyro = driverController.x();
 			intake = driverController.y().or(secondaryController.y());
-			outtake = driverController.a();
+			outtake = driverController.a().or(secondaryController.a()::getAsBoolean);
 			alignLeft = driverController.rightBumper();
 			alignRight = driverController.leftBumper();
 		}

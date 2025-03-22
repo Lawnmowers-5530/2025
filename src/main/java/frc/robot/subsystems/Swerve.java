@@ -299,6 +299,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
 		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity() + this.frontRightModule.getVelocity()
 				+ this.rearLeftModule.getVelocity() + this.rearRightModule.getVelocity()) / 4);
+		SmartDashboard.putNumber("Auto Gyro Offset", Pgyro.alignOffset.getDegrees());
+		SmartDashboard.putNumber("Gyro measurement raw", Pgyro.getRawRot().getDegrees());
+		SmartDashboard.putNumber("Gyro measurement", Pgyro.getRot().getDegrees());
 	}
 
 	/**
@@ -422,7 +425,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 			this.y = 0;
 			this.x = 0;
 			this.rot = new Rotation2d();
-			;
+			
 			yawPID.setSetpoint(180);
 			yawPID.setIZone(2);
 			yawPID.enableContinuousInput(-180, 180);
@@ -441,6 +444,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
 		}
 
+		
+		
+
 		@Override
 		public void execute() {
 			if (isFinished()) {
@@ -448,6 +454,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
 			yaw = Pgyro.getDeg();
+			if (auton) {
+				yaw = yaw - Pgyro.alignOffset.getDegrees();
+			}
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetRight();
 			cameraToRobot = AlignConstants.rightCameraToRobot;
@@ -487,9 +496,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
-							if (auton) {
-								yaw = yaw - Pgyro.alignOffset.getDegrees();
-							}
+							
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {
 							yawTarget = 180;
@@ -563,12 +570,17 @@ public class Swerve extends SubsystemBase implements Loggable {
 		@Override
 		public void execute() {
 			SmartDashboard.putString("pose est", pose_est.getEstimatedPosition().toString());
-
+			SmartDashboard.putNumber("gyro auton", Pgyro.alignOffset.getDegrees());
 			if (isFinished()) {
 				Controller.rumbleRight = true;
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
 			yaw = Pgyro.getDeg();
+			if (auton) {
+				yaw -= Pgyro.alignOffset.getDegrees();
+			}
+
+
 			Optional<PhotonTrackedTarget> tags;
 			tags = cameraManager.getPrimaryTargetLeft();
 			cameraToRobot = AlignConstants.leftCameraToRobot;
@@ -618,9 +630,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 						SmartDashboard.putNumber("yVal", y);
 						if (AlignConstants.useGyro) {
 							yawTarget = getTagAngle(tag.getFiducialId());
-							if (auton) {
-								yaw = yaw - Pgyro.alignOffset.getDegrees();
-							}
 							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
 						} else {
 							yawTarget = 180;
@@ -633,6 +642,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 			if (tags.isEmpty() && !setInitPose) {
 				return;
 			}
+			if (auton) {
+				
+			}
+			SmartDashboard.putNumber("Auto Align Yaw Post", yaw);
+			SmartDashboard.putNumber("What the fuck it should be", Pgyro.getDeg() - Pgyro.alignOffset.getDegrees());
+			SmartDashboard.putNumber("Yaw Pid Out", yawPID.calculate(yaw, yawTarget));
 			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
 					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
 		}

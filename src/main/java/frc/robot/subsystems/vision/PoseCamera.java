@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -152,6 +153,14 @@ public class PoseCamera extends SubsystemBase {
             return false;
         } else {
             return latestResult.get().hasTargets();
+        }
+    }
+
+    public List<PhotonTrackedTarget> getTargets() {
+        if (latestResult.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return latestResult.get().targets;
         }
     }
 

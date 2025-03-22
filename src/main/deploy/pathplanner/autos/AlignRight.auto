@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "hello"
+            "name": "gyro"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "align left"
+            "name": "align right"
           }
         }
       ]
