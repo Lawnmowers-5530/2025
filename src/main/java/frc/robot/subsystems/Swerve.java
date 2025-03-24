@@ -228,6 +228,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 	}
 
+	public void velocityDrive(Vector<N2> translationSpeeds, double rotationSpeed) {
+		ChassisSpeeds speeds = new ChassisSpeeds(translationSpeeds.get(0), translationSpeeds.get(1), rotationSpeed);
+		SwerveModuleState[] states = SwerveConstants.kinematics.toSwerveModuleStates(speeds);
+
+		frontLeftModule.setStateVelocity(states[0]);
+		frontRightModule.setStateVelocity(states[1]);
+		rearRightModule.setStateVelocity(states[2]);
+		rearLeftModule.setStateVelocity(states[3]);
+	}
+
 	/**
 	 * Uses {@link PIDController} to reach rotation target
 	 * 
@@ -272,10 +282,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 		frontRightModule.setState(desiredStates[1]);
 		rearRightModule.setState(desiredStates[2]);
 		rearLeftModule.setState(desiredStates[3]);
-	}
-
-	public void velocityDrive(Vector<N2> translation, double rotation) {
-
 	}
 
 	/**
