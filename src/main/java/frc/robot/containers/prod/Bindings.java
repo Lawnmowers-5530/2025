@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.subsystems.Bonk;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake.Targets;
 import frc.robot.subsystems.Pgyro;
@@ -39,6 +40,22 @@ public class Bindings {
 		 */
 		Command angleIntake() {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
+		}
+	}
+	final class Bonker {
+		Command up() {
+			return new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.UP);
+			}, Bonk.getInstance()).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.RESET);
+			})); 
+		}
+		Command down() {
+			return new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.DOWN);
+			}, Bonk.getInstance()).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.RESET);
+			})); 
 		}
 	}
 

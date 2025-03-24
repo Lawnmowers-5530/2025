@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.Bonk.Targets;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -566,9 +567,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 		@Override
 		public void initialize() {
 			setInitPose = false;
+			Bonk.getInstance().setTarget(Targets.MIDDLE);
 		}
 		@Override
 		public void execute() {
+
 			SmartDashboard.putString("pose est", pose_est.getEstimatedPosition().toString());
 			SmartDashboard.putNumber("gyro auton", Pgyro.alignOffset.getDegrees());
 			if (isFinished()) {
