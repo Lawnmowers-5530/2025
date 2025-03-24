@@ -274,6 +274,10 @@ public class Swerve extends SubsystemBase implements Loggable {
 		rearLeftModule.setState(desiredStates[3]);
 	}
 
+	public void velocityDrive(Vector<N2> translation, double rotation) {
+
+	}
+
 	/**
 	 * Method primarily for PathPlanner to reset robot position in odometry
 	 * 

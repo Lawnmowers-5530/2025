@@ -5,7 +5,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -68,6 +71,13 @@ public class SwerveModule extends SubsystemBase {
 		talonOutputConfig.NeutralMode = NeutralModeValue.Brake;
 		talonOutputConfig.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive; // invert the motor output because theres
 																				// an extra gear on these swerve modules
+		var slot0Config = new Slot0Configs();
+		slot0Config.kP = SwerveModuleConstants.VelocityControlConstants.p;
+		slot0Config.kI = SwerveModuleConstants.VelocityControlConstants.i;
+		slot0Config.kD = SwerveModuleConstants.VelocityControlConstants.d;
+		slot0Config.kV = SwerveModuleConstants.VelocityControlConstants.v;
+
+		driveConfiguration.withSlot0(slot0Config);
 		driveConfiguration.withMotorOutput(talonOutputConfig);
 		drive.getConfigurator().apply(driveConfiguration);
 
@@ -75,7 +85,6 @@ public class SwerveModule extends SubsystemBase {
 		rotateConfig.idleMode(IdleMode.kBrake); // same invert logic as the talons
 		rotateConfig.inverted(true);
 		rotate.configure(rotateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
 	}
 
 	/**
@@ -92,12 +101,20 @@ public class SwerveModule extends SubsystemBase {
 												// always chooses the shortest angle to
 												// rotate to
 		double clamped_out = Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond));
-		SmartDashboard.putNumber("smps", state.speedMetersPerSecond);
 
 		drive.set(slowMode ? clamped_out * SwerveModuleConstants.slowModeScaleFactor : clamped_out); // set speed of drive motor
 		// System.out.println(state.speedMetersPerSecond);
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
 		rotate.set(pidOut);
+	}
+
+	VelocityVoltage request = new VelocityVoltage(0);
+
+	public void setStateVelocity(SwerveModuleState state) {
+		state.optimize(getTurningPosition());
+		request.withVelocity(state.speedMetersPerSecond / SwerveModuleConstants.conversionFactor);
+		drive.setControl(request);
+		rotate.set(anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians()));
 	}
 
 	/**

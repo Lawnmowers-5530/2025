@@ -65,6 +65,13 @@ public class Swerve {
         }
 
         public static final double slowModeScaleFactor = (double) 1 / 3;
+
+        public static class VelocityControlConstants {
+            public static final double p = 0.1;
+            public static final double i = 0.0;
+            public static final double d = 0.0;
+            public static final double v = 0.0;
+        }
     }
 
     public static class Rotation {
