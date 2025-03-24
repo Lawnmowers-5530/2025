@@ -32,6 +32,7 @@ public class CoralIntake extends SubsystemBase {
     private SparkMaxConfig pivotConfig;
     private LaserCan fakeBeamBreak;
     private LaserCan fakeBeamBreak2;
+    LaserCan inFunnel;
     private AbsoluteEncoder pivotEncoder;
     public States state = States.HAS_CORAL;
     
@@ -54,7 +55,7 @@ public class CoralIntake extends SubsystemBase {
         // intakeConfig.softLimit.
         fakeBeamBreak = new LaserCan(PivotConstants.laserCan1Id);
         fakeBeamBreak2 = new LaserCan(PivotConstants.laserCan2Id);
-
+        inFunnel = new LaserCan(28);
         intake = new SparkMax(PivotConstants.intakeId, MotorType.kBrushless);
         intake.configure(intakeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         pivot = new SparkMax(PivotConstants.pivotId, MotorType.kBrushless);
@@ -104,6 +105,13 @@ public class CoralIntake extends SubsystemBase {
 
         //}
         
+    }
+    public boolean coralInFunnel() {
+        if (inFunnel.getMeasurement() == null) {
+            System.err.println("Sensor 3 Failure");
+            return false;
+        }
+        return inFunnel.getMeasurement().distance_mm < 300;
     }
 
     public void setTarget(Targets target) {
@@ -216,7 +224,7 @@ public class CoralIntake extends SubsystemBase {
         }, this);
     }
     public Command waitUntilCoralInFunnel() {
-        return new WaitUntilCommand(()->{return true;});
+        return new WaitUntilCommand(this::coralInFunnel);
     }
 
     public enum States {
