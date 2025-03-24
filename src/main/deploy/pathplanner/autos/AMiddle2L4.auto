@@ -5,6 +5,18 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "gyro"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M180"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
