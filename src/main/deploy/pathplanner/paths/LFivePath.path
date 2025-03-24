@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1234431328398684,
-        "y": 6.5433743494256005
+        "x": 1.0935214574064498,
+        "y": 6.644442723378678
       },
       "isLocked": false,
       "linkedName": "intakepos"
@@ -20,8 +20,8 @@
         "y": 4.3013693576388885
       },
       "prevControl": {
-        "x": 1.505132849462118,
-        "y": 5.08044421919549
+        "x": 1.501406958025771,
+        "y": 5.056547508337079
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
+    "velocity": 2.5,
     "rotation": -26.270189684911593
   },
   "reversed": false,

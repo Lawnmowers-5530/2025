@@ -180,6 +180,8 @@ public class RobotContainer {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
 			NamedCommands.registerCommand("Wait Until In Funnel", this.subsystems.coralIntake.waitUntilCoralInFunnel());
+			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::coralDetected));
+			
 		}
 		{
 			autoChooser = AutoBuilder.buildAutoChooser("Score4L410L4Right"); //TODO: MAKE SURE THIS IS NOT SET DURING COMPETITION
