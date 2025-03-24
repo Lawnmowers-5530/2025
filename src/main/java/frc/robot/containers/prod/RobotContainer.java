@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -25,6 +26,8 @@ import frc.robot.subsystems.Swerve;
 import io.github.oblarg.oblog.Logger;
 
 import java.util.Objects;
+
+import frc.robot.subsystems.Bonk.Targets;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -111,8 +114,7 @@ public class RobotContainer {
 			Controller.intake.onTrue(this.bindings.coral.runIntake());
 			Controller.outtake.onTrue(this.bindings.coral.outtake());
 
-			Controller.enableManualControl
-					.whileTrue(this.bindings.coral.manualElevator().alongWith(this.bindings.coral.manualPivot()));
+			
 
 			Controller.alignLeft.whileTrue(this.subsystems.swerve.new AlignToTagLeft(false));
 			Controller.alignLeft.onFalse(new InstantCommand(
@@ -151,6 +153,9 @@ public class RobotContainer {
 										.manualInput(this.controller.secondaryController.getRightTriggerAxis()
 												- this.controller.secondaryController.getLeftTriggerAxis());
 							}, this.subsystems.hang));
+			this.controller.secondaryController.x().onTrue(new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(Targets.RESET);
+			}, Bonk.getInstance()));
 			//this.controller.secondaryController.a().onTrue(this.subsystems.bonk.bonk());
 
 			// this.subsystems.algaeIntake.setDefaultCommand(this.subsystems.algaeIntake.manualInputCommand(this::getEject,

@@ -25,14 +25,14 @@ public class Bonk extends SubsystemBase{
 
     //Constants
     private final int id = 25;
-    private static final double upPos = 2.5;
-    private static final double downPos = 1.45;
-    private static final double middlePos = 1.69;
-    private static final double  resetPos = 0;
-    private static final double Kp=0.1; 
+    private static final double upPos = 37.3;
+    private static final double downPos = 25.7;
+    private static final double middlePos = 35.2;
+    private static final double  resetPos = 12;
+    private static final double Kp=0.42; 
     private static final double Ki=0; 
-    private static final double Kd = 3;
-    private static final double ff = 0.02;
+    private static final double Kd = 0;
+    private static final double ff = 0.00;
 
 
 
@@ -70,7 +70,7 @@ public class Bonk extends SubsystemBase{
             bonker = new SparkMax(id, MotorType.kBrushless);
             bonker.getEncoder().setPosition(0);
             ClosedLoopConfig config = new ClosedLoopConfig().p(Kp).i(Ki).d(Kd).velocityFF(ff);
-            config.maxOutput(0.2).minOutput(-0.2);
+            //config.maxOutput(0.75).minOutput(-0.75);
             SparkMaxConfig confi = new SparkMaxConfig();
             confi.apply(config);
             bonker.configure(confi,ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);

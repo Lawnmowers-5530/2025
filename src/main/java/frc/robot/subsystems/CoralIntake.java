@@ -145,7 +145,7 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void intake() {
-        System.out.println("intaking");
+       
         intake.set(PivotConstants.intakePower);
     }
 

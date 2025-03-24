@@ -143,7 +143,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				this::getPose,
 				this::resetPose,
 				this::getRobotRelativeSpeeds,
-				(speeds, feedforwards) -> autoDriveRobotRelative(speeds, 1 / 4.8),
+				(speeds, feedforwards) -> autoDriveRobotRelative(speeds, 1/4.8),
 				new PPHolonomicDriveController(
 						SwerveConstants.PathPlanner.translationConstants,
 						SwerveConstants.PathPlanner.rotationConstants),

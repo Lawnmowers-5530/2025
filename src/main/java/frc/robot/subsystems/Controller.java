@@ -93,7 +93,7 @@ public class Controller extends SubsystemBase {
 			L3 = secondaryController.povUp();
 			L4 = secondaryController.povRight();
 
-			enableManualControl = this.secondaryController.x();
+			//enableManualControl = this.secondaryController.x();
 
 			manualElevatorPower = () -> {
 				return -this.secondaryController.getLeftY()/4.0 + 0.05;
