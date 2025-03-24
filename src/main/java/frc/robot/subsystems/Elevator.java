@@ -1,55 +1,35 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
-
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.units.TimeUnit;
-import edu.wpi.first.units.VelocityUnit;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.MutDistance;
-import edu.wpi.first.units.measure.MutLinearVelocity;
-import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public final class Elevator extends SubsystemBase {
-    //import frc.robot.constants.Elevator as ElevatorConstants
-    static final class ElevatorConstants extends frc.robot.constants.Elevator {};
-
+    // import frc.robot.constants.Elevator as ElevatorConstants
+    static final class ElevatorConstants extends frc.robot.constants.Elevator {
+    };
 
     private SparkMax motor1;
     private SparkMax motor2;
     private SparkMaxConfig motor1Config;
     private SparkMaxConfig motor2Config;
 
-    private TrapezoidProfile elevatorProfile;
     private TrapezoidProfile.State goal;
-    private TrapezoidProfile.State setpoint;
-
-    private ElevatorFeedforward feedforward;
 
     private double kDt = 0.02;
 
@@ -59,104 +39,111 @@ public final class Elevator extends SubsystemBase {
 
     private DigitalInput limitSwitch;
 
-    private SysIdRoutine routine;
-    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
-    private final MutDistance m_distance = Meters.mutable(0);
-    // Mutable holder for unit-safe linear velocity values, persisted to avoid
-    // reallocation.
-    private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
+    private RelativeEncoder motor1Encoder;
+    private RelativeEncoder motor2Encoder;
 
     public Elevator() {
-       // routine = new SysIdRoutine(
-       //     new SysIdRoutine.Config(Velocity.ofBaseUnits(3, VelocityUnit.combine(Volts, Seconds)), Voltage.ofBaseUnits(3, Volts), Time.ofBaseUnits(5, Second)),
-       //         new SysIdRoutine.Mechanism(this::voltageDrive,
-       //                 log -> {
-       //                     // Record a frame for the left motors. Since these share an encoder, we consider
-       //                     // the entire group to be one motor.
-       //                     log.motor("motor1")
-       //                             .voltage(
-       //                                     m_appliedVoltage.mut_replace(
-       //                                             motor1.get() * RobotController.getBatteryVoltage(), Volts))
-       //                             .linearPosition(m_distance.mut_replace(motor1.getEncoder().getPosition(), Meters))
-       //                             .linearVelocity(
-       //                                     m_velocity.mut_replace(motor1.getEncoder().getVelocity(), MetersPerSecond));
-       //                     // Record a frame for the right motors. Since these share an encoder, we
-       //                     // consider
-       //                     // the entire group to be one motor.
-       //                     log.motor("motor2")
-       //                             .voltage(
-       //                                     m_appliedVoltage.mut_replace(
-       //                                             motor2.get() * RobotController.getBatteryVoltage(), Volts))
-       //                             .linearPosition(m_distance.mut_replace(motor2.getEncoder().getPosition(), Meters))
-       //                             .linearVelocity(
-       //                                     m_velocity.mut_replace(motor2.getEncoder().getVelocity(), MetersPerSecond));
-       //                 },
-       //                 // Tell SysId to make generated commands require this subsystem, suffix test
-       //                 // state in
-       //                 // WPILog with this subsystem's name ("drive")
-       //                 this));
-
-        feedforward = new ElevatorFeedforward(ElevatorConstants.kS, ElevatorConstants.kV, ElevatorConstants.kA);
 
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
 
+        SparkMaxConfig pidConfig = new SparkMaxConfig();
+
         motor1Config = new SparkMaxConfig();
         motor1Config.inverted(false);
         motor1Config.idleMode(IdleMode.kBrake);
-        motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor1Config.closedLoop
+                .p(ElevatorConstants.kP)
+                .i(ElevatorConstants.kI)
+                .d(ElevatorConstants.kD)
+                .iZone(ElevatorConstants.integralZone)
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
+        motor1Config.smartCurrentLimit(20, 20);
+
+        motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         motor2Config = new SparkMaxConfig();
         motor2Config.inverted(true);
         motor2Config.idleMode(IdleMode.kBrake);
-        motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor2Config.closedLoop
+                .p(ElevatorConstants.kP)
+                .i(ElevatorConstants.kI)
+                .d(ElevatorConstants.kD)
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
+        motor1Config.smartCurrentLimit(20, 20);
+        
+        motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        motor1Encoder = motor1.getEncoder();
+        motor2Encoder = motor2.getEncoder();
 
         limitSwitch = new DigitalInput(ElevatorConstants.limitSwitchChannel);
 
-        elevatorController = new PIDController(ElevatorConstants.kP1, ElevatorConstants.kI1, 0);
+        elevatorController = new PIDController(ElevatorConstants.kP, 0, 0);
         elevatorController.setIZone(2);
         elevatorController.setIntegratorRange(-0.2, 0.2);
-
-        elevatorProfile = new TrapezoidProfile(new Constraints(
-                ElevatorConstants.maxVelocity,
-                ElevatorConstants.maxAcceleration));
 
         sp = getCurrentState().position;
 
         goal = new TrapezoidProfile.State(0, 0);
-        setpoint = new TrapezoidProfile.State(0, 0);
+    }
+
+    public void manualSetSpeed(double speed) {
+        motor1.set(speed);
+        motor2.set(speed);
+        // sp += speed;
+        // sp = MathUtil.clamp(sp, 0.0, ElevatorConstants.level3);
+
+    }
+
+    public boolean tooHigh() {
+        return this.getCurrentState().position > 50;
     }
 
     public void setTarget(double sp) {
         this.sp = sp;
+        this.motor1.getClosedLoopController().setReference(sp, ControlType.kPosition);
+        this.motor2.getClosedLoopController().setReference(sp, ControlType.kPosition);
     }
 
     public TrapezoidProfile.State getCurrentState() {
-        double average = (motor1.getEncoder().getPosition() + motor2.getEncoder().getPosition()) / 2.0;
-        double averageVel = (motor1.getEncoder().getVelocity() + motor2.getEncoder().getVelocity()) / 2.0;
+        double average = (motor1Encoder.getPosition() + motor2Encoder.getPosition()) / 2.0;
+        double averageVel = (motor1Encoder.getVelocity() + motor2Encoder.getVelocity()) / 2.0;
         return new TrapezoidProfile.State(average, averageVel);
 
     }
 
+    public boolean atTarget() {
+        SmartDashboard.putNumber("elevator error: ", sp - getCurrentState().position);
+        return Math.abs(sp - getCurrentState().position) < ElevatorConstants.tolerance;
+    }
+
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("pos", getCurrentState().position);
+        SmartDashboard.putNumber("Elevator setpoint", sp);
         goal.position = sp;
         goal.velocity = 0;
 
-        setpoint = elevatorProfile.calculate(kDt, getCurrentState(), goal);
+        SmartDashboard.putNumber("left curr", this.motor1.getOutputCurrent());
+        SmartDashboard.putNumber("right curr", this.motor2.getOutputCurrent());
 
-        double pud = elevatorController.calculate(getCurrentState().position, setpoint.position);
-        double ff = feedforward.calculate(setpoint.velocity);
-        motor1.set(pud + ff);
-        motor2.set(pud + ff);
+        // double pud = elevatorController.calculate(getCurrentState().position,
+        // setpoint.position); //TODO switch to trap profile
+        // double ff = feedforward.calculate(setpoint.velocity);
+
+        double pud = elevatorController.calculate(getCurrentState().position, sp);
+        double ff = 0.018; // temp
+
+        // motor1.set(pud + ff);
+        // motor2.set(pud + ff);
     }
 
     @Deprecated
     public void setDirectSpeed(double speed) {
         motor2.set((speed / 4) + 0.018);
         motor1.set((speed / 4) + 0.018);
+        SmartDashboard.putNumber("cont speed", speed);
     }
 
     public void voltageDrive(Voltage voltage) {
@@ -189,6 +176,7 @@ public final class Elevator extends SubsystemBase {
     }
 
     public Command goToTarget(int level) {
+        System.out.println("going");
         return new RunCommand(() -> {
             switch (level) {
                 case 0:
@@ -212,6 +200,11 @@ public final class Elevator extends SubsystemBase {
         }, this);
     }
 
+    public void resetPosition() {
+        this.motor1Encoder.setPosition(0);
+        this.motor2Encoder.setPosition(0);
+    }
+
     public boolean calibrated = false;
 
     public Command calibrate() {
@@ -229,7 +222,7 @@ public final class Elevator extends SubsystemBase {
                     if (limitSwitch.get()) {
                         motor1.set(0);
                         motor2.set(0);
-                        motor1.getEncoder().setPosition(0);
+                        motor1Encoder.setPosition(0);
                         motor2.getEncoder().setPosition(0);
 
                         SoftLimitConfig limits = new SoftLimitConfig()
@@ -251,22 +244,22 @@ public final class Elevator extends SubsystemBase {
                 }, this);
     }
 
-    ///**
+    /// **
     // * Returns a command that will execute a quasistatic test in the given
     // * direction.
     // *
     // * @param direction The direction (forward or reverse) to run the test in
     // */
-    //public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //    return routine.quasistatic(direction);
-    //}
-//
-    ///**
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    // return routine.quasistatic(direction);
+    // }
+    //
+    /// **
     // * Returns a command that will execute a dynamic test in the given direction.
     // *
     // * @param direction The direction (forward or reverse) to run the test in
     // */
-    //public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //    return routine.dynamic(direction);
-    //}
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    // return routine.dynamic(direction);
+    // }
 }

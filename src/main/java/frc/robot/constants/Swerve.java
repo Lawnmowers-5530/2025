@@ -2,18 +2,26 @@ package frc.robot.constants;
 
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 public class Swerve {
+    public static final double fieldWidth = Units.feetToMeters(26) + Units.inchesToMeters(5);
+    public static final double fieldLength = Units.feetToMeters(57) + Units.inchesToMeters(6.875);
+
     public static final double trackWidth = Units.inchesToMeters(24);
     public static final double wheelBase = Units.inchesToMeters(24);
+
+    public static final double leftStationAngle = 0;
+    public static final double rightStationAngle = 0;
 
     public static final class FrontLeftModule { // FL
         public static final int driveMotor = 5;
         public static final int turnMotor = 6;
         public static final int canCoder = 13;
         public static final double angleOffset = 0;
+        public static final boolean inverted = true;
     }
 
     public static final class FrontRightModule { // FR
@@ -21,6 +29,7 @@ public class Swerve {
         public static final int turnMotor = 8;
         public static final int canCoder = 14;
         public static final double angleOffset = 0.1;
+        public static final boolean inverted = true;
     }
 
     public static final class RearRightModule { // RR
@@ -28,6 +37,7 @@ public class Swerve {
         public static final int turnMotor = 10;
         public static final int canCoder = 15;
         public static final double angleOffset = 0;
+        public static final boolean inverted = true;
     }
 
     public static final class RearLeftModule { // RL
@@ -35,10 +45,11 @@ public class Swerve {
         public static final int turnMotor = 12;
         public static final int canCoder = 16;
         public static final double angleOffset = 0;
+        public static final boolean inverted = false;
     }
 
     public static class SwerveModule {
-        public static final double conversionFactor = (1 / 6.75) * Units.inchesToMeters(Math.PI * 4);
+        public static final double conversionFactor = (1 / 6.12) * Units.inchesToMeters(Math.PI * 4);
 
         /**
          * number to multiply
@@ -52,6 +63,8 @@ public class Swerve {
             public static final double i = 0.125;
             public static final double d = 0;
         }
+
+        public static final double slowModeScaleFactor = (double) 1 / 3;
     }
 
     public static class Rotation {
@@ -68,8 +81,8 @@ public class Swerve {
         public static final double driveBaseRadius = Units
                 .inchesToMeters(Math.sqrt(trackWidth * trackWidth + wheelBase * wheelBase));
 
-        public static final PIDConstants translationConstants = new PIDConstants(5, 0.5, 0);
-        public static final PIDConstants rotationConstants = new PIDConstants(3, 0, 0);
+        public static final PIDConstants translationConstants = new PIDConstants(6, 0, 0);
+        public static final PIDConstants rotationConstants = new PIDConstants(4.5, 0, 0);
 
         public static final PathConstraints constraints = new PathConstraints(1, 1, 1, 1);
     }

@@ -2,20 +2,24 @@ package frc.robot.constants;
 
 public class CoralIntake {
     public static class Pivot {
-        public static final int pivotId = 6;
-        public static final int intakeId = 0;
+        public static final int pivotId = 22;
+        public static final int intakeId = 23;
         public static final int laserCan1Id = 42;
-        public static final int laserCan2Id = 0;
+        public static final int laserCan2Id = 27;
 
-        public static final double intakePower = -0.6;
+        public static final double intakePower = 0.7;//0.45
+        public static final double outtakeL1 = 0.85;
 
-        public static final double Kp = 1.65;
+        public static final double Kp = 2.3;
+        public static final double ff = 0.5;
+        public static final double tolerance = 0.06;
 
-        //Targets (Degrees)
-        public static final double intakePos = 0.712;
-        public static final double middlePos = 0.712;
-        public static final double topPos = 0.641;
-        public static final double bottomPos = 0.858;
+        //Targets (Degrees)w
+        public static final double intakePos = 0.095;
+        public static final double middlePos = 0.095;
+        public static final double topPos = 0.2;//redone
+        public static final double bottomPos = 0;
+        public static final double L4 = 0.095;
 
 
         //Feedforward Calculations

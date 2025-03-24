@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import au.grapplerobotics.CanBridge;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-
-//change this to switch container
-import frc.robot.containers.coral_intake.RobotContainer;
+import frc.robot.containers.prod.RobotContainer;
 
 
 /**
@@ -26,7 +23,8 @@ public class Robot extends TimedRobot {
 	public static final class Container extends RobotContainer {};
 
 	public Robot() {
-		CanBridge.runTCP();
+		
+		DriverStation.silenceJoystickConnectionWarning(true);
 	}
 	private Command autonomousCommand;
 

@@ -4,23 +4,32 @@
 
 package frc.robot.subsystems;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import io.github.oblarg.oblog.Loggable;
+
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -32,7 +41,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Robot.Container;
 import frc.robot.subsystems.vision.PoseCameraManager;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -42,10 +50,13 @@ import io.github.oblarg.oblog.annotations.Log;
  */
 public class Swerve extends SubsystemBase implements Loggable {
 
-	//impart frc.robot.constants.Swerve as SwerveConstants
-	static final class SwerveConstants extends frc.robot.constants.Swerve {};
-	//import frc.robot.constants.VisionTargeter as VisionTargeterConstants
-	static final class VisionTargeterConstants extends frc.robot.constants.VisionTargeter {};
+	// impart frc.robot.constants.Swerve as SwerveConstants
+	static final class SwerveConstants extends frc.robot.constants.Swerve {
+	};
+
+	// import frc.robot.constants.AlignToTag as AlignConstants
+	static final class AlignConstants extends frc.robot.constants.AlignToTag {
+	};
 
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
@@ -61,6 +72,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 	Pose2d currentPose;
 
 	RobotConfig config;
+	
 
 	/**
 	 * Initialize all swerve elements
@@ -72,40 +84,45 @@ public class Swerve extends SubsystemBase implements Loggable {
 				SwerveConstants.FrontLeftModule.driveMotor,
 				SwerveConstants.FrontLeftModule.turnMotor,
 				SwerveConstants.FrontLeftModule.canCoder,
-				SwerveConstants.FrontLeftModule.angleOffset);
+				SwerveConstants.FrontLeftModule.angleOffset,
+				SwerveConstants.FrontLeftModule.inverted);
+
 		this.frontRightModule = new SwerveModule(
 				SwerveConstants.FrontRightModule.driveMotor,
 				SwerveConstants.FrontRightModule.turnMotor,
 				SwerveConstants.FrontRightModule.canCoder,
-				SwerveConstants.FrontRightModule.angleOffset);
+				SwerveConstants.FrontRightModule.angleOffset,
+				SwerveConstants.FrontRightModule.inverted);
 		this.rearRightModule = new SwerveModule(
 				SwerveConstants.RearRightModule.driveMotor,
 				SwerveConstants.RearRightModule.turnMotor,
 				SwerveConstants.RearRightModule.canCoder,
-				SwerveConstants.RearRightModule.angleOffset);
+				SwerveConstants.RearRightModule.angleOffset,
+				SwerveConstants.RearRightModule.inverted);
 		this.rearLeftModule = new SwerveModule(
 				SwerveConstants.RearLeftModule.driveMotor,
 				SwerveConstants.RearLeftModule.turnMotor,
 				SwerveConstants.RearLeftModule.canCoder,
-				SwerveConstants.RearLeftModule.angleOffset);
+				SwerveConstants.RearLeftModule.angleOffset,
+				SwerveConstants.RearLeftModule.inverted);
 		rotationPID = new PIDController(
 				SwerveConstants.Rotation.kP,
 				SwerveConstants.Rotation.kI,
 				SwerveConstants.Rotation.kD);
 		rotationPID.setTolerance(SwerveConstants.Rotation.controllerTolerance); // useful to tell commands when
-																							// the
-																							// target angle has been
-																							// reached
+																				// the
+																				// target angle has been
+																				// reached
 		SwerveModulePosition[] modPos = getModulePositions();
 
 		this.cameraManager = new PoseCameraManager();
 
 		odometry = new SwerveDrivePoseEstimator(
 				SwerveConstants.kinematics,
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				modPos,
 				getPose(),
-				VecBuilder.fill(0.5, 0.5, 0.1), // set state std devs to 0.5,0.5,0.1 - these are //TODO
+				VecBuilder.fill(0.1, 0.1, 0.1), // set state std devs to 0.1,0.1,0.1 - these are //TODO
 												// relative to
 												// the vision devs and only determine the
 												// magnitude of the vision devs
@@ -121,28 +138,27 @@ public class Swerve extends SubsystemBase implements Loggable {
 			e.printStackTrace();
 		}
 
-		 AutoBuilder.configure(
-		 this::getPose,
-		 this::resetPose,
-		 this::getRobotRelativeSpeeds,
-		 (speeds, feedforwards) -> autoDriveRobotRelative(speeds),
-		 new PPHolonomicDriveController(
-			SwerveConstants.PathPlanner.translationConstants,
-			SwerveConstants.PathPlanner.rotationConstants
-		 ),
-		 config,
-		 () -> {
-		 // BooleanSupplier that controls when the path will be mirrored for the red
-		 // alliance
-		 // This will flip the path being followed to the red side of the field.
-		 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-		 Optional<Alliance> alliance = DriverStation.getAlliance();
-		 if (alliance.isPresent()) {
-		 return alliance.get() == DriverStation.Alliance.Red;
-		 }
-		 return false;
-		 },
-		 this);
+		AutoBuilder.configure(
+				this::getPose,
+				this::resetPose,
+				this::getRobotRelativeSpeeds,
+				(speeds, feedforwards) -> autoDriveRobotRelative(speeds, 1 / 4.8),
+				new PPHolonomicDriveController(
+						SwerveConstants.PathPlanner.translationConstants,
+						SwerveConstants.PathPlanner.rotationConstants),
+				config,
+				() -> {
+					// BooleanSupplier that controls when the path will be mirrored for the red
+					// alliance
+					// This will flip the path being followed to the red side of the field.
+					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+					Optional<Alliance> alliance = DriverStation.getAlliance();
+					if (alliance.isPresent()) {
+						return alliance.get() == DriverStation.Alliance.Red;
+					}
+					return false;
+				},
+				this);
 	}
 
 	/**
@@ -171,7 +187,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 	public Command drive() {
 		return new RunCommand(
 				() -> {
-					this.drive(Container.State.ControllerState.driveVector.get(), Container.State.ControllerState.driveRotation.get(), true, Container.State.ControllerState.slowMode.get() ? 0.5 : 1);
+					this.drive(Controller.driveVector.get(), Controller.driveRotation.get(), true,
+							Controller.slowMode.getAsBoolean() ? 0.5 : 1);
 				}, this);
 	};
 
@@ -207,7 +224,6 @@ public class Swerve extends SubsystemBase implements Loggable {
 		frontRightModule.setState(states[1]);
 		rearRightModule.setState(states[2]);
 		rearLeftModule.setState(states[3]);
-		SmartDashboard.putString("rr", states[2].toString());
 
 	}
 
@@ -230,9 +246,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 							yawSupplier.getAsDouble());
 					this.drive(vectorSupplier.get().times(scalar), rotationOutput, false, 1);
 				},
-				this).until(() -> {
-					return rotationPID.atSetpoint(); // lambda boolean supplier to detect if at rotation setpoint
-				});
+				this);
 	}
 
 	/**
@@ -240,13 +254,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 * 
 	 * @param speeds ChassisSpeeds object
 	 */
-	public void autoDriveRobotRelative(ChassisSpeeds speeds) {
+	public void autoDriveRobotRelative(ChassisSpeeds speeds, double scalar) {
 		this.drive(
 				VecBuilder.fill(
 						speeds.vxMetersPerSecond,
 						speeds.vyMetersPerSecond),
 				speeds.omegaRadiansPerSecond,
-				false, 1);
+				false, scalar);
 	}
 
 	/**
@@ -266,9 +280,11 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	public void resetPose(Pose2d pose) {
 		odometry.resetPosition(
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				getModulePositions(),
 				pose);
+		// Pgyro.setAutoGyro();
+
 	}
 
 	/**
@@ -276,8 +292,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	@Override
 	public void periodic() {
+		SmartDashboard.putNumber("gyro deg:", Pgyro.getDeg());
 		updateOdometry();
 		currentPose = getPose();
+		SmartDashboard.putString("current pose:", this.currentPose.toString());
+		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
+		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity() + this.frontRightModule.getVelocity()
+				+ this.rearLeftModule.getVelocity() + this.rearRightModule.getVelocity()) / 4);
+		SmartDashboard.putNumber("Auto Gyro Offset", Pgyro.alignOffset.getDegrees());
+		SmartDashboard.putNumber("Gyro measurement raw", Pgyro.getRawRot().getDegrees());
+		SmartDashboard.putNumber("Gyro measurement", Pgyro.getRot().getDegrees());
 	}
 
 	/**
@@ -286,16 +310,17 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 */
 	public void updateOdometry() {
 		odometry.update(
-				Pgyro.getRot(),
+				Pgyro.getRawRot(),
 				getModulePositions());
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		for (var visionEstimate : visionEstimates) {
-			var estimate = visionEstimate.getFirst();
-			var deviations = visionEstimate.getSecond();
-			odometry.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, deviations);
-		}
+		// for (var visionEstimate : visionEstimates) {
+		// var estimate = visionEstimate.getFirst();
+		// var deviations = visionEstimate.getSecond();
+		// odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
+		// estimate.timestampSeconds, deviations);
+		// }
 	}
 
 	/**
@@ -303,13 +328,13 @@ public class Swerve extends SubsystemBase implements Loggable {
 	 * enabled
 	 */
 	public void disabledPeriodic() {
-		//if (!isCoasting) {
-		//	isCoasting = true;
-		//	frontLeftModule.setIdleMode(IdleMode.kCoast);
-		//	frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
-		//	rearRightModule.setIdleMode(IdleMode.kCoast);
-		//	rearLeftModule.setIdleMode(IdleMode.kCoast);
-		//}
+		// if (!isCoasting) {
+		// isCoasting = true;
+		// frontLeftModule.setIdleMode(IdleMode.kCoast);
+		// frontRightModule.setIdleMode(IdleMode.kCoast); //TODO: wtf
+		// rearRightModule.setIdleMode(IdleMode.kCoast);
+		// rearLeftModule.setIdleMode(IdleMode.kCoast);
+		// }
 	}
 
 	/**
@@ -370,93 +395,287 @@ public class Swerve extends SubsystemBase implements Loggable {
 				rearLeftModule.getState());
 	}
 
-	/**
-	 * Returns a new PointTargeter {@link Command} to target an apriltag
-	 * 
-	 * @param fiducialTagId Apriltag id to target
-	 * @param yawOffset     Offset in yaw from the center of the apriltag
-	 * @return New {@link PointTargeter}
-	 */
-	public Command getPointTargeterCommand(int fiducialTagId, double yawOffset) {
-		return new PointTargeter(fiducialTagId, yawOffset);
-	}
-
-	/**
-	 * Command for targeting a specific point relative to an apriltag angle
-	 */
-	public class PointTargeter extends Command {
-		private PIDController rotationController;
-		private int fiducialTagId;
-		private double yawOffset;
-
-		public PointTargeter(int fiducialTagId, double yawOffset) {
-			this.fiducialTagId = fiducialTagId;
-			this.yawOffset = yawOffset;
-
-			rotationController = new PIDController(VisionTargeterConstants.kP, VisionTargeterConstants.kI,
-					VisionTargeterConstants.kD);
-		}
-
-		/**
-		 * Sets the offset between the yaw from apriltag and the target yaw.
-		 * 
-		 * @param yawOffset
-		 */
-		public void setYawOffset(double yawOffset) {
-			this.yawOffset = yawOffset;
-		}
-
-		/**
-		 * Returns a Supplier of the {@link PIDController} output as a radians / second
-		 * rotational velcity
-		 * 
-		 * @return {@link DoubleSupplier} rad/sec
-		 */
-		public DoubleSupplier getNextOmega() {
-			return () -> {
-				return rotationController.calculate(Pgyro.getHdgRad());
-			};
-		}
-
-		/**
-		 * Checks each registered {@link frc.robot.subsystems.vision.PoseCamera
-		 * PoseCamera} and updates the yaw target in the {@link PIDController} if a
-		 * PoseCamera's best target matches the specified target fiducial id
-		 */
-		@Override
-		public void execute() {
-			if (cameraManager.getFiducialIdYaw(fiducialTagId).isPresent()) {
-				rotationController.setSetpoint(cameraManager.getFiducialIdYaw(fiducialTagId).get() - yawOffset);
-			}
-		}
-	}
-
-	public class AlignToTag extends Command {
+	public class AlignToTagRight extends Command {
 		static final double tagAmbiguityThreshold = 0.2;
-		PIDController yawPID = new PIDController(1.3, 0, 0);
-		int tagId;
+		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
+				AlignConstants.kDrot);
+		PIDController xdrivePID = new PIDController(AlignConstants.xkPtrans, AlignConstants.xkItrans,
+				AlignConstants.xkDtrans);
+		PIDController ydrivePID = new PIDController(AlignConstants.ykPtrans, AlignConstants.ykItrans,
+				AlignConstants.ykDtrans);
+		double y;
+		double x;
+		double yaw;
+		double yawTarget;
+		Rotation2d rot;
+		Transform3d cameraToRobot;
+		boolean auton;
+		boolean isPoseSet = false;
+		SwerveDrivePoseEstimator pose_est;
 
-		public AlignToTag(int tagId) {
-			this.tagId = tagId;
-			yawPID.setSetpoint(0);
+		@Override
+		public void initialize() {
+			isPoseSet = false;
 		}
+
+		public AlignToTagRight(boolean auton) {
+			this.auton = auton;
+			yawTarget = 0;
+
+			this.y = 0;
+			this.x = 0;
+			this.rot = new Rotation2d();
+			
+			yawPID.setSetpoint(180);
+			yawPID.setIZone(2);
+			yawPID.enableContinuousInput(-180, 180);
+			yawPID.setTolerance(AlignConstants.rotatationTolerance);
+
+			xdrivePID.setSetpoint(0);
+			ydrivePID.setSetpoint(0);
+
+			xdrivePID.setTolerance(AlignConstants.xDriveTolerance);
+			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
+			pose_est = new SwerveDrivePoseEstimator(SwerveConstants.kinematics, Pgyro.getRot(), getModulePositions(), Pose2d.kZero);
+			addRequirements(Swerve.this);
+		}
+
+		public boolean isFinished() {
+			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
+		}
+
+		
+		
 
 		@Override
 		public void execute() {
-			var tags = cameraManager.getTagsById(tagId);
+			if (isFinished()) {
+				Controller.rumbleLeft = true;
+			}
+			pose_est.update(Pgyro.getRot(), getModulePositions());
+			yaw = Pgyro.getRawRot().getDegrees();
+			if (auton) {
+				yaw = yaw - Pgyro.alignOffset.getDegrees();
+			}
+			Optional<PhotonTrackedTarget> tags;
+			tags = cameraManager.getPrimaryTargetRight();
+			cameraToRobot = AlignConstants.rightCameraToRobot;
+			Optional<PhotonTrackedTarget> tracked_tag;
+			if (tags.isEmpty()) {
+				tracked_tag= Optional.empty();
+			}else {
+				tracked_tag = tags.get().getPoseAmbiguity() != -1
+					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+
+			}
 			// sort tags by the tag's pose ambiguity
-			var tracked_tag = tags
-				.stream()
-				.filter(tag -> tag.getPoseAmbiguity() != -1 && tag.getPoseAmbiguity() < 0.2)
-				.min(Comparator.comparingDouble(PhotonTrackedTarget::getPoseAmbiguity));
+			x = pose_est.getEstimatedPosition().getX();
+			y = pose_est.getEstimatedPosition().getY();
+			tracked_tag.ifPresent(
+					tag -> {
+						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()).inverse()) // TODO
+																													// check
+																													// functionality
+								: cameraToRobot;
+						Transform3d camTrans = tag.getBestCameraToTarget();
+						SmartDashboard.putString("camTrans", camTrans.toString());
+						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
+								new Pose3d(0, 0, 0.25, new Rotation3d()), cameraToRobot);
+						if (!isPoseSet) {
+							isPoseSet = true;
+							pose_est.resetPose(estimate.toPose2d());
+						}
+						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
+						rot = estimate.getRotation().toRotation2d();
+						y = estimate.getTranslation().getY();
+						x = estimate.getTranslation().getX();
+
+						SmartDashboard.putNumber("xVal", x);
+						SmartDashboard.putNumber("yVal", y);
+						if (AlignConstants.useGyro) {
+							yawTarget = getTagAngle(tag.getFiducialId());
+							
+							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
+						} else {
+							yawTarget = 180;
+							yaw = rot.getDegrees();
+
+						}
+
+					});
+			if (tracked_tag.isEmpty() && !isPoseSet) {
+				return;
+			}
+			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
+		}
+	}
+
+	public class AlignToTagLeft extends Command {
+		static final double tagAmbiguityThreshold = 0.2;
+		PIDController yawPID = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
+				AlignConstants.kDrot);
+		PIDController xdrivePID = new PIDController(AlignConstants.xkPtrans, AlignConstants.xkItrans,
+				AlignConstants.xkDtrans);
+		PIDController ydrivePID = new PIDController(AlignConstants.ykPtrans, AlignConstants.ykItrans,
+				AlignConstants.ykDtrans);
+		double y;
+		double x;
+		double yaw;
+		double yawTarget;
+		Rotation2d rot;
+		Transform3d cameraToRobot;
+		boolean auton;
+		SwerveDrivePoseEstimator pose_est;
+		boolean setInitPose = false;
+		/*
+		 * Best practice is to just work completely in field coordinates
+		 */
+		
+
+		public AlignToTagLeft(boolean auton) {
+			this.auton = auton;
+			yawTarget = 0;
+
+			this.y = 0;
+			this.x = 0;
+			this.rot = new Rotation2d();
+			pose_est = new SwerveDrivePoseEstimator(SwerveConstants.kinematics, Pgyro.getRot(), getModulePositions(), Pose2d.kZero);
+
+			yawPID.setSetpoint(180);
+			yawPID.setIZone(2);
+			yawPID.enableContinuousInput(-180, 180);
+			yawPID.setTolerance(AlignConstants.rotatationTolerance);
+
+			xdrivePID.setSetpoint(0);
+			ydrivePID.setSetpoint(0);
+
+			xdrivePID.setTolerance(AlignConstants.xDriveTolerance);
+			ydrivePID.setTolerance(AlignConstants.yDriveTolerance);
+
+			addRequirements(Swerve.this);
+			
+		}
+
+		public boolean isFinished() {
+			return yawPID.atSetpoint() && xdrivePID.atSetpoint() && ydrivePID.atSetpoint();
+		}
+		
+		@Override
+		public void initialize() {
+			setInitPose = false;
+		}
+		@Override
+		public void execute() {
+			SmartDashboard.putString("pose est", pose_est.getEstimatedPosition().toString());
+			SmartDashboard.putNumber("gyro auton", Pgyro.alignOffset.getDegrees());
+			if (isFinished()) {
+				Controller.rumbleRight = true;
+			}
+			pose_est.update(Pgyro.getRot(), getModulePositions());
+			yaw = Pgyro.getRawRot().getDegrees();
+			if (auton) {
+				yaw -= Pgyro.alignOffset.getDegrees();
+			}
+
+
+			Optional<PhotonTrackedTarget> tags;
+			tags = cameraManager.getPrimaryTargetLeft();
+			cameraToRobot = AlignConstants.leftCameraToRobot;
+			
+			Optional<PhotonTrackedTarget> tracked_tag;
+			// sort tags by the tag's pose ambiguity
+			//DELETE THIS???
+			if (tags.isEmpty()) {
+				tracked_tag = Optional.empty();
+			}else {
+				tracked_tag = tags.get().getPoseAmbiguity() != -1
+					&& tags.get().getPoseAmbiguity() < 0.2 ? Optional.of(tags.get()) : Optional.empty();
+			}
+			
+			
+			x = pose_est.getEstimatedPosition().getX();
+			y = pose_est.getEstimatedPosition().getY();
+			
 
 			tracked_tag.ifPresent(
 					tag -> {
-						double output = yawPID.calculate(tag.getYaw());
-						Swerve.this.drive(VecBuilder.fill(0, 0), 0, false, 1);
-						System.out.println(output);
-					});
-		}
+					
+						cameraToRobot = AlignConstants.tagOffsets.containsKey(tag.getFiducialId())
+								? cameraToRobot.plus(AlignConstants.tagOffsets.get(tag.getFiducialId()))
+								: cameraToRobot;
 
+						Transform3d camTrans = tag.getBestCameraToTarget();
+						SmartDashboard.putString("camTrans", camTrans.toString());
+						Pose3d estimate = PhotonUtils.estimateFieldToRobotAprilTag(camTrans,
+						new Pose3d(0, 0, -0.25, new Rotation3d()), cameraToRobot);
+						if (!setInitPose) {
+							setInitPose = true;
+							pose_est.resetPose(estimate.toPose2d());
+						}
+
+						
+						//Make sure things are fine here (such that y is the correct thing in the plus)
+						
+
+						xdrivePID.setP(Math.max(0, AlignConstants.xkPtrans - 0.35 * Math.abs(ydrivePID.getError())));
+						SmartDashboard.putNumber("xdriveP", AlignConstants.xkPtrans - 0.35 * ydrivePID.getError());
+						rot = estimate.getRotation().toRotation2d();
+						y = estimate.getTranslation().getY();
+						x = estimate.getTranslation().getX();
+
+						SmartDashboard.putNumber("xVal", x);
+						SmartDashboard.putNumber("yVal", y);
+						if (AlignConstants.useGyro) {
+							yawTarget = getTagAngle(tag.getFiducialId());
+							SmartDashboard.putNumber("Target Yaw Align", yawTarget);
+						} else {
+							yawTarget = 180;
+							yaw = rot.getDegrees();
+
+						}
+						
+
+					});
+			if (tags.isEmpty() && !setInitPose) {
+				return;
+			}
+			if (auton) {
+				
+			}
+			SmartDashboard.putNumber("Auto Align Yaw Post", yaw);
+			SmartDashboard.putNumber("What the fuck it should be", Pgyro.getRawRot().getDegrees() - Pgyro.alignOffset.getDegrees());
+			SmartDashboard.putNumber("Yaw Pid Out", yawPID.calculate(yaw, yawTarget));
+			Swerve.this.autoDriveRobotRelative(new ChassisSpeeds(-xdrivePID.calculate(x),
+					-ydrivePID.calculate(y), yawPID.calculate(yaw, yawTarget)), 1);
+		}
+	}
+
+	public void setSlowMode(boolean slowMode) {
+		frontLeftModule.setSlowMode(slowMode);
+		frontRightModule.setSlowMode(slowMode);
+		rearRightModule.setSlowMode(slowMode);
+		rearLeftModule.setSlowMode(slowMode);
+	}
+
+	public int getTagAngle(int id) {
+		return switch (id) {
+			case 6 -> -60;
+			case 7 -> 0;
+			case 8 -> 60;
+			case 9 -> 120;
+			case 10 -> 180;
+			case 11 -> -120;
+			case 18 -> 0;
+			case 19 -> -60;
+			case 20 -> -120;
+			case 21 -> 180;
+			case 22 -> 120;
+			case 17 -> 60;
+
+			default -> 0;
+		};
 	}
 }

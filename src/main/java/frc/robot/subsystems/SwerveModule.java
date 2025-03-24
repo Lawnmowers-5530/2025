@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Swerve;
 
@@ -28,8 +30,11 @@ import frc.robot.constants.Swerve;
  */
 public class SwerveModule extends SubsystemBase {
 
-	static final class SwerveModuleConstants extends Swerve.SwerveModule {};
-	static final class SwerveAnglePIDConstants extends Swerve.SwerveModule.SwerveAnglePIDConstants {};
+	static final class SwerveModuleConstants extends Swerve.SwerveModule {
+	};
+
+	static final class SwerveAnglePIDConstants extends Swerve.SwerveModule.SwerveAnglePIDConstants {
+	};
 
 	private final PIDController anglePID = new PIDController(
 			SwerveAnglePIDConstants.p,
@@ -40,11 +45,18 @@ public class SwerveModule extends SubsystemBase {
 	private SparkMax rotate;
 	private CANcoder canCoder;
 	private double angleOffset;
+	private boolean slowMode;
 
-	public SwerveModule(int driveMotorID, int turnMotorID, int canCoderID, double angleOffset) { // initialize module
-
+	public SwerveModule(int driveMotorID, int turnMotorID, int canCoderID, double angleOffset, boolean inverted) { // initialize
+																													// module
 		drive = new TalonFX(driveMotorID);
 		rotate = new SparkMax(turnMotorID, MotorType.kBrushless);
+
+		//var talonFXConfigurator = drive.getConfigurator();
+		//var motorConfigs = new MotorOutputConfigs();
+		//motorConfigs.Inverted = (inverted ? InvertedValue.Clockwise_Positive
+		//		: InvertedValue.CounterClockwise_Positive);
+		//talonFXConfigurator.apply(motorConfigs);
 
 		this.canCoder = new CANcoder(canCoderID);
 
@@ -53,10 +65,11 @@ public class SwerveModule extends SubsystemBase {
 
 		TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
 		MotorOutputConfigs talonOutputConfig = new MotorOutputConfigs();
-		talonOutputConfig.Inverted = InvertedValue.CounterClockwise_Positive; //invert the motor output because theres an extra gear on these swerve modules
+		talonOutputConfig.NeutralMode = NeutralModeValue.Brake;
+		talonOutputConfig.Inverted = inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive; // invert the motor output because theres
+																				// an extra gear on these swerve modules
 		driveConfiguration.withMotorOutput(talonOutputConfig);
 		drive.getConfigurator().apply(driveConfiguration);
-
 
 		SparkMaxConfig rotateConfig = new SparkMaxConfig();
 		rotateConfig.idleMode(IdleMode.kBrake); // same invert logic as the talons
@@ -78,9 +91,11 @@ public class SwerveModule extends SubsystemBase {
 												// so it
 												// always chooses the shortest angle to
 												// rotate to
+		double clamped_out = Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond));
+		SmartDashboard.putNumber("smps", state.speedMetersPerSecond);
 
-		drive.set(Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond)));
-		//System.out.println(state.speedMetersPerSecond);
+		drive.set(slowMode ? clamped_out * SwerveModuleConstants.slowModeScaleFactor : clamped_out); // set speed of drive motor
+		// System.out.println(state.speedMetersPerSecond);
 		double pidOut = anglePID.calculate(getTurningPosition().getRadians(), state.angle.getRadians());
 		rotate.set(pidOut);
 	}
@@ -91,7 +106,8 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Absolute angle of module including angleOffset
 	 */
 	public Rotation2d getTurningPosition() {
-		return new Rotation2d(((this.canCoder.getAbsolutePosition().getValueAsDouble()) * Math.PI * 2 + this.angleOffset));
+		return new Rotation2d(
+				((this.canCoder.getAbsolutePosition().getValueAsDouble()) * Math.PI * 2 + this.angleOffset));
 	}
 
 	/**
@@ -100,7 +116,7 @@ public class SwerveModule extends SubsystemBase {
 	 * @return Velocity of drive motor
 	 */
 	public double getVelocity() { // convert rpm to m/s
-		return  drive.getVelocity().getValueAsDouble() * SwerveModuleConstants.conversionFactor;
+		return drive.getVelocity().getValueAsDouble() * SwerveModuleConstants.conversionFactor;
 	}
 
 	/**
@@ -139,16 +155,22 @@ public class SwerveModule extends SubsystemBase {
 		return new SwerveModuleState(getVelocity(), getTurningPosition());
 	}
 
+	public void setSlowMode(boolean slowMode) {
+		this.slowMode = slowMode;
+	}
+
 	/**
 	 * Method used to set motors to coast when robot is disabled and on. Makes robot
 	 * movement outside of the field much easier
 	 * 
 	 * @param idlemode Coast or brake
 	 */
-	//public void setIdleMode(IdleMode idlemode) {
-	//	SparkMaxConfig config = new SparkMaxConfig();
-	//	config.idleMode(idlemode);
-	//	drive.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-	//	rotate.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-	//}
+	// public void setIdleMode(IdleMode idlemode) {
+	// SparkMaxConfig config = new SparkMaxConfig();
+	// config.idleMode(idlemode);
+	// drive.configure(config, SparkBase.ResetMode.kNoResetSafeParameters,
+	// SparkBase.PersistMode.kPersistParameters);
+	// rotate.configure(config, SparkBase.ResetMode.kNoResetSafeParameters,
+	// SparkBase.PersistMode.kPersistParameters);
+	// }
 }

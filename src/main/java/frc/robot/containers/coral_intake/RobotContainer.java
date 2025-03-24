@@ -106,18 +106,18 @@ public class RobotContainer {
 
             this.subsystems.coralIntake.setLaserCanSwitch(true);
 
-            this.controllers.driverController.a().onTrue(new RunCommand(() -> {
-                this.subsystems.coralIntake.setTarget(CoralIntake.Targets.INTAKE);
-            }));
-            this.controllers.driverController.b().onTrue(new RunCommand(() -> {
-                this.subsystems.coralIntake.setTarget(CoralIntake.Targets.BOTTOM);
-            }));
-            this.controllers.driverController.x().onTrue(new RunCommand(() -> {
-                this.subsystems.coralIntake.setTarget(CoralIntake.Targets.MIDDLE);
-            }));
-            this.controllers.driverController.y().onTrue(new RunCommand(() -> {
-                this.subsystems.coralIntake.setTarget(CoralIntake.Targets.TOP);
-            }));
+            this.controllers.driverController.a().onTrue(
+                this.subsystems.coralIntake.anglePivot(CoralIntake.Targets.INTAKE)
+            );
+            this.controllers.driverController.b().onTrue(
+                this.subsystems.coralIntake.anglePivot(CoralIntake.Targets.BOTTOM)
+            );
+            this.controllers.driverController.x().onTrue(
+                this.subsystems.coralIntake.anglePivot(CoralIntake.Targets.MIDDLE)
+            );
+            this.controllers.driverController.y().onTrue(
+                this.subsystems.coralIntake.anglePivot(CoralIntake.Targets.TOP)
+            );
 
             this.controllers.driverController.leftBumper().onTrue(new RunCommand(() -> {
                 this.subsystems.coralIntake.intake();
