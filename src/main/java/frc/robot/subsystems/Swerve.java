@@ -567,7 +567,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		@Override
 		public void initialize() {
 			setInitPose = false;
-			Bonk.getInstance().setTarget(Targets.MIDDLE);
+			
 		}
 		@Override
 		public void execute() {

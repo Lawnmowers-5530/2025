@@ -19,6 +19,9 @@ public class Bindings {
 		intake = this.new Intake();
 		elevator = this.new Elevator();
 		coral = this.new Coral();
+		bonk = this.new Bonker();
+
+
 
 	}
 
@@ -34,6 +37,8 @@ public class Bindings {
 
 	Intake intake;
 
+	
+
 	final class Intake {
 		/**
 		 * Angle pivot to intake angle / L2 & L3 angle
@@ -42,20 +47,24 @@ public class Bindings {
 			return Bindings.this.subsystems.coralIntake.anglePivot(Targets.INTAKE);
 		}
 	}
-	final class Bonker {
+
+	Bonker bonk;
+	public final class Bonker {
 		Command up() {
 			return new InstantCommand(()-> {
 				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.UP);
-			}, Bonk.getInstance()).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> {
-				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.RESET);
-			})); 
+			}, Bonk.getInstance());
 		}
 		Command down() {
 			return new InstantCommand(()-> {
 				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.DOWN);
-			}, Bonk.getInstance()).andThen(new WaitCommand(2)).andThen(new InstantCommand(()-> {
-				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.RESET);
-			})); 
+			}, Bonk.getInstance());
+		
+		}
+		Command middle() {
+			return new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.MIDDLE);
+			}, subsystems.bonk);
 		}
 	}
 

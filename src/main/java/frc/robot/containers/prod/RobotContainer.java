@@ -75,7 +75,7 @@ public class RobotContainer {
 			this.subsystems.controller = new Controller();
 			this.subsystems.coralIntake = new CoralIntake();
 			this.subsystems.elevator = new Elevator();
-			//this.subsystems.bonk = new Bonk(); 
+			this.subsystems.bonk = new Bonk(); 
 			this.subsystems.swerve = new Swerve();
 
 			// if (this.subsystems.algaeIntake == null) {
@@ -128,6 +128,7 @@ public class RobotContainer {
 			Controller.toggleLaserCan.onChange(new RunCommand(() -> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
+			
 
 			this.controller.switches.x().onTrue(new RunCommand(() -> {
 				this.subsystems.hang.setFunnelRelease();
@@ -140,7 +141,9 @@ public class RobotContainer {
 
 			this.controller.driverController.leftTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
 			this.controller.driverController.rightTrigger(0.2).whileTrue(this.subsystems.swerve.yawController(Controller.driveVector, () -> {return frc.robot.constants.Swerve.leftStationAngle;}, 1));
-			
+			this.controller.secondaryController.leftBumper().onTrue(this.bindings.bonk.up());
+			this.controller.secondaryController.rightBumper().onTrue(this.bindings.bonk.down());
+			this.controller.secondaryController.b().onTrue(this.bindings.bonk.middle());
 			this.subsystems.hang.setDefaultCommand(
 					new RunCommand(
 							() -> {
