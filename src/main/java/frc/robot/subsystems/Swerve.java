@@ -59,6 +59,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 	static final class AlignConstants extends frc.robot.constants.AlignToTag {
 	};
 
+	static final class RobotGlobalConstants extends frc.robot.constants.RobotGlobal {};
+
 	private PoseCameraManager cameraManager;
 	private PIDController rotationPID;
 
@@ -146,7 +148,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				(speeds, feedforwards) -> autoDriveRobotRelative(speeds, 1/4.8),
 				new PPHolonomicDriveController(
 						SwerveConstants.PathPlanner.translationConstants,
-						SwerveConstants.PathPlanner.rotationConstants),
+						SwerveConstants.PathPlanner.rotationConstants, RobotGlobalConstants.timePeriodS),
 				config,
 				() -> {
 					// BooleanSupplier that controls when the path will be mirrored for the red

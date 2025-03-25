@@ -1,5 +1,6 @@
 package frc.robot.containers.prod;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -64,6 +65,11 @@ public class Bindings {
 		Command middle() {
 			return new InstantCommand(()-> {
 				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.MIDDLE);
+			}, subsystems.bonk);
+		}
+		Command reset() {
+			return new InstantCommand(()-> {
+				Bonk.getInstance().setTarget(frc.robot.subsystems.Bonk.Targets.RESET);
 			}, subsystems.bonk);
 		}
 	}
@@ -147,6 +153,11 @@ public class Bindings {
 			return new SlowModeCommand();
 		} // use whileTrue on trigger only, command will not end properly when using
 			// onTrue on trigger
+		Command stopDrivetrain() {
+			return new InstantCommand(()-> {
+				Bindings.this.subsystems.swerve.autoDriveRobotRelative(new ChassisSpeeds(), 0);
+			}, Bindings.this.subsystems.swerve);
+		}
 	}
 
 	Coral coral;
@@ -165,6 +176,13 @@ public class Bindings {
 			return Bindings.this.elevator.goToL0()
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
+					.until(Bindings.this.subsystems.coralIntake::coralDetected)
+					.andThen(new WaitCommand(0.15))
+					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
+		}
+		Command runIntakeOnly() {
+			return 
+					Bindings.this.subsystems.coralIntake.intakeCommand()
 					.until(Bindings.this.subsystems.coralIntake::coralDetected)
 					.andThen(new WaitCommand(0.15))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());

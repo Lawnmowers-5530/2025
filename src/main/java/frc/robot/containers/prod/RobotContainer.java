@@ -175,12 +175,18 @@ public class RobotContainer {
 			NamedCommands.registerCommand("outtake", this.bindings.coral.outtake());
 			NamedCommands.registerCommand("outtakeL4", this.bindings.coral.angleAndOuttakeL4());
 			NamedCommands.registerCommand("gyro", Pgyro.setAutoGyro());
+			NamedCommands.registerCommand("BonkUp", this.bindings.bonk.up());
+			NamedCommands.registerCommand("BonkMiddle", this.bindings.bonk.middle());
+			NamedCommands.registerCommand("BonkDown", this.bindings.bonk.down());
+			NamedCommands.registerCommand("BonkReset", this.bindings.bonk.reset());
 			NamedCommands.registerCommand("print", new RunCommand(
 				() -> {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
 			NamedCommands.registerCommand("Wait Until In Funnel", this.subsystems.coralIntake.waitUntilCoralInFunnel());
 			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::coralDetected));
+			NamedCommands.registerCommand("Intake Only", this.bindings.coral.runIntakeOnly());
+			NamedCommands.registerCommand("Stop", );
 			
 		}
 		{

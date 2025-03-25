@@ -19,11 +19,15 @@ import frc.robot.containers.prod.RobotContainer;
  * respective commands.
  */
 public class Robot extends TimedRobot {
-	//import frc.robot.containers.coral_intake.RobotContainer as Container;
+	//import frc.robot.containers.prod.RobotContainer as Container;
 	public static final class Container extends RobotContainer {};
 
+	public static final class RobotGlobalConstants extends frc.robot.constants.RobotGlobal {};
+
 	public Robot() {
-		
+		super(RobotGlobalConstants.timePeriodS);
+
+		//TODO: Wpilib shutup for testing, useful to be on during comp
 		DriverStation.silenceJoystickConnectionWarning(true);
 	}
 	private Command autonomousCommand;

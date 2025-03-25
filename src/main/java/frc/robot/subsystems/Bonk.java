@@ -26,9 +26,9 @@ public class Bonk extends SubsystemBase{
     //Constants
     private final int id = 25;
     private static final double upPos = 37.3;
-    private static final double downPos = 25.7;
+    private static final double downPos = 22.7;
     private static final double middlePos = 35.2;
-    private static final double  resetPos = 12;
+    private static final double  resetPos = 0;
     private static final double Kp=0.42; 
     private static final double Ki=0; 
     private static final double Kd = 0;
