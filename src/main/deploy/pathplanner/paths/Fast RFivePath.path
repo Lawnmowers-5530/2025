@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3744117164460707,
-        "y": 1.071378916531743
+        "x": 1.817747333899155,
+        "y": 1.4415706176047522
       },
       "isLocked": false,
       "linkedName": "mintakepos"
     },
     {
       "anchor": {
-        "x": 2.961813501144165,
-        "y": 1.5099685354691075
+        "x": 3.0247159090909093,
+        "y": 2.529261363636363
       },
       "prevControl": {
-        "x": 1.8483112851104364,
-        "y": 1.1474595605083575
+        "x": 2.5556936792232015,
+        "y": 1.973866903516766
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,16 +33,16 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.72,
+    "maxAcceleration": 4.72,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 59.99999999999999
+    "velocity": 4.72,
+    "rotation": 57.00000000000001
   },
   "reversed": false,
   "folder": null,
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": 53.13010235415599
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
