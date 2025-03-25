@@ -186,7 +186,7 @@ public class RobotContainer {
 			NamedCommands.registerCommand("Wait Until In Funnel", this.subsystems.coralIntake.waitUntilCoralInFunnel());
 			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::coralDetected));
 			NamedCommands.registerCommand("Intake Only", this.bindings.coral.runIntakeOnly());
-			NamedCommands.registerCommand("Stop", );
+		
 			
 		}
 		{
