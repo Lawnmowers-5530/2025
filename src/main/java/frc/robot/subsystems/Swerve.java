@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import io.github.oblarg.oblog.Loggable;
-
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -17,19 +15,15 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -41,8 +35,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.Bonk.Targets;
 import frc.robot.subsystems.vision.PoseCameraManager;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
 /**
@@ -456,8 +450,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Controller.rumbleLeft = true;
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
-			yaw = Pgyro.getRawRot().getDegrees();
+			yaw = Pgyro.getDeg();
 			if (auton) {
+				yaw = Pgyro.getRawRot().getDegrees();
 				yaw = yaw - Pgyro.alignOffset.getDegrees();
 			}
 			Optional<PhotonTrackedTarget> tags;
@@ -580,8 +575,9 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Controller.rumbleRight = true;
 			}
 			pose_est.update(Pgyro.getRot(), getModulePositions());
-			yaw = Pgyro.getRawRot().getDegrees();
+			yaw = Pgyro.getDeg();
 			if (auton) {
+				yaw = Pgyro.getRawRot().getDegrees();
 				yaw -= Pgyro.alignOffset.getDegrees();
 			}
 
@@ -647,9 +643,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 			if (tags.isEmpty() && !setInitPose) {
 				return;
 			}
-			if (auton) {
-				
-			}
+			
 			SmartDashboard.putNumber("Auto Align Yaw Post", yaw);
 			SmartDashboard.putNumber("What the fuck it should be", Pgyro.getRawRot().getDegrees() - Pgyro.alignOffset.getDegrees());
 			SmartDashboard.putNumber("Yaw Pid Out", yawPID.calculate(yaw, yawTarget));
