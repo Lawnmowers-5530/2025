@@ -18,16 +18,16 @@ public class AlignToTag {
     public static final double kIrot = 0.0;
     public static final double kDrot = 0;
 
-    public static final Transform3d leftCameraToRobot = new Transform3d(0, -0.0104, 0, new Rotation3d(0, 0, 0));
-    public static final Transform3d rightCameraToRobot = new Transform3d(0, 0.028, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d leftCameraToRobot = new Transform3d(0, -0.017, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d rightCameraToRobot = new Transform3d(0, 0.024, 0, new Rotation3d(0, 0, 0));
 
     public static final double yDriveTolerance = 0.01;
     public static final double xDriveTolerance = 0.025;
     public static final double rotatationTolerance = 0.25;
 
-    public static final boolean  useGyro = true;
+    public static final boolean  useGyro = true; 
     public static HashMap<Integer, Transform3d> tagOffsets = new HashMap<>();
-    public void initializeTagOffsets() {
+    /*public void initializeTagOffsets() {
         tagOffsets = new HashMap<>();
         tagOffsets.put(6, new Transform3d(0, 0, 0, new Rotation3d()));
         tagOffsets.put(7, new Transform3d(0, 0, 0, new Rotation3d()));
@@ -41,7 +41,7 @@ public class AlignToTag {
         tagOffsets.put(21, new Transform3d(0, 0, 0, new Rotation3d()));
         tagOffsets.put(22, new Transform3d(0, 0, 0, new Rotation3d()));
         tagOffsets.put(17, new Transform3d(0, 0, 0, new Rotation3d()));
-    }
+    }*/
 
 
 }

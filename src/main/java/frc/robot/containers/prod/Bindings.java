@@ -191,6 +191,7 @@ public class Bindings {
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
 					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
+					.andThen(new WaitCommand(0.1))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 

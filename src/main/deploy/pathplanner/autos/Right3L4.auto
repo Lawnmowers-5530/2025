@@ -41,23 +41,11 @@
                       "data": {
                         "name": "align right"
                       }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "BonkDown"
-                      }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "BonkUp"
           }
         },
         {
@@ -99,12 +87,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "BonkReset"
                 }
               }
             ]
