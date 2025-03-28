@@ -137,6 +137,7 @@ public class RobotContainer {
 			Controller.rotateToFaceLeft.whileTrue(this.subsystems.swerve.new RotateToFaceCoralStation(RotateToFaceCoralStation.LEFT, true));
 			Controller.rotateToFaceRight.whileTrue(this.subsystems.swerve.new RotateToFaceCoralStation(RotateToFaceCoralStation.RIGHT, true));
 
+			this.controller.switches.b().onTrue(this.subsystems.hang.zeroHang());
 			
 
 			this.controller.switches.x().onTrue(new RunCommand(() -> {
@@ -186,6 +187,7 @@ public class RobotContainer {
 			NamedCommands.registerCommand("BonkMiddle", this.bindings.bonk.middle());
 			NamedCommands.registerCommand("BonkDown", this.bindings.bonk.down());
 			NamedCommands.registerCommand("BonkReset", this.bindings.bonk.reset());
+			NamedCommands.registerCommand("L2", this.bindings.elevator.goToL2());
 			NamedCommands.registerCommand("print", new RunCommand(
 				() -> {
 					System.out.println("named command print");

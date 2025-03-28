@@ -193,7 +193,7 @@ public class Bindings {
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
 					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
-					.andThen(new WaitCommand(0.1))
+					.andThen(new WaitCommand(0.2))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 		Command conditionalOuttake() {
@@ -204,7 +204,7 @@ public class Bindings {
 					Bindings.this.subsystems.coralIntake.intake();
 				}
 			}, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::notCoralDetected)
-			.andThen(new WaitCommand(0.1))
+			.andThen(new WaitCommand(0.2))
 			.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 
 		}
