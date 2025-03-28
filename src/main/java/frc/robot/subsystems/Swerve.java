@@ -659,6 +659,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 		rearLeftModule.setSlowMode(slowMode);
 	}
 
+
 	public int getTagAngle(int id) {
 		return switch (id) {
 			case 6 -> -60;
@@ -676,5 +677,41 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 			default -> 0;
 		};
+	}
+	public class RotateToFaceCoralStation extends Command {
+		int side;
+		boolean fieldRelative;
+		PIDController yawPID;
+
+		public static final int RIGHT = 60;
+		public static final int LEFT = -60;
+
+
+		public RotateToFaceCoralStation(int side, boolean fieldRelative) {
+			this.side = side;
+			this.fieldRelative = fieldRelative;
+			yawPID  = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
+			AlignConstants.kDrot);
+			yawPID.setIZone(2);
+			yawPID.enableContinuousInput(-180, 180);
+			yawPID.setTolerance(AlignConstants.rotatationTolerance);
+		}
+
+		@Override
+		public void execute() {
+			Swerve.this.drive(Controller.driveVector.get(), 
+			yawPID.calculate(Pgyro.getDeg(), side), 
+			fieldRelative,
+			 Controller.slowMode.getAsBoolean() ? 0.5 : 1);
+		}
+		@Override
+		public boolean isFinished() {
+			return Math.abs(side -  Pgyro.getDeg()) < AlignConstants.rotatationTolerance;
+		}
+
+
+
+
+		
 	}
 }

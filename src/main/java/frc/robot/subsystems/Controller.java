@@ -38,6 +38,8 @@ public class Controller extends SubsystemBase {
 	public static Trigger alignLeft;
 	public static Trigger alignRight;
 	public static Trigger toggleLaserCan;
+	public static Trigger rotateToFaceLeft;
+	public static Trigger rotateToFaceRight;
 
 	public static boolean rumbleLeft;
 	public static boolean rumbleRight;
@@ -104,6 +106,9 @@ public class Controller extends SubsystemBase {
 			};
 
 			toggleLaserCan = this.switches.y();
+
+			rotateToFaceLeft = this.driverController.leftTrigger(0.2);
+			rotateToFaceRight = this.driverController.rightTrigger(0.2);
 		}
 	}
 

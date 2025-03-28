@@ -4,18 +4,24 @@
 
 package frc.robot.containers.prod;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import java.util.Objects;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.Bonk;
+import frc.robot.subsystems.Bonk.Targets;
 import frc.robot.subsystems.Controller;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Elevator;
@@ -23,11 +29,8 @@ import frc.robot.subsystems.Hang;
 import frc.robot.subsystems.LedManager;
 import frc.robot.subsystems.Pgyro;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Swerve.RotateToFaceCoralStation;
 import io.github.oblarg.oblog.Logger;
-
-import java.util.Objects;
-
-import frc.robot.subsystems.Bonk.Targets;
 
 /**
  * The {@link RobotContainer} holds all subsystems, commands, suppliers, etc. in
@@ -130,6 +133,10 @@ public class RobotContainer {
 			Controller.toggleLaserCan.onChange(new RunCommand(() -> {
 				this.subsystems.coralIntake.setLaserCanSwitch(Controller.toggleLaserCan.getAsBoolean());
 			}, this.subsystems.coralIntake));
+
+			Controller.rotateToFaceLeft.whileTrue(this.subsystems.swerve.new RotateToFaceCoralStation(RotateToFaceCoralStation.LEFT, true));
+			Controller.rotateToFaceRight.whileTrue(this.subsystems.swerve.new RotateToFaceCoralStation(RotateToFaceCoralStation.RIGHT, true));
+
 			
 
 			this.controller.switches.x().onTrue(new RunCommand(() -> {
