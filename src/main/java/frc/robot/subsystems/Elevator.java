@@ -35,7 +35,7 @@ public final class Elevator extends SubsystemBase {
 
     private PIDController elevatorController;
 
-    private double sp;
+    public double sp;
 
     private DigitalInput limitSwitch;
 

@@ -1,5 +1,7 @@
 package frc.robot.containers.prod;
 
+import javax.naming.Binding;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -194,7 +196,18 @@ public class Bindings {
 					.andThen(new WaitCommand(0.1))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
+		Command conditionalOuttake() {
+			return new RunCommand(()-> {
+				if (Bindings.this.subsystems.elevator.sp == frc.robot.constants.Elevator.level1) {
+					Bindings.this.subsystems.coralIntake.outtakeL1();
+				}else {
+					Bindings.this.subsystems.coralIntake.intake();
+				}
+			}, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::notCoralDetected)
+			.andThen(new WaitCommand(0.1))
+			.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 
+		}
 		Command outtakeL1() {
 			return Bindings.this.subsystems.coralIntake.outtakeL1Command()
 					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)

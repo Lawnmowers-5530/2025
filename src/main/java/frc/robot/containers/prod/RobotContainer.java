@@ -115,7 +115,7 @@ public class RobotContainer {
 			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro());
 
 			Controller.intake.onTrue(this.bindings.coral.runIntake());
-			Controller.outtake.onTrue(this.bindings.coral.outtake());
+			Controller.outtake.onTrue(this.bindings.coral.conditionalOuttake());
 
 			
 

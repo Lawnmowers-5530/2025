@@ -8,7 +8,7 @@ public class CoralIntake {
         public static final int laserCan2Id = 27;
 
         public static final double intakePower = 0.7;//0.45
-        public static final double outtakeL1 = 0.85;
+        public static final double outtakeL1 = 1;
 
         public static final double Kp = 2.3;
         public static final double ff = 0.5;

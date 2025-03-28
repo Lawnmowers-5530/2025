@@ -688,6 +688,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 
 		public RotateToFaceCoralStation(int side, boolean fieldRelative) {
+			this.addRequirements(Swerve.this);
 			this.side = side;
 			this.fieldRelative = fieldRelative;
 			yawPID  = new PIDController(AlignConstants.kProt, AlignConstants.kIrot,
@@ -699,14 +700,16 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		@Override
 		public void execute() {
+			SmartDashboard.putNumber("rot err", Pgyro.getDeg() - side);
+			SmartDashboard.putNumber("auto rot out", yawPID.calculate(Pgyro.getDeg(), side));
 			Swerve.this.drive(Controller.driveVector.get(), 
 			yawPID.calculate(Pgyro.getDeg(), side), 
 			fieldRelative,
-			 Controller.slowMode.getAsBoolean() ? 0.5 : 1);
+			1);
 		}
 		@Override
 		public boolean isFinished() {
-			return Math.abs(side -  Pgyro.getDeg()) < AlignConstants.rotatationTolerance;
+			return false;
 		}
 
 
