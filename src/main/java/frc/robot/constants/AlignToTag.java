@@ -18,7 +18,7 @@ public class AlignToTag {
     public static final double kIrot = 0.0;
     public static final double kDrot = 0;
 
-    public static final Transform3d leftCameraToRobot = new Transform3d(0, 0.025, 0, new Rotation3d(0, 0, 0)); //working for aligning to right coral post
+    public static final Transform3d leftCameraToRobot = new Transform3d(0, 0.016, 0, new Rotation3d(0, 0, 0)); //working for aligning to right coral post
     public static final Transform3d rightCameraToRobot = new Transform3d(0, 0.08, 0, new Rotation3d(0, 0, 0));
 
     public static final double yDriveTolerance = 0.005;
