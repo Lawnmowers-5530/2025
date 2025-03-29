@@ -7,7 +7,7 @@ public class Elevator {
     public static final double level1 = 14; //unsure of actual value was 28
     public static final double intake = 0.1;
 
-    public static final double minSpeed = -0.73;
+    public static final double minSpeed = -0.55; //-0.4 is old constant but works overkill
     public static final double maxSpeed = 1;
 
     public static final double kP = 0.07;
