@@ -121,10 +121,10 @@ public class RobotContainer {
 
             this.controllers.driverController.leftBumper().onTrue(new RunCommand(() -> {
                 this.subsystems.coralIntake.intake();
-            }).until(this.subsystems.coralIntake::coralDetected).andThen(this.subsystems.coralIntake::stopIntake));
+            }).until(this.subsystems.coralIntake::legacyCoralDetected).andThen(this.subsystems.coralIntake::stopIntake));
             this.controllers.driverController.rightBumper().onTrue(new RunCommand(() -> {
                 this.subsystems.coralIntake.outtake();
-            }).until(this.subsystems.coralIntake::coralDetected).andThen(this.subsystems.coralIntake::stopIntake));
+            }).until(this.subsystems.coralIntake::legacyCoralDetected).andThen(this.subsystems.coralIntake::stopIntake));
         }
 
         /**supps */
