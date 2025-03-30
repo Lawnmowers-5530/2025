@@ -30,6 +30,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -615,6 +616,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 						if (!setInitPose) {
 							setInitPose = true;
 							pose_est.resetPose(estimate.toPose2d());
+						}else {
+							pose_est.addVisionMeasurement(estimate.toPose2d(), Timer.getFPGATimestamp());
 						}
 
 						
