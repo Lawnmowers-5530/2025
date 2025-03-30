@@ -196,6 +196,9 @@ public class RobotContainer {
 			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::legacyCoralDetected));
 			NamedCommands.registerCommand("Intake Only", this.bindings.coral.runIntakeOnly());
 			NamedCommands.registerCommand("Stop", this.bindings.swerve.stopDrivetrain());
+			NamedCommands.registerCommand("Gyro + 90", Pgyro.setAutoGyroWithOffset(90));
+			NamedCommands.registerCommand("Gyro - 90", Pgyro.setAutoGyroWithOffset(-90));
+			NamedCommands.registerCommand("Init with vision", this.bindings.subsystems.swerve.resetPoseWithVision());
 		
 			
 		}

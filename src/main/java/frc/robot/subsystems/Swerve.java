@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -282,6 +283,33 @@ public class Swerve extends SubsystemBase implements Loggable {
 				getModulePositions(),
 				pose);
 		// Pgyro.setAutoGyro();
+
+	}
+
+	public Command resetPoseWithVision() {
+		return new InstantCommand(()-> {
+			var visionEstimates = cameraManager.getEstimatedPoses();
+			if (visionEstimates.size() < 2){
+				System.out.print("Failed to see targets");
+				return;
+			}
+			double xSum = 0;
+			double ySum = 0;
+			double rotSum = 0;
+			int count = 0;
+			for (var visionEstimate : visionEstimates) {
+				var estimate = visionEstimate.getFirst().estimatedPose.toPose2d();
+				xSum += estimate.getX();
+				ySum += estimate.getY();
+				rotSum += estimate.getRotation().getRadians();
+				count ++;
+				
+			}
+			xSum/=count;
+			ySum/=count;
+			rotSum/=count;
+			odometry.resetPose(new Pose2d(xSum, ySum, new Rotation2d(rotSum)));
+		});
 
 	}
 
