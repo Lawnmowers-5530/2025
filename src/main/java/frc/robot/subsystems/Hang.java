@@ -48,19 +48,18 @@ public class Hang extends SubsystemBase {
 
         hangMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
-        //MORE AUtO HANG
-        //limitSwitch = new DigitalInput(0);
+        
         
     }
     //Auto Hang
-    /*private final double target = 7.72;
-    private boolean resetting = false;
-    private DigitalInput limitSwitch;
+    private final double target = 7.72;
+    
+    private final double absEncoderPos = 0;
     
     public Command reset() {
         return new RunCommand(()-> {
             hangMotor.set(-HangConstants.hangPower);
-        }, this).until(this.limitSwitch::get).andThen(new InstantCommand(()-> {
+        }, this).until(()-> {return Math.abs(hangMotor.getAbsoluteEncoder().getPosition() - absEncoderPos) < 0.1;}).andThen(new InstantCommand(()-> {
             hangMotor.set(0);
             hangMotor.getEncoder().setPosition(0);
         }));
@@ -71,7 +70,7 @@ public class Hang extends SubsystemBase {
         }, this).until(()-> {return this.hangMotor.getEncoder().getPosition() > target;}).andThen(new InstantCommand(()-> {
             hangMotor.set(0);
         }));
-    }*/
+    }
   
     public Command zeroHang() {
         return new InstantCommand(
