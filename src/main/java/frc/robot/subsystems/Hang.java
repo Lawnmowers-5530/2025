@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,8 +47,32 @@ public class Hang extends SubsystemBase {
         config.softLimit.forwardSoftLimit(HangConstants.topPos);
 
         hangMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    }
 
+        //MORE AUtO HANG
+        //limitSwitch = new DigitalInput(0);
+        
+    }
+    //Auto Hang
+    /*private final double target = 7.72;
+    private boolean resetting = false;
+    private DigitalInput limitSwitch;
+    
+    public Command reset() {
+        return new RunCommand(()-> {
+            hangMotor.set(-HangConstants.hangPower);
+        }, this).until(this.limitSwitch::get).andThen(new InstantCommand(()-> {
+            hangMotor.set(0);
+            hangMotor.getEncoder().setPosition(0);
+        }));
+    }
+    public Command autoHang() {
+        return new RunCommand(()-> {
+            hangMotor.set(HangConstants.hangPower);
+        }, this).until(()-> {return this.hangMotor.getEncoder().getPosition() > target;}).andThen(new InstantCommand(()-> {
+            hangMotor.set(0);
+        }));
+    }*/
+  
     public Command zeroHang() {
         return new InstantCommand(
             () -> {
@@ -57,11 +81,7 @@ public class Hang extends SubsystemBase {
         );
     }
 
-    public Command autoHang() {
-        return new RunCommand(() -> {
-            hangMotor.set(HangConstants.hangPower);
-        }, this).until(this::isHanged).andThen(new RunCommand(() -> stop(), this));
-    }
+   
 
     public Command autoOut() {
         return new RunCommand(() -> {

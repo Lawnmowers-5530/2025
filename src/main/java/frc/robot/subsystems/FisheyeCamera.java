@@ -26,6 +26,7 @@ public class FisheyeCamera extends SubsystemBase {
         output = CameraServer.putVideo(c.name, c.width, c.height);
         image = new Mat();
         CommandScheduler.getInstance().registerSubsystem(this);
+       
     }
 
     @Override
@@ -41,4 +42,10 @@ public class FisheyeCamera extends SubsystemBase {
         }
         output.putFrame(image);
     }
+    /*
+     * 
+     */
+    
+
+    
 }

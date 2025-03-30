@@ -119,7 +119,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 				SwerveConstants.kinematics,
 				Pgyro.getRawRot(),
 				modPos,
-				getPose(),
+				Pose2d.kZero, // pathplanner overrides this. Make sure to reset this if not using pathplanner
 				VecBuilder.fill(0.1, 0.1, 0.1), // set state std devs to 0.1,0.1,0.1 - these are //TODO
 												// relative to
 												// the vision devs and only determine the
@@ -313,12 +313,12 @@ public class Swerve extends SubsystemBase implements Loggable {
 
 		var visionEstimates = cameraManager.getEstimatedPoses();
 
-		// for (var visionEstimate : visionEstimates) {
-		// var estimate = visionEstimate.getFirst();
-		// var deviations = visionEstimate.getSecond();
-		// odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
-		// estimate.timestampSeconds, deviations);
-		// }
+		for (var visionEstimate : visionEstimates) {
+			var estimate = visionEstimate.getFirst();
+			var deviations = visionEstimate.getSecond();
+			odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
+			estimate.timestampSeconds, deviations);
+		}
 	}
 
 	/**
@@ -617,7 +617,7 @@ public class Swerve extends SubsystemBase implements Loggable {
 							setInitPose = true;
 							pose_est.resetPose(estimate.toPose2d());
 						}else {
-							pose_est.addVisionMeasurement(estimate.toPose2d(), Timer.getFPGATimestamp());
+							pose_est.addVisionMeasurement(estimate.toPose2d(), Timer.getFPGATimestamp()); // TO be tested
 						}
 
 						
