@@ -41,6 +41,9 @@ public class CoralIntake extends SubsystemBase {
 
     boolean laserCanSwitch = false;
 
+    int primaryLaserCANFailCount = 0;
+    int secondaryLaserCANFailCount = 0;
+
     public CoralIntake() {
         intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(20, 20);
@@ -75,13 +78,13 @@ public class CoralIntake extends SubsystemBase {
     
         if (intake.get() != 0) {
             state = States.WANTS_CORAL;
-        } else if (coralDetected()) {
+        } else if (legacyCoralDetected()) {
             state = States.HAS_CORAL;
         } else {
             state = States.IDLE;
         }
         //SmartDashboard.putBoolean("is coral in effector", notCoralDetected());
-       
+
         SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
         SmartDashboard.putNumber("pivot target", this.target);
         //SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);
@@ -108,7 +111,7 @@ public class CoralIntake extends SubsystemBase {
     }
     public boolean coralInFunnel() {
         if (inFunnel.getMeasurement() == null) {
-            System.err.println("Sensor 3 Failure");
+            System.err.println("Funnel sensor failure");
             return false;
         }
         return inFunnel.getMeasurement().distance_mm < 300;
@@ -161,6 +164,7 @@ public class CoralIntake extends SubsystemBase {
         intake.set(0);
     }
 
+    @Deprecated
     public boolean coralDetected1() {
         var measurement = fakeBeamBreak.getMeasurement();
         if (measurement == null) {
@@ -171,14 +175,41 @@ public class CoralIntake extends SubsystemBase {
     
     }
 
+    public boolean coralDetected() {
+        boolean primaryFailed = false;
+        boolean secondaryFailed = false;
+
+        var primaryMeasurement = laserCanSwitch ? fakeBeamBreak.getMeasurement(): fakeBeamBreak2.getMeasurement();
+        if (primaryMeasurement == null) {
+            primaryLaserCANFailCount++;
+            primaryFailed = true;
+        } else {
+            return primaryMeasurement.distance_mm < 35;
+        }
+
+        var secondaryMeasurement = laserCanSwitch? fakeBeamBreak2.getMeasurement(): fakeBeamBreak.getMeasurement();
+        if (secondaryMeasurement == null) {
+            secondaryLaserCANFailCount++;
+            secondaryFailed = true;
+        } else {
+            return secondaryMeasurement.distance_mm < 35;
+        }
+
+        System.err.println("NO VAILD LASERCAN OUTPUT, INTAKE WILL NOT WORK, fail count 1: " + primaryLaserCANFailCount + ", fail count 2: " + secondaryLaserCANFailCount);
+        return true;
+    }
+
+    @Deprecated
     public boolean notCoralDetected1() {
         return !coralDetected1();
     }
 
-    public boolean notCoralDetected() {
+    @Deprecated
+    public boolean legacyNotCoralDetected() {
         return laserCanSwitch ? !coralDetected2() : !coralDetected1();
     }
 
+    @Deprecated
     private boolean coralDetected2() {
 
         var measurement = fakeBeamBreak2.getMeasurement();
@@ -189,7 +220,8 @@ public class CoralIntake extends SubsystemBase {
         return measurement.distance_mm < 35;
     }
 
-    public boolean coralDetected() {
+    @Deprecated
+    public boolean legacyCoralDetected() {
         return laserCanSwitch ? coralDetected2() : coralDetected1();
     }
 
@@ -200,7 +232,7 @@ public class CoralIntake extends SubsystemBase {
     public static class Helper {
         public static double ticksToDegree(double ticks) {
             return ticks * 360;// domath
-        }
+        } // TODO: can remove?
 
     }
 

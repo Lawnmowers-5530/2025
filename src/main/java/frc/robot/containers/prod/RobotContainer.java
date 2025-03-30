@@ -193,7 +193,7 @@ public class RobotContainer {
 					System.out.println("named command print");
 				}, new Subsystem[]{}));
 			NamedCommands.registerCommand("Wait Until In Funnel", this.subsystems.coralIntake.waitUntilCoralInFunnel());
-			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::coralDetected));
+			NamedCommands.registerCommand("Wait Until In Intake", new WaitUntilCommand(this.subsystems.coralIntake::legacyCoralDetected));
 			NamedCommands.registerCommand("Intake Only", this.bindings.coral.runIntakeOnly());
 			NamedCommands.registerCommand("Stop", this.bindings.swerve.stopDrivetrain());
 		
