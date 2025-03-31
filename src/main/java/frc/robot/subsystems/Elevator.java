@@ -57,8 +57,11 @@ public final class Elevator extends SubsystemBase {
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
                 .iZone(ElevatorConstants.integralZone)
-                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
-        motor1Config.smartCurrentLimit(20, 20);
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed)
+                .maxMotion.allowedClosedLoopError(ElevatorConstants.tolerance)
+                .maxAcceleration(45)
+                .maxVelocity(45);
+        motor1Config.smartCurrentLimit(80, 80);
 
         motor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -69,8 +72,12 @@ public final class Elevator extends SubsystemBase {
                 .p(ElevatorConstants.kP)
                 .i(ElevatorConstants.kI)
                 .d(ElevatorConstants.kD)
-                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed);
-        motor1Config.smartCurrentLimit(20, 20);
+                .velocityFF(ElevatorConstants.ff)
+                .outputRange(ElevatorConstants.minSpeed, ElevatorConstants.maxSpeed)
+                .maxMotion.allowedClosedLoopError(ElevatorConstants.tolerance)
+                .maxAcceleration(45)
+                .maxVelocity(45);
+        motor1Config.smartCurrentLimit(80, 80);
         
         motor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -102,8 +109,8 @@ public final class Elevator extends SubsystemBase {
 
     public void setTarget(double sp) {
         this.sp = sp;
-        this.motor1.getClosedLoopController().setReference(sp, ControlType.kPosition);
-        this.motor2.getClosedLoopController().setReference(sp, ControlType.kPosition);
+        this.motor1.getClosedLoopController().setReference(sp, ControlType.kMAXMotionPositionControl);
+        this.motor2.getClosedLoopController().setReference(sp, ControlType.kMAXMotionPositionControl);
     }
 
     public TrapezoidProfile.State getCurrentState() {

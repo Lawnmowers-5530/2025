@@ -286,6 +286,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Fast",
   "choreoAuto": false
 }

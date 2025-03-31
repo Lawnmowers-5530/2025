@@ -13,6 +13,7 @@ public class Elevator {
     public static final double kP = 0.07;
     public static final double kI = 0.000;
     public static final double kD = 0.0;
+    public static final double ff = 0;
     public static final double integralZone = 2;
 
     public static final double maxAcceleration = 15;

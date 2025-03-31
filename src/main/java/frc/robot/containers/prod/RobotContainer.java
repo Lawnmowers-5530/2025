@@ -188,6 +188,7 @@ public class RobotContainer {
 			NamedCommands.registerCommand("BonkDown", this.bindings.bonk.down());
 			NamedCommands.registerCommand("BonkReset", this.bindings.bonk.reset());
 			NamedCommands.registerCommand("L2", this.bindings.elevator.goToL2());
+			NamedCommands.registerCommand("L3", this.bindings.elevator.goToL3());
 			NamedCommands.registerCommand("print", new RunCommand(
 				() -> {
 					System.out.println("named command print");
