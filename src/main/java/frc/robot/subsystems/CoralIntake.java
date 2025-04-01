@@ -199,6 +199,10 @@ public class CoralIntake extends SubsystemBase {
         return true;
     }
 
+    public boolean notCoralDetected() {
+        return !coralDetected();
+    }
+
     @Deprecated
     public boolean notCoralDetected1() {
         return !coralDetected1();

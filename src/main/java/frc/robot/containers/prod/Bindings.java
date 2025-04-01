@@ -176,21 +176,21 @@ public class Bindings {
 			return Bindings.this.elevator.goToL0()
 					.until(Bindings.this.subsystems.elevator::atTarget)
 					.andThen(Bindings.this.subsystems.coralIntake.intakeCommand())
-					.until(Bindings.this.subsystems.coralIntake::legacyCoralDetected)
+					.until(Bindings.this.subsystems.coralIntake::coralDetected)
 					.andThen(new WaitCommand(0.15))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 		Command runIntakeOnly() {
 			return 
 					Bindings.this.subsystems.coralIntake.intakeCommand()
-					.until(Bindings.this.subsystems.coralIntake::legacyCoralDetected)
+					.until(Bindings.this.subsystems.coralIntake::coralDetected)
 					.andThen(new WaitCommand(0.15))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
 		Command outtake() {
 			return Bindings.this.subsystems.coralIntake.intakeCommand()
-					.until(Bindings.this.subsystems.coralIntake::legacyNotCoralDetected)
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 					.andThen(new WaitCommand(0.2))
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
@@ -201,14 +201,14 @@ public class Bindings {
 				}else {
 					Bindings.this.subsystems.coralIntake.intake();
 				}
-			}, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::legacyNotCoralDetected)
+			}, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 			.andThen(new WaitCommand(0.2))
 			.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 
 		}
 		Command outtakeL1() {
 			return Bindings.this.subsystems.coralIntake.outtakeL1Command()
-					.until(Bindings.this.subsystems.coralIntake::legacyNotCoralDetected)
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 					.andThen(Bindings.this.subsystems.coralIntake.stopIntakeCommand());
 		}
 
@@ -249,7 +249,7 @@ public class Bindings {
 			return Bindings.this.elevator.goToL4()
 					.andThen(new WaitUntilCommand(this::pivotAndElevator))
 					.andThen(Bindings.this.coral.outtake())
-					.until(Bindings.this.subsystems.coralIntake::legacyNotCoralDetected);
+					.until(Bindings.this.subsystems.coralIntake::notCoralDetected);
 		}
 
 		/**
