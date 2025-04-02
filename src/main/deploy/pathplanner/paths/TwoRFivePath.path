@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 1.367416087962962,
-        "y": 7.273
+        "y": 0.7270000000000003
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1938177088623263,
-        "y": 6.3857741911188155
+        "x": 1.61547794839311,
+        "y": 0.9266956281678368
       },
       "isLocked": false,
-      "linkedName": "IdealLeftIntake"
+      "linkedName": "IdealRightIntake"
     },
     {
       "anchor": {
-        "x": 3.0276121238425917,
-        "y": 5.92284107349537
+        "x": 2.3656300636574064,
+        "y": 1.5110000000000001
       },
       "prevControl": {
-        "x": 2.6742838707028107,
-        "y": 6.288970855294377
+        "x": 2.1605300619308707,
+        "y": 1.3472695826959415
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.8,
+    "maxVelocity": 4.72,
     "maxAcceleration": 6.9,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 360.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -59.99999999999999
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Ideal Left",
+  "folder": "Fast Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": false
 }

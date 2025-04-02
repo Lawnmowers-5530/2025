@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.367416087962962,
-        "y": 7.273067853009259
+        "y": 7.273
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.2456276213308675,
-        "y": 6.618638801585582
+        "y": 6.618570948576322
       },
       "isLocked": false,
       "linkedName": "IdealLeftIntake"
