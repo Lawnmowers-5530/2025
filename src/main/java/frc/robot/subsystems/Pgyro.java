@@ -97,7 +97,7 @@ public class Pgyro extends SubsystemBase {
 	}
 	public static Command setAutoGyroWithOffset(double angle) {
 		return new InstantCommand(()-> {
-			alignOffset = alignOffset.plus(new Rotation2d(Math.toRadians(angle)));
+			alignOffset = alignOffset.minus(Rotation2d.fromDegrees(angle));
 		});
 	}
 }

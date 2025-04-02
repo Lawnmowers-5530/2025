@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,13 +20,13 @@ public class Hang extends SubsystemBase {
     public static final class HangConstants {
         public static final int leftMotorChannel = 17;
 
-        public static final double topPos = 8.126;
+        public static final double topPos = 7.72;
         public static final int servoLeftPWMId = 0;
 
         public static final float servoReleaseLeft = 0;
         public static final float servoHoldLeft = 0;
 
-        public static final double hangPower = 0.15;
+        public static final double hangPower = 0.3;
         public static final double toHangPos = -0.2;
         public static final double doneHangPos = 0;
         public static final int funnelRelease = 1;
@@ -47,29 +50,32 @@ public class Hang extends SubsystemBase {
         config.softLimit.forwardSoftLimit(HangConstants.topPos);
 
         hangMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
+        limitSwitch = new DigitalInput(0);
         
         
     }
     //Auto Hang
     private final double target = 7.72;
     
-    private final double absEncoderPos = 0;
+
+    DigitalInput limitSwitch;
     
-    public Command reset() {
-        return new RunCommand(()-> {
-            hangMotor.set(-HangConstants.hangPower);
-        }, this).until(()-> {return Math.abs(hangMotor.getAbsoluteEncoder().getPosition() - absEncoderPos) < 0.1;}).andThen(new InstantCommand(()-> {
+    public Command reset(DoubleSupplier supOne) {
+        return (new RunCommand(()-> {
+            setRatchetRelease();
+            hangMotor.set(-supOne.getAsDouble()/3);
+        }, this).until(()-> {return !limitSwitch.get();}).andThen(new InstantCommand(()-> {
             hangMotor.set(0);
             hangMotor.getEncoder().setPosition(0);
-        }));
+        }))).finallyDo(()->hangMotor.set(0));
     }
-    public Command autoHang() {
-        return new RunCommand(()-> {
-            hangMotor.set(HangConstants.hangPower);
+    public Command autoHang(DoubleSupplier supTwo) {
+        return (new RunCommand(()-> {
+            hangMotor.set(supTwo.getAsDouble()/3);
+            setRatchetHold();
         }, this).until(()-> {return this.hangMotor.getEncoder().getPosition() > target;}).andThen(new InstantCommand(()-> {
             hangMotor.set(0);
-        }));
+        }))).finallyDo(()->hangMotor.stopMotor());
     }
   
     public Command zeroHang() {
@@ -144,11 +150,13 @@ public class Hang extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("limit", limitSwitch.get());
         SmartDashboard.putNumber("Hang Pos", hangMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("abosulte Pos", hangMotor.getAbsoluteEncoder().getPosition());
         if (!funnelState) {
             funnelRelease.set(1);
         } else {
             funnelRelease.set(0);
-        }
+        } 
     }
 }

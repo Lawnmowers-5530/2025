@@ -73,6 +73,8 @@ public class Swerve extends SubsystemBase implements Loggable {
 	RobotConfig config;
 	
 
+	
+
 	/**
 	 * Initialize all swerve elements
 	 */
@@ -339,14 +341,14 @@ public class Swerve extends SubsystemBase implements Loggable {
 				Pgyro.getRawRot(),
 				getModulePositions());
 
-		var visionEstimates = cameraManager.getEstimatedPoses();
+		/*var visionEstimates = cameraManager.getEstimatedPoses();
 
 		for (var visionEstimate : visionEstimates) {
 			var estimate = visionEstimate.getFirst();
 			var deviations = visionEstimate.getSecond();
 			odometry.addVisionMeasurement(cameraManager.flipPose(estimate.estimatedPose.toPose2d()),
 			estimate.timestampSeconds, deviations);
-		}
+		}*/
 	}
 
 	/**

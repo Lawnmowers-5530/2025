@@ -4,8 +4,10 @@ import java.util.HashMap;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
-public class AlignToTag {
+public class AlignToTag implements Sendable {
     public static final double xkPtrans = 0.32;
     public static final double xkItrans = 0;
     public static final double xkDtrans = 0;
@@ -18,8 +20,16 @@ public class AlignToTag {
     public static final double kIrot = 0.0;
     public static final double kDrot = 0;
 
-    public static final Transform3d leftCameraToRobot = new Transform3d(0, 0.016, 0, new Rotation3d(0, 0, 0)); //working for aligning to right coral post
-    public static final Transform3d rightCameraToRobot = new Transform3d(0, 0.08, 0, new Rotation3d(0, 0, 0));
+    public static Transform3d leftCameraToRobot = new Transform3d(0, 0.016, 0, new Rotation3d(0, 0, 0)); //working for aligning to right coral post
+    public static Transform3d rightCameraToRobot = new Transform3d(0, 0.08, 0, new Rotation3d(0, 0, 0));
+    //Reanissance Constants are 0.016 and 0.08
+    @Override
+     public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Camera Offsets");
+        builder.addDoubleProperty("Left Offset", ()-> {return leftCameraToRobot.getY();}, (d)-> {leftCameraToRobot = new Transform3d(0,d,0,Rotation3d.kZero);});
+        builder.addDoubleProperty("Right Offset", ()-> {return rightCameraToRobot.getY();}, (d)-> {rightCameraToRobot = new Transform3d(0,d,0,Rotation3d.kZero);});
+       
+    }
 
     public static final double yDriveTolerance = 0.005;
     public static final double xDriveTolerance = 0.025;

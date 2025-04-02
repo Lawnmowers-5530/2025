@@ -8,6 +8,7 @@
     "Ideal Left",
     "Left",
     "Middle",
+    "Ideal Right",
     "Right"
   ],
   "autoFolders": [
@@ -21,12 +22,12 @@
   "defaultMaxAngVel": 360.0,
   "defaultMaxAngAccel": 360.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 74.088,
-  "robotMOI": 10.14,
+  "robotMass": 61.23496995,
+  "robotMOI": 15.0,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.048,
   "driveGearing": 6.12,
-  "maxDriveSpeed": 4.5,
+  "maxDriveSpeed": 4.72,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 60.0,
   "wheelCOF": 1.2,

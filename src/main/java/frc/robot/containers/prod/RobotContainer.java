@@ -154,13 +154,8 @@ public class RobotContainer {
 			this.controller.secondaryController.leftBumper().onTrue(this.bindings.bonk.up());
 			this.controller.secondaryController.rightBumper().onTrue(this.bindings.bonk.down());
 			this.controller.secondaryController.b().onTrue(this.bindings.bonk.middle());
-			this.subsystems.hang.setDefaultCommand(
-					new RunCommand(
-							() -> {
-								this.subsystems.hang
-										.manualInput(this.controller.secondaryController.getRightTriggerAxis()
-												- this.controller.secondaryController.getLeftTriggerAxis());
-							}, this.subsystems.hang));
+			this.controller.secondaryController.rightTrigger(0.2).whileTrue(this.bindings.subsystems.hang.autoHang(this.controller.secondaryController::getRightTriggerAxis));
+			this.controller.secondaryController.leftTrigger(0.2).whileTrue(this.bindings.subsystems.hang.reset(this.controller.secondaryController::getLeftTriggerAxis));
 			this.controller.secondaryController.x().onTrue(new InstantCommand(()-> {
 				Bonk.getInstance().setTarget(Targets.RESET);
 			}, Bonk.getInstance()));

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.277173200779447,
-        "y": 6.665192261571201
+        "x": 2.06161180406738,
+        "y": 6.762527361443597
       },
       "isLocked": false,
       "linkedName": "IdealLeftIntake"
     },
     {
       "anchor": {
-        "x": 2.3656300636574064,
-        "y": 6.489089626736111
+        "x": 3.2198943865740732,
+        "y": 6.3326200810185185
       },
       "prevControl": {
-        "x": 2.103476328585397,
-        "y": 6.670778176963346
+        "x": 2.9589349469097996,
+        "y": 6.886384465520209
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,21 +29,7 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.1534937207943926,
-      "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 2.0,
-        "maxAngularVelocity": 360.0,
-        "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -59,9 +45,9 @@
     "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "Left",
+  "folder": "Ideal Left",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -59.99999999999999
   },
   "useDefaultConstraints": false
