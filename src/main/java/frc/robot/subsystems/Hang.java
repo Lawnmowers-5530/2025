@@ -47,7 +47,7 @@ public class Hang extends SubsystemBase {
         ratchetRelease = new Servo(HangConstants.servoLeftPWMId);
 
         var config = new SparkMaxConfig();
-        config.softLimit.forwardSoftLimit(HangConstants.topPos);
+       
 
         hangMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         limitSwitch = new DigitalInput(0);
