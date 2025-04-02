@@ -70,12 +70,11 @@ public class Hang extends SubsystemBase {
         }))).finallyDo(()->hangMotor.set(0));
     }
     public Command autoHang(DoubleSupplier supTwo) {
-        return (new RunCommand(()-> {
+        return new RunCommand(()-> {
             hangMotor.set(supTwo.getAsDouble()/3);
             setRatchetHold();
-        }, this).until(()-> {return this.hangMotor.getEncoder().getPosition() > target;}).andThen(new InstantCommand(()-> {
-            hangMotor.set(0);
-        }))).finallyDo(()->hangMotor.stopMotor());
+        }, this)
+        .finallyDo(()->hangMotor.stopMotor());
     }
   
     public Command zeroHang() {
