@@ -112,12 +112,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Wait Until In Funnel"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "intake"
                 }
               }
@@ -132,12 +126,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "LThreePath"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
                 }
               }
             ]
@@ -233,12 +221,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Wait Until In Funnel"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "intake"
                 }
               }
@@ -253,12 +235,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "TwoLFivePath"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
                 }
               }
             ]
