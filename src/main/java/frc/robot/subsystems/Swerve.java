@@ -324,12 +324,14 @@ public class Swerve extends SubsystemBase implements Loggable {
 		updateOdometry();
 		currentPose = getPose();
 		SmartDashboard.putString("current pose:", this.currentPose.toString());
-		SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
-		SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity() + this.frontRightModule.getVelocity()
-				+ this.rearLeftModule.getVelocity() + this.rearRightModule.getVelocity()) / 4);
-		SmartDashboard.putNumber("Auto Gyro Offset", Pgyro.alignOffset.getDegrees());
-		SmartDashboard.putNumber("Gyro measurement raw", Pgyro.getRawRot().getDegrees());
-		SmartDashboard.putNumber("Gyro measurement", Pgyro.getRot().getDegrees());
+		//SmartDashboard.putString("bl out", rearLeftModule.getPos().toString());
+		//SmartDashboard.putNumber("speed", (this.frontLeftModule.getVelocity() + this.frontRightModule.getVelocity()
+		//		+ this.rearLeftModule.getVelocity() + this.rearRightModule.getVelocity()) / 4);
+		//SmartDashboard.putNumber("Auto Gyro Offset", Pgyro.alignOffset.getDegrees());
+		//SmartDashboard.putNumber("Gyro measurement raw", Pgyro.getRawRot().getDegrees());
+		//SmartDashboard.putNumber("Gyro measurement", Pgyro.getRot().getDegrees());
+		SmartDashboard.putBoolean("left cam status: ", cameraManager.camList.get(0).hasTargets());
+		SmartDashboard.putBoolean("right cam status: ", cameraManager.camList.get(1).hasTargets());
 	}
 
 	/**

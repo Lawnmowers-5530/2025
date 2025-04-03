@@ -8,6 +8,7 @@ public class CoralIntake {
         public static final int laserCan2Id = 27;
 
         public static final double intakePower = 0.3; //was 0.7, gear ratio scalar is 0.234375  //0.45
+        public static final double outtakePower = 0.6;
         public static final double outtakeL1 = 0.7;
 
         public static final double Kp = 2.3;
@@ -15,7 +16,7 @@ public class CoralIntake {
         public static final double tolerance = 0.06;
 
         //Targets (Degrees)w
-        public static final double intakePos = 0.07;//0.08;
+        public static final double intakePos = 0.065;//0.08;
         public static final double middlePos = 0.095;
         public static final double topPos = 0.2;//redone
         public static final double bottomPos = 0;
