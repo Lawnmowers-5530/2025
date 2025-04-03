@@ -67,7 +67,8 @@ public class Hang extends SubsystemBase {
         }, this).until(()-> {return !limitSwitch.get();}).andThen(new InstantCommand(()-> {
             hangMotor.set(0);
             hangMotor.getEncoder().setPosition(0);
-        }))).finallyDo(()->hangMotor.set(0));
+        }))).finallyDo(()->{hangMotor.set(0);setRatchetHold();}
+        );
     }
     public Command autoHang(DoubleSupplier supTwo) {
         return new RunCommand(()-> {
