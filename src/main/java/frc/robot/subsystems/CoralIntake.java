@@ -183,6 +183,7 @@ public class CoralIntake extends SubsystemBase {
         if (primaryMeasurement == null) {
             primaryLaserCANFailCount++;
             primaryFailed = true;
+            SmartDashboard.putNumber("Primary Lazercan fail count", primaryLaserCANFailCount);
         } else {
             return primaryMeasurement.distance_mm < 35;
         }
@@ -191,6 +192,7 @@ public class CoralIntake extends SubsystemBase {
         if (secondaryMeasurement == null) {
             secondaryLaserCANFailCount++;
             secondaryFailed = true;
+            SmartDashboard.putNumber("Secondary Lazercan fail count:", secondaryLaserCANFailCount);
         } else {
             return secondaryMeasurement.distance_mm < 35;
         }
