@@ -199,7 +199,7 @@ public class Bindings {
 				if (Bindings.this.subsystems.elevator.sp == frc.robot.constants.Elevator.level1) {
 					Bindings.this.subsystems.coralIntake.outtakeL1();
 				}else {
-					Bindings.this.subsystems.coralIntake.intake();
+					Bindings.this.subsystems.coralIntake.outtake();
 				}
 			}, Bindings.this.subsystems.coralIntake).until(Bindings.this.subsystems.coralIntake::notCoralDetected)
 			.andThen(new WaitCommand(0.2))

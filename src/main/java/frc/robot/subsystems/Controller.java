@@ -74,7 +74,7 @@ public class Controller extends SubsystemBase {
 
 			driveRotation = () -> {
 				return MathUtil.applyDeadband(
-						-driverController.getRightX(),
+						-driverController.getRightX()*1.5,
 						ControllerConstants.driveControllerJoystickDeadband,
 						1);
 			};
