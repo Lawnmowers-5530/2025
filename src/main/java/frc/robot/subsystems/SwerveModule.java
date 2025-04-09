@@ -92,6 +92,7 @@ public class SwerveModule extends SubsystemBase {
 												// always chooses the shortest angle to
 												// rotate to
 		double clamped_out = Math.max(-1.0, Math.min(1.0, state.speedMetersPerSecond));
+
 		SmartDashboard.putNumber("smps", state.speedMetersPerSecond);
 
 		drive.set(slowMode ? clamped_out * SwerveModuleConstants.slowModeScaleFactor : clamped_out); // set speed of drive motor

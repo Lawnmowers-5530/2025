@@ -195,6 +195,7 @@ public class RobotContainer {
 			NamedCommands.registerCommand("Gyro + 90", Pgyro.setAutoGyroWithOffset(90));
 			NamedCommands.registerCommand("Gyro - 90", Pgyro.setAutoGyroWithOffset(-90));
 			NamedCommands.registerCommand("Init with vision", this.bindings.subsystems.swerve.resetPoseWithVision());
+			NamedCommands.registerCommand("gyro final", Pgyro.zeroGyroAfterAutonCommand());
 		
 			
 		}

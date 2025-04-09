@@ -179,7 +179,7 @@ public class CoralIntake extends SubsystemBase {
         boolean primaryFailed = false;
         boolean secondaryFailed = false;
 
-        var primaryMeasurement = laserCanSwitch ? fakeBeamBreak.getMeasurement(): fakeBeamBreak2.getMeasurement();
+        var primaryMeasurement = laserCanSwitch ? fakeBeamBreak2.getMeasurement(): fakeBeamBreak.getMeasurement();
         if (primaryMeasurement == null) {
             primaryLaserCANFailCount++;
             primaryFailed = true;
@@ -188,7 +188,7 @@ public class CoralIntake extends SubsystemBase {
             return primaryMeasurement.distance_mm < 35;
         }
 
-        var secondaryMeasurement = laserCanSwitch? fakeBeamBreak2.getMeasurement(): fakeBeamBreak.getMeasurement();
+        var secondaryMeasurement = laserCanSwitch? fakeBeamBreak.getMeasurement(): fakeBeamBreak2.getMeasurement();
         if (secondaryMeasurement == null) {
             secondaryLaserCANFailCount++;
             secondaryFailed = true;

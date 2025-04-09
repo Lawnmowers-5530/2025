@@ -100,4 +100,9 @@ public class Pgyro extends SubsystemBase {
 			alignOffset = alignOffset.minus(Rotation2d.fromDegrees(angle));
 		});
 	}
+	public static Command zeroGyroAfterAutonCommand() {
+		return new InstantCommand(()->{
+			offset = getRawRot().minus(alignOffset);
+		});
+	}
 }
