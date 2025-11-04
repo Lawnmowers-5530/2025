@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Robot;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.Bonk;
@@ -107,10 +108,10 @@ public class RobotContainer {
 			//		}, this.subsystems.swerve)
 			//);
 
-			Controller.L1.onTrue(this.bindings.elevator.goToL1());
-			Controller.L2.onTrue(this.bindings.elevator.goToL2());
-			Controller.L3.onTrue(this.bindings.elevator.goToL3());
-			Controller.L4.onTrue(this.bindings.elevator.goToL4());
+			Controller.L1.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.dynamic(Direction.kForward));
+			Controller.L2.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.dynamic(Direction.kReverse));
+			Controller.L3.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.quasistatic(Direction.kForward));
+			Controller.L4.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.quasistatic(Direction.kReverse));
 
 			Controller.zeroGyro.onTrue(this.bindings.swerve.zeroGyro());
 

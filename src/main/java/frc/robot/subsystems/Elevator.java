@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public final class Elevator extends SubsystemBase {
     // import frc.robot.constants.Elevator as ElevatorConstants
@@ -42,10 +43,14 @@ public final class Elevator extends SubsystemBase {
     private RelativeEncoder motor1Encoder;
     private RelativeEncoder motor2Encoder;
 
+
+
     public Elevator() {
 
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
+
+        
 
         SparkMaxConfig pidConfig = new SparkMaxConfig();
 

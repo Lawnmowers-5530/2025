@@ -13,12 +13,24 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.Units;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volt;
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class CoralIntake extends SubsystemBase {
     // import frc.robot.constants.CoralIntake.Pivot as PivotConstants;
@@ -32,10 +44,11 @@ public class CoralIntake extends SubsystemBase {
     private SparkMaxConfig pivotConfig;
     private LaserCan fakeBeamBreak;
     private LaserCan fakeBeamBreak2;
+    private SimpleMotorFeedforward smff;
     LaserCan inFunnel;
     private AbsoluteEncoder pivotEncoder;
     public States state = States.HAS_CORAL;
-    
+    SimpleMotorFeedforward ff;
 
     public double target = PivotConstants.bottomPos;
 
@@ -43,11 +56,22 @@ public class CoralIntake extends SubsystemBase {
 
     int primaryLaserCANFailCount = 0;
     int secondaryLaserCANFailCount = 0;
+    private final MutVoltage m_appliedVoltage = Volt.mutable(0);
+
+    private final MutAngularVelocity m_angularVelocity= RadiansPerSecond.mutable(0);
+    private final MutAngle m_angle = Radians.mutable(0);
+
+
+    public SysIdRoutine sysIdRoutine;
 
     public CoralIntake() {
+        double randomValue = 0;
+        ff = new SimpleMotorFeedforward(0.3698, 0.062468,0.0057195);
         intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(20, 20);
-
+        //EncoderConfig encoderConf = new EncoderConfig();
+       // encoderConf.
+        smff = new SimpleMotorFeedforward(0.3819, 0.0010414,0.000083063); //from sysid
         pivotConfig = new SparkMaxConfig();
 
         pivotConfig.closedLoop.pidf(PivotConstants.Kp, 0, 0, PivotConstants.ff);
@@ -67,9 +91,28 @@ public class CoralIntake extends SubsystemBase {
         pivotEncoder = pivot.getAbsoluteEncoder();
         pivotController = new PIDController(PivotConstants.Kp, 0, 0);
         pivotController.setTolerance(PivotConstants.tolerance);
+        
+       // var encoder = intake.getEncoder();
+      //  SmartDashboard.putNumber("Position Conversion Factor")
+
+        sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(intake::setVoltage, log -> {
+             log.motor("shooter-wheel")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                        intake.getBusVoltage(), Units.Volt))
+                    .angularPosition(m_angle.mut_replace(intake.getEncoder().getPosition(), Rotations))
+                    .angularVelocity(
+                        m_angularVelocity.mut_replace(intake.getEncoder().getVelocity(), Units.RPM));
+        }, this));
 
     }
 
+
+    public void setVolts(Voltage voltage) {
+
+        intake.set(voltage.in(Volt.getBaseUnit())/RobotController.getBatteryVoltage());
+    }
+   
 
     @Override
     public void periodic() {
@@ -136,6 +179,11 @@ public class CoralIntake extends SubsystemBase {
 
         }
     }
+    public Command intakeDefaultCommand(
+        return new RunCommand(()-> {
+            intake.set(ff.calculate(ModuleLayer.))
+        }, null)
+    )
 
     public Command anglePivot(Targets target) {
         return new InstantCommand(() -> {
