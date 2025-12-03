@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -60,13 +61,13 @@ public class CoralIntake extends SubsystemBase {
 
     private final MutAngularVelocity m_angularVelocity= RadiansPerSecond.mutable(0);
     private final MutAngle m_angle = Radians.mutable(0);
-
+    private RelativeEncoder encoder;
 
     public SysIdRoutine sysIdRoutine;
 
     public CoralIntake() {
         double randomValue = 0;
-        ff = new SimpleMotorFeedforward(0.3698, 0.062468,0.0057195);
+        ff = new SimpleMotorFeedforward(0.22178, 0.062049,0.0060731);
         intakeConfig = new SparkMaxConfig();
         intakeConfig.smartCurrentLimit(20, 20);
         //EncoderConfig encoderConf = new EncoderConfig();
@@ -94,17 +95,19 @@ public class CoralIntake extends SubsystemBase {
         
        // var encoder = intake.getEncoder();
       //  SmartDashboard.putNumber("Position Conversion Factor")
-
+        encoder = intake.getEncoder();
         sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(intake::setVoltage, log -> {
              log.motor("shooter-wheel")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                        intake.getBusVoltage(), Units.Volt))
-                    .angularPosition(m_angle.mut_replace(intake.getEncoder().getPosition(), Rotations))
+                        intake.getBusVoltage() * intake.getAppliedOutput(), Units.Volt))
+                    .angularPosition(m_angle.mut_replace(encoder.getPosition(), Rotations))
                     .angularVelocity(
-                        m_angularVelocity.mut_replace(intake.getEncoder().getVelocity(), Units.RPM));
+                        m_angularVelocity.mut_replace(encoder.getVelocity(), Units.RPM));
         }, this));
+        
 
+        
     }
 
 
@@ -116,7 +119,12 @@ public class CoralIntake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         SmartDashboard.putNumber("intake power", intake.get());
+        SmartDashboard.putNumber("Voltage-Intake", intake.getBusVoltage());
+        SmartDashboard.putNumber("Position-Intake", encoder.getPosition());
+        SmartDashboard.putNumber("Velocity-Intake", encoder.getVelocity());
+        SmartDashboard.putNumber("Applied Output-Intake", intake.getAppliedOutput());
         pivot.getClosedLoopController().setReference(target, ControlType.kPosition);
     
         if (intake.get() != 0) {
@@ -128,10 +136,10 @@ public class CoralIntake extends SubsystemBase {
         }
         //SmartDashboard.putBoolean("is coral in effector", notCoralDetected());
 
-        SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
-        SmartDashboard.putNumber("pivot target", this.target);
+       //SmartDashboard.putNumber("pivot position", pivot.getAbsoluteEncoder().getPosition());
+        //SmartDashboard.putNumber("pivot target", this.target);
         //SmartDashboard.putNumber("lasercan", fakeBeamBreak.getMeasurement().distance_mm);
-        SmartDashboard.putNumber("intake speed", intake.get());
+        //SmartDashboard.putNumber("intake speed", intake.get());
     }
 
     public BooleanSupplier atTarget = () -> {
@@ -179,11 +187,7 @@ public class CoralIntake extends SubsystemBase {
 
         }
     }
-    public Command intakeDefaultCommand(
-        return new RunCommand(()-> {
-            intake.set(ff.calculate(ModuleLayer.))
-        }, null)
-    )
+  
 
     public Command anglePivot(Targets target) {
         return new InstantCommand(() -> {
@@ -191,6 +195,11 @@ public class CoralIntake extends SubsystemBase {
         }, this);
     }
 
+    public Command runatspeed(double velocity) {
+        return new RunCommand(() -> {
+            intake.set(ff.calculate(velocity));
+        }, this);
+    }
     public enum Targets {
         INTAKE, BOTTOM, MIDDLE, TOP, L4
     }

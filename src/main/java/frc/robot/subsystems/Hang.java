@@ -150,9 +150,9 @@ public class Hang extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("limit", limitSwitch.get());
-        SmartDashboard.putNumber("Hang Pos", hangMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("abosulte Pos", hangMotor.getAbsoluteEncoder().getPosition());
+      //  SmartDashboard.putBoolean("limit", limitSwitch.get());
+       // SmartDashboard.putNumber("Hang Pos", hangMotor.getEncoder().getPosition());
+       // SmartDashboard.putNumber("abosulte Pos", hangMotor.getAbsoluteEncoder().getPosition());
         if (!funnelState) {
             funnelRelease.set(1);
         } else {

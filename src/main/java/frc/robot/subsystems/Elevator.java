@@ -13,12 +13,12 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public final class Elevator extends SubsystemBase {
     // import frc.robot.constants.Elevator as ElevatorConstants
@@ -49,7 +49,7 @@ public final class Elevator extends SubsystemBase {
 
         motor1 = new SparkMax(ElevatorConstants.motor1Id, MotorType.kBrushless);
         motor2 = new SparkMax(ElevatorConstants.motor2Id, MotorType.kBrushless);
-
+        SmartDashboard.putData(this);
         
 
         SparkMaxConfig pidConfig = new SparkMaxConfig();
@@ -128,19 +128,19 @@ public final class Elevator extends SubsystemBase {
     }
 
     public boolean atTarget() {
-        SmartDashboard.putNumber("elevator error: ", sp - getCurrentState().position);
+      //  SmartDashboard.putNumber("elevator error: ", sp - getCurrentState().position);
         return Math.abs(sp - getCurrentState().position) < ElevatorConstants.tolerance;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("pos", getCurrentState().position);
-        SmartDashboard.putNumber("Elevator setpoint", sp);
+        //SmartDashboard.putNumber("pos", getCurrentState().position);
+        //SmartDashboard.putNumber("Elevator setpoint", sp);
         goal.position = sp;
         goal.velocity = 0;
 
-        SmartDashboard.putNumber("left curr", this.motor1.getOutputCurrent());
-        SmartDashboard.putNumber("right curr", this.motor2.getOutputCurrent());
+        //SmartDashboard.putNumber("left curr", this.motor1.getOutputCurrent());
+        //SmartDashboard.putNumber("right curr", this.motor2.getOutputCurrent());
 
         // double pud = elevatorController.calculate(getCurrentState().position,
         // setpoint.position); //TODO switch to trap profile
@@ -157,7 +157,7 @@ public final class Elevator extends SubsystemBase {
     public void setDirectSpeed(double speed) {
         motor2.set((speed / 4) + 0.018);
         motor1.set((speed / 4) + 0.018);
-        SmartDashboard.putNumber("cont speed", speed);
+       // SmartDashboard.putNumber("cont speed", speed);
     }
 
     public void voltageDrive(Voltage voltage) {
@@ -276,4 +276,11 @@ public final class Elevator extends SubsystemBase {
     // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     // return routine.dynamic(direction);
     // }
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("Elevator");
+        builder.addDoubleProperty("Position", () -> {return getCurrentState().position;}, this::setTarget);
+        builder.setActuator(true);
+        
+    }
 }

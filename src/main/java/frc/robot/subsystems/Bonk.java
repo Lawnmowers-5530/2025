@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /*
@@ -82,7 +81,7 @@ public class Bonk extends SubsystemBase{
  
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Pos", bonker.getEncoder().getPosition());
+       // SmartDashboard.putNumber("Pos", bonker.getEncoder().getPosition());
         bonker.getClosedLoopController().setReference(setpoint, ControlType.kPosition);
     }
     

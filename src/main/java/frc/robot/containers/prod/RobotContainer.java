@@ -108,7 +108,7 @@ public class RobotContainer {
 			//		}, this.subsystems.swerve)
 			//);
 
-			Controller.L1.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.dynamic(Direction.kForward));
+			Controller.L1.whileTrue(this.bindings.subsystems.coralIntake.runatspeed(2.5));
 			Controller.L2.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.dynamic(Direction.kReverse));
 			Controller.L3.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.quasistatic(Direction.kForward));
 			Controller.L4.whileTrue(this.bindings.subsystems.coralIntake.sysIdRoutine.quasistatic(Direction.kReverse));
